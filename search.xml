@@ -4,11 +4,49 @@
   
     
     <entry>
-      <title>Hello world</title>
+      <title>Stay or Leave?</title>
+      <link href="/2039/11/30/where-are-you-going/"/>
+      <url>/2039/11/30/where-are-you-going/</url>
+      
+        <content type="html"><![CDATA[<p>总有一条通向黑暗的隧道让你望眼欲穿</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> Memories of Murder </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>I am here</title>
+      <link href="/2019/11/30/look-here/"/>
+      <url>/2019/11/30/look-here/</url>
+      
+        <content type="html"><![CDATA[<p>在有限中以无限去演绎，这才是美妙。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> The legend of 1900 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>汇编学习</title>
       <link href="/2019/11/29/hello-world-0/"/>
       <url>/2019/11/29/hello-world-0/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<p>在debug的T指令，如果执行修改ss寄存器的指令，接下来的一条指令也紧接着被执行。<br>具体原因将在后面提到</p><p>   4.1 一个源程序从写出到执行的过程<br>一个汇编语言程序从写出到最终执行的简要过程：<br>第一步：编写汇编源程序。结果是产生一个储存源程序的文本文件<br>第二 步：对源程序进行编译连接。使用汇编语言编译程序对源程序文件中的源程序进行编译，产生目标文件，再用连接程序进行连接，生成可在操作系统中直接执行的文件。</p><p>可执行文件包括三部分：程序（从编译指令翻译过来的机器码）和数据（源程序中定义的数据）以及相关信息的描述（需要占用多少内存之类的）<br>第三步：执行</p><p>操作系统根据文件中的描述信息，将可执行文件中的机器码和数据载入内存中，并进行一些初始化如设置cs：ip指向第一条要执行的指令，然后有cpu执行</p><pre><code>      4.2 源程序</code></pre><p>1：在一个汇编语言源程序中包含两种指令：汇编指令与伪指令<br>汇编指令有对应的机器指令可以被翻译并执行，顾名思义伪指令没有对应机器码翻译后无法执行。<br>  其实伪指令是由编译器来执行的指令，来调节编译工作<br>例子：</p><p>segment和ends：是一对成对使用的伪指令，他们的功能是定义一个段。这是在写可被编译器编译的汇编源程序时必须要用到的一对伪指令<br>格式：<br>     段名 segment<br>           ……..<br>           ……..<br>     段名 ends</p><p>一个汇编源程序是由多个段组成的，这些段用来存放代码，数据，或者当作栈空间。<br>一个源程序所有将被计算机处理的信息：指令，数据，栈，被划分到不同的段中</p><p>end:是一个汇编程序的结束标记，在编译过程中编译器遇到end就结束编译</p><p>Assume：“假设”   它假设某一段寄存器和程序中某个用segment。。。。。Ends定义的段相关联，以后编程时记得用assume将有特定用途的段和相关寄存器关联起来即可</p><p>2：源程序包括汇编指令和伪指令，其中汇编指令组成了由计算机执行的程序，这里的程序指源程序中由计算机执行，处理的指令或数据<br>以后将源程序文件中的所有内容称为源程序，其中由计算机执行，处理的指令或数据称为程序<br>除了汇编指令和伪代码，还有一些标号：如这里的codesg， 一个标号指代了一个地址。如codesg在segment前面作为一个段的名称，这个名称最终被编译连接程序处理为一个段的段地址。</p><p>运算2的3次的源程序：<br>1：定义一个段名为abc<br> Abc segment<br>      。。。<br>Abc ends<br>2：写入汇编指令，实现目标</p><p> Abc segment<br>     Mov ax，2<br>     Add ax，ax<br>     Add ax，ax<br>Abc ends<br>3：指出程序在何处结束<br> Abc segment<br>     Mov ax，2<br>     Add ax，ax<br>     Add ax，ax<br>Abc ends<br>End</p><p>4：abc被当作代码段来利用，所以将abc和cs联系起来<br>Assume cs：abc<br> Abc segment<br>     Mov ax，2<br>     Add ax，ax<br>     Add ax，ax<br>Abc ends<br>End</p><p>5：一个程序结束后，将cpu的控制权交还给使它，使cpu得以继续运行程序<br>所以在程序末尾添加返回的程序段<br>利用 mov ax，4c00H<br>     Int 21H        来实现<br>目前我们只要知道，在程序的末尾使用这两条指令就可以实现程序返回<br>Assume cs：abc<br> Abc segment<br>     Mov ax，2<br>     Add ax，ax<br>     Add ax，ax<br>     Mov ax，4c00H<br>     Int 21H<br>Abc ends<br>End</p><p>与结束相关的概念：</p><pre><code>    4.3 编辑源程序</code></pre><p>可以在任意文本编辑器上编写源程序，只要最终的格式为纯文本即可，保存后将后缀改为asm。如：</p><pre><code>       4.4 编译</code></pre><p>如上图：进入masm后在[.ASM]后面输入要编译的asm文件，此处我的asm文件与masm程序在一个文件里就不需要路径了。<br>然后出现object filename ：编译后的文件名称默认为1.obj<br>继续，出现source listing 这是编译过程的中间产物，可以不理会直接ENTER，以后讲<br>下面的cross-reference 也一样不管<br>最后的两行代码说明这个源程序没有警告错误和必须要改正的错误</p><p>对asm文件编译过后将在同一个文件夹产生1.obj这个编译结果</p><p>在编译过程中我们提供输入（asm文件）最多三个输出：目标文件(.OBJ)，列表文件(.LST)，交叉引用文件(.CRF)，目标文件是我们需要的最终结果，其他是中间结果可以暂时忽略</p><pre><code>      4.5 连接</code></pre><p>与使用masm编译类似第一个提示符：输入可执行文件的名称，这是我们需要的最终结果，下面2行暂时忽略<br>Libraries 这一行：提示输入库文件的名称，库文件里包含了一些可以调用的子程序，如果某个程序调用了就得将相应的库文件与这个目标文件连接，我们这个程序没有调用任何子程序，直接ENTER<br>最后一行：“没有栈段”，这个错误暂时不理会</p><p>第五章[EX]和loop指令<br>[bx]<br>[bx]与内存单元：<br>我们前面学过：[0]表示内存单元的偏移地址为0，其段地址存放在ds寄存器中。<br>那么类似的[bx]表示某个内存单元，其偏移地址在bx中，段地址在ds中。<br>两者根据进行操作的寄存器的长度（类型）表示对应的长度（类型）<br>比如：<br>Mov ax，[0]/[bx]    将某个内存单元的内容送入ax中，这个内存单元的长度为2字节（字单元）<br>Mov lx，[0]/[bx]    将某个内存单元的内容送入lx中，这个内存单元的长度为1字节（字节单元）<br>其中偏移地址在[bx]或偏移地址是0，段地址在ds中<br>[loop]<br>Cup在执行loop指令时会进行两步操作：1、（cx）=（cx）-1  （所以cx中的内容决定了循环次数）  2、判断（cx）的值，如果不为0则转向被标记的地址处执行相应指令，如果为0则向下执行。<br>例如：</p><p>在上图：从mov ax，2开始执行汇编指令，执行了带标号的指令（s）——add ax，ax后向下执行 loop s：对被s标号的指令重复执行，直到cx变为0</p><p>标号：在汇编语言中，标号代表一个地址，上程序有一个标号“s”。他实际上标识了一个地址，在这个地址处有一条指令：add ax，ax</p><p>要点：1、cx中存放循环次数<br>2、loop指令所标识的指令要在loop前面<br>3、需要循环的指令放在标号s 与  loop s之间</p><pre><code>      And和or指令</code></pre><p>And指令：逻辑与指令；按位进行与运算<br>将对应位变为0其他不变，如：<br>Mov al，11111010<br>Add al，01111111   //将al中的第七位变为0——01111010</p><p>Add al，10111111   //将al中的第六位变为0——10111010</p><p>Add al，11111110   //将al中第0位变为0——11111010</p><p>Or指令：逻辑或指令，按位进行或运算<br>将对应位变为1其他不变；如<br>Mov al，11111000<br>Or al，00011111   //将al中的后面5个数变为1——11111111</p><p>Add与0，or或1</p><pre><code>           Div指令</code></pre><p>Div指令用来进行除法运算<br>被除数÷除数=商+余数<br>被除数一般默认放在ax或 ax和dx。<br>除数放在reg（指寄存器）或内存单元中<br>结果放在ax或ax和dx</p><p>两种情况：被除数放在ax——ax是16位寄存器，对应除数应该是8位（字节型数据）。<br>          其结果有商和余数，其中商放在al中，余数放在ah中</p><pre><code>      被除数放在ax和dx中——组成32位（组成一个32位寄存器），对应除数应该是16位（字型数据）      被除数高位放在dx中，低位放在ax中。结果的商放在ax中，余数放在dx中</code></pre><p>高位放余数，低位放商</p><p>格式：<br>Div reg（或内存单元）<br>例如：</p><pre><code>     伪指令dd</code></pre><p>Dd：dword（double word 双字）型数据，用来定义一个双字型数据，还有类似的：<br>Db：define byte 定义字节型数据<br>Dw：define word 定义字型数据</p><p>如：<br>Data segment<br>db 1<br>dw 1<br>dd 1</p><p>Data ends<br>End<br>在data段中定义了三个数据<br>第一个是字节型数据在data:0处占一个字节<br>第二个是字型数据在data：1处占两个字节（一个字）<br>第三个是双字型数据在data:3处占四个字节（两个字）</p><p>dup操作符：与db，dw，dd等一样也是由编译器识别处理。他是和db，dw，dd等数据定义伪指令配合使用的，用来进行数据恢复</p><p>db 3 dup （0）<br>定义了三个字节，他们的值都是0<br>db 3 dup （1，2，3）<br>定义了9个字节，他们是1、2、3、1、2、3、1、2、3<br>定义一个200字节的栈段：<br> Stack segment<br>   db 200 dup（0）<br> Stack ends<br>可以看作将dup中的内容循环列出n次</p><pre><code>       操作符0ffset</code></pre><p>Offset是一个操作符，由编译器处理，作用是：取标号所对应地址的偏移地址<br>如：<br>Start：Mov ax，offset start——mov ax，0      （假设初始地址为0）<br>S：mov ax，offset s——mov ax，3       （上一条指令占3个字节）</p><p>如上图：操作符offset在debug调试中没有出现</p><pre><code>     Jmp指令</code></pre><p>1：依据位移进行转移：<br>Jmp short 标号 —— 执行后cs：ip指向标号地址处的指令<br>段内短转移，ip修改范围是-128~127：指令向下走为正，向上走为负</p><p>Jmp near ptr 标号 —— 执行后cs：ip指向标号地址处的指令<br>段内近转移，ip修改范围是-32768~32767：指令向下走为正，向上走为负</p><p>注：这两个指令“依据位移进行转移”原因是，short 标号或者near ptr 标号 由编译器处理，编译器根据标号地址算出位移地址给cpu使用<br>2：依据目标地址转移<br>Jmp far ptr 标号—— 执行后cs：ip都被修改为标号处的地址<br>段间转移，远转移,直接依据目标地址修改cs：ip</p><pre><code>         转移地址在寄存器jmp</code></pre><p>格式：<br>Jmp reg——ip变为（reg)</p><pre><code>        转移地址在内存中的jmp</code></pre><p>段内转移：<br>Jmp word ptr 内存地址  ：将寄存器ip中的数据改为，对应内存地址中的字数据<br>如：<br>Mov ax，0123h<br>Mov ds:[0]，ax<br>Jmp word ptr ds:[0]  //此处将ip改为（ds:[0]内的字数据）<br>执行后：（ip）=0123h</p><p>段间转移：<br>Jmp dword ptr 内存地址 ：将寄存器cs，ip中的数据改为对应内存单元中的字数据，cs改为高位的字数据，ip改为低位的字数据<br>如：<br>Mov ax，0123h<br>Mov ds:[0]，ax<br>Mov word ptr ds：[2]，0<br>Jmp dword ptr ds:[0]<br>//执行后从ds：[0]开始的两个字数据，cs取其中的高位，ip取其中的低位<br>执行后：（cs）=0000h      （ip）=0123h</p><pre><code>    Jcxz指令</code></pre><p>Jcxz指令是有条件转移指令，所有的有条件转移指令都是短转移，在段内根据位移进行跳转，ip范围是：-128~127</p><p>格式：jcxz 标号  ——执行这个指令前判断：如果寄存器cx=o则进行跳转否则向下走<br>很想这个：if（cx==0）jmp short 标号<br>例如：利用jcxz指令,现实在内存2000H段中查找第一个值为0的字节,找到后,将它的偏移地址存储在dx中.<br>assume cs:codesg<br>codesg segment<br>start:    mov ax,2000H<br>        mov ds,ax<br>        mov bx,0<br>    s:    mov cl,[bx]<br>        mov ch,0<br>        jcxz ok<br>        inc bx<br>        jmp short s</p><pre><code>ok:    mov dx,bx    mov ax,4c00h    int 21h</code></pre><p>codesg ends<br>end start </p><pre><code>          loop指令</code></pre><p>Loop指令是循环指令，所有的循环指令都是短转移，也是根据位移进行转移，ip修改范围是-127~128<br>格式：loop 标号——执行时进行两步操作<br>1：（cx）=（cx）-1<br>2：判断cx，若cx为0不转跳，向下走，若cx不为0转跳<br>相当于：<br>（cx）–；<br>If（cx！=0）jmp short 标号；——从这里可以看出loop指令与有条件转移指令很类似</p><p>Dec功能与inc相反<br>Dec bx ——（bx）=（bx）-1</p>]]></content>
       
       
       
