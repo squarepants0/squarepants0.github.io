@@ -6,7 +6,8 @@
     <meta charset="utf-8">
     <meta name="keywords" content="Format String Exploit, Matrix">
     <meta name="description" content="                   格式化字符串漏洞原理格式化字符串函数是根据格式化字符串函数来进行解析的。那么相应的要被解析的参数的个数也自然是由这个格式化字符串所控制。比如说’%s’表明我们会输出一个字符串参数。
-printf(“co">
+
+对于这样的例子，在">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -375,9 +376,13 @@ printf(“co">
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                          <div class="article-tag">
-                            <span class="chip bg-color">无标签</span>
-                          </div>
+                    <div class="article-tag">
+                        
+                            <a href="/tags/pwn/" target="_blank">
+                                <span class="chip bg-color">pwn</span>
+                            </a>
+                        
+                    </div>
                     
                 </div>
                 <div class="col s5 right-align">
@@ -419,7 +424,7 @@ printf(“co">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <pre><code>                   格式化字符串漏洞原理</code></pre><p>格式化字符串函数是根据格式化字符串函数来进行解析的。那么相应的要被解析的参数的个数也自然是由这个格式化字符串所控制。比如说’%s’表明我们会输出一个字符串参数。</p>
-<p>printf(“color %s, number %d, float %4.3f”, “red”, 1234, 3.12);</p>
+<p><img src="https://ctf-wiki.github.io/ctf-wiki/pwn/linux/fmtstr/figure/printf.png" alt="函数"></p>
 <p>对于这样的例子，在进入 printf 函数的之前 (即还没有调用 printf)，栈上的布局由高地址到低地址依次如下<br>some value   //未知量<br> 3.14 123456<br> addr of “red”<br> addr of format string: Color %s…</p>
 <p>在进入 printf 之后，函数首先获取第一个参数，一个一个读取其字符会遇到两种情况<br>当前字符不是 %，直接输出到相应标准输出。<br>当前字符是 %， 继续读取下一个字符<br>如果没有字符，报错<br>如果下一个字符是 %, 输出 %<br>否则根据相应的字符，获取相应的参数，对其进行解析并输出</p>
 <p>假设编写如下程序:<br>printf(“Color %s, Number %d, Float %4.2f”);<br>程序照样会运行，会将栈上存储格式化字符串地址上面的三个变量分别解析为<br>1.解析其地址对应的字符串<br>2.解析其内容对应的整形值<br>3.解析其内容对应的浮点值</p>
@@ -657,27 +662,28 @@ target 表示我们要覆盖为的目的变量值。</code></pre><p>这其实就
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/05/22/formal/">
+                <a href="/2020/05/23/mass/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Format String Exploit">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="mass">
                         
-                        <span class="card-title">Format String Exploit</span>
+                        <span class="card-title">mass</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">                   格式化字符串漏洞原理格式化字符串函数是根据格式化字符串函数来进行解析的。那么相应的要被解析的参数的个数也自然是由这个格式化字符串所控制。比如说’%s’表明我们会输出一个字符串参数。
-printf(“co</div>
+                    <div class="summary">             hexo基本写文章操作：1：在自己本地blog文件夹git bash here
+2:在bash中：hexo n “name” 或是直接在_posts中写文章
+3：文章中插入图片    语法：
+![图片alt](图片</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-22
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-23
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -686,7 +692,14 @@ printf(“co</div>
                         </span>
                     </div>
                 </div>
-
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/mass/" target="_blank">
+                        <span class="chip bg-color">mass</span>
+                    </a>
+                    
+                </div>
                 
             </div>
         </div>
@@ -836,7 +849,7 @@ printf(“co</div>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">7k</span>
+                <span class="white-color">7.1k</span>
             
 
             
