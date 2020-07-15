@@ -537,7 +537,7 @@ int __fastcall set_user(__int64 a1)         #这个函数的参数是dosms函数
   for ( i = 0; i &lt;= 40 &amp;&amp; s[i]; ++i )     #这个是s[i]应该不会是0（大胆猜测），然后就会循环41次，将s，0~40标号字符赋给a1（v1）地址处，从其140标号~180标号
     *(_BYTE *)(a1 + i + 140) = s[i];
   return printf(&quot;Hi, %s&quot;, a1 + 140);
-}</code></pre><h3 id="4：set-sms-int64-amp-v1-函数"><a href="#4：set-sms-int64-amp-v1-函数" class="headerlink" title="4：set_sms((__int64)&amp;v1)函数"></a>4：set_sms((__int64)&amp;v1)函数</h3><p>__fastcall是一种函数调用方式，在这里没啥用</p>
+}</code></pre><h3 id="4：set-sms-int64-amp-v1-函数"><a href="#4：set-sms-int64-amp-v1-函数" class="headerlink" title="4：set_sms((__int64)&amp;v1)函数"></a>4：set_sms((__int64)&amp;v1)函数</h3><p>fastcall是一种函数调用方式，在这里没啥用</p>
 <pre><code>set_sms((__int64)&amp;v1)函数：
 char *__fastcall set_sms(__int64 a1)               #一样，a1是dosms函数中v1的地址，作为该函数的参数，v1地址位于[rbp-C0h]
 {
@@ -768,26 +768,27 @@ for i in range(256):     #256，也可以小一点
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/07/14/pie-rao-guo/">
+                <a href="/2020/07/15/xctf-challenge-stack2/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="PIE绕过">
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="xctf-challenge-stack2">
                         
-                        <span class="card-title">PIE绕过</span>
+                        <span class="card-title">xctf-challenge-stack2</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：ASLR简单介绍ASLR（地址随机化）是一种针对缓冲区溢出的安全保护技术，通过对堆、栈、共享库映射等线性区布局的随机化，通过增加攻击者预测目的地址的难度，防止攻击者直接定位攻击代码位置，达到阻止溢出攻击的目的。可以理解为libc、栈、堆</div>
+                    <div class="summary">1：checksec[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/stack2&#39;
+    Arch:     i386-32-little
+    RELRO:    Partial R</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-14
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-15
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -796,12 +797,11 @@ for i in range(256):     #256，也可以小一点
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
-                        <span class="chip bg-color">原理学习</span>
+                    <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                        <span class="chip bg-color">xctf-pwn-challenge</span>
                     </a>
                     
                 </div>
@@ -953,7 +953,7 @@ for i in range(256):     #256，也可以小一点
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">26.3k</span>
+                <span class="white-color">27.6k</span>
             
 
             
