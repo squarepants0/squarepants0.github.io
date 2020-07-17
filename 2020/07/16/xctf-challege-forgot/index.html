@@ -519,7 +519,7 @@ size_t v0; // ebx
   snprintf(&amp;s, 0x32u, &quot;cat %s&quot;, &quot;./flag&quot;);
   return system(&amp;s);
 }</code></pre><p>snprintf函数收录</p>
-<h2 id="3：分析"><a href="#3：分析" class="headerlink" title="3：分析"></a>3：分析</h2><p>首先由于存在栈溢出，且数组v2下面的都是函数指针那我们就可以控制fun1<del>fun3，以及v6</del>v12的函数指针，还有v14。<br>有后门，那么我们只要想到如何控制程序流程跳转到后门即可。<br>在for循环语句中，会根据数组v2中的字符来改变v14的大小，跳出循环后到这个语句：(<em>(&amp;fun1 + –v14))() 显然是执行指针所指向的函数。整个过程&amp;fun1不变，变的只有v14那么我们可以设计payload使得v14的变化在我们可以预测。那么就要好好分析switch case中的语句。<br>我们进入第一个判断函数*</em>sub_8048702：**</p>
+<h2 id="3：分析"><a href="#3：分析" class="headerlink" title="3：分析"></a>3：分析</h2><p>首先由于存在栈溢出，且数组v2下面的都是函数指针那我们就可以控制fun1<del>fun3，以及v6</del>v12的函数指针，还有v14。<br>有后门，那么我们只要想到如何控制程序流程跳转到后门即可。<br>在for循环语句中，会根据数组v2中的字符来改变v14的大小，跳出循环后到这个语句：(*(&amp;fun1 + –v14))() 显然是执行指针所指向的函数。整个过程&amp;fun1不变，变的只有v14那么我们可以设计payload使得v14的变化在我们可以预测。那么就要好好分析switch case中的语句。<br>我们进入第一个判断函数sub_8048702：</p>
 <pre><code>_BOOL4 __cdecl sub_8048702(char a1)
 {
   return a1 &gt; &#39;`&#39; &amp;&amp; a1 &lt;= &#39;z&#39; || a1 &gt; &#39;/&#39; &amp;&amp; a1 &lt;= &#39;9&#39; || a1 == &#39;_&#39; || a1 == &#39;-&#39; || a1 == &#39;+&#39; || a1 == &#39;.&#39;;// A~Z ：65~90   \xcc\x86\x04\x08
@@ -778,27 +778,25 @@ $
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/07/16/xctf-challege-forgot/">
+                <a href="/2020/07/17/wiki-hijack-got/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="xctf-challege-forgot">
+                        <img src="/medias/featureimages/1.jpg" class="responsive-img" alt="wiki-hijack GOT">
                         
-                        <span class="card-title">xctf-challege-forgot</span>
+                        <span class="card-title">wiki-hijack GOT</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec forgot
-[*] &#39;/home/hunter/PWN/XCTF/xctf_challenge/forgot&</div>
+                    <div class="summary">1：原理在目前的 C 程序中，libc 中的函数都是通过 GOT 表来跳转的。此外，在没有开启 RELRO（即 partial RELRO）前提下，每个 libc 的函数对应的 GOT 表项是可以被修改的。因此，我们可以修改某个 libc </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-16
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-17
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-user fa-fw"></i>
@@ -807,12 +805,11 @@ $
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/xctf-challege/" target="_blank">
-                        <span class="chip bg-color">xctf-challege</span>
+                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                        <span class="chip bg-color">原理学习</span>
                     </a>
                     
                 </div>
@@ -966,7 +963,7 @@ $
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">29.4k</span>
+                <span class="white-color">31.5k</span>
             
 
             
