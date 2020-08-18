@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="Ret2dlresolve, Matrix">
+    <meta name="keywords" content="Ret2dlresolve原理理解, Matrix">
     <meta name="description" content="延迟绑定技术因为程序分为静态链接跟动态链接，因为好多库函数在程序中并不一定都用到，所以在处理动态链接程序的时候，elf文件会采取一种叫做延迟绑定（lazy binding）的技术，也就是当我们位于动态链接库的函数被调用的时候，编译器才会真正">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Ret2dlresolve | Matrix</title>
+    <title>Ret2dlresolve原理理解 | Matrix</title>
     <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -197,13 +197,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/1.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        Ret2dlresolve
+                        Ret2dlresolve原理理解
                     </div>
                 </div>
             </div>
@@ -304,6 +304,15 @@
                 </div>
                 <div class="col s5 right-align">
                     
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                CTF-PWN
+                            </a>
+                        
+                    </div>
+                    
                 </div>
             </div>
 
@@ -372,7 +381,7 @@ gdb-peda$
 <pre class=" language-bash"><code class="language-bash">gdb-peda$ x/3i 0x80482d0
    0x80482d0:    push   DWORD PTR ds:0x804a004
    0x80482d6:    jmp    DWORD PTR ds:0x804a008</code></pre>
-<p>可以看到这两条指令将got+4（0x804a004）里面的值压入栈中，然后跳转到got+8（0x804a008）的地方去执行。跟进got+8：</p>
+<p>可以看到这两条指令将got+4（0x804a004）里面的值压入栈中，然后跳转到got+8（0x804a008）的地方去执行。跟进got+8：（0x804a004存放linkmap）</p>
 <pre class=" language-bash"><code class="language-bash">gdb-peda$ x/wx 0x804a008
 0x804a008:    0xf7fead90
 gdb-peda$ 
@@ -415,19 +424,16 @@ Dynamic section at offset 0xf14 contains 24 entries:
  0x6ffffffe <span class="token punctuation">(</span>VERNEED<span class="token punctuation">)</span>                    0x8048270
  0x6fffffff <span class="token punctuation">(</span>VERNEEDNUM<span class="token punctuation">)</span>                 1
  0x6ffffff0 <span class="token punctuation">(</span>VERSYM<span class="token punctuation">)</span>                     0x8048266
- 0x00000000 <span class="token punctuation">(</span>NULL<span class="token punctuation">)</span>                       0x0
-``<span class="token variable"><span class="token variable">`</span><span class="token function">bash</span>
-
-他们其实是一个结构体数组，其结构体定义为：
-<span class="token variable">`</span></span>``c
-typedef struct <span class="token punctuation">{</span>
+ 0x00000000 <span class="token punctuation">(</span>NULL<span class="token punctuation">)</span>                       0x0</code></pre>
+<p>他们其实是一个结构体数组，其结构体定义为：</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token punctuation">{</span>
     Elf32_Sword     d_tag<span class="token punctuation">;</span>
-    union <span class="token punctuation">{</span>
+    <span class="token keyword">union</span> <span class="token punctuation">{</span>
         Elf32_Word  d_val<span class="token punctuation">;</span>
         Elf32_Addr  d_ptr<span class="token punctuation">;</span>
     <span class="token punctuation">}</span> d_un<span class="token punctuation">;</span>
 <span class="token punctuation">}</span> Elf32_Dyn<span class="token punctuation">;</span>
-extern Elf32_Dyn_DYNAMIC<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<span class="token keyword">extern</span> Elf32_Dyn_DYNAMIC<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
 <p>Elf32_Dyn结构由一个类型值加上一个附加的数值或指针，对于不同的类型，后面附加的数值或者指针有着不同的含义。下面给出和延迟绑定相关的类型值的定义。</p>
 <ul>
 <li><p>d_tag类型                     d_un的定义</p>
@@ -483,7 +489,7 @@ gdb-peda$ </code></pre>
 0x80481dc:    0x0000001a    0x00000000    0x00000000    0x00000012
 0x80481ec:    0x0000003b    0x00000000
 gdb-peda$ </code></pre>
-<p>同样的也可以用readelf -s查看符号表内容</p>
+<p>同样的也可以用readelf -s查看符号表结构体</p>
 <pre class=" language-bash"><code class="language-bash">hunter@hunter:~/PWN/Freebuf$ readelf -s test1
 
 Symbol table <span class="token string">'.dynsym'</span> contains 5 entries:
@@ -1063,7 +1069,7 @@ $  </code></pre>
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/08/17/ret2dlresolve/" class="b-link-green">Ret2dlresolve</a>
+                    <a href="/2020/08/17/ret2dlresolve/" class="b-link-green">Ret2dlresolve原理理解</a>
                 </p>
             </div>
         </div>
@@ -1106,42 +1112,44 @@ $  </code></pre>
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/08/17/ret2dlresolve/">
+                <a href="/2020/08/18/ret2dlresovle-lian-xi/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="Ret2dlresolve">
+                        <img src="/medias/featureimages/20.jpg" class="responsive-img" alt="Ret2dlresovle练习">
                         
-                        <span class="card-title">Ret2dlresolve</span>
+                        <span class="card-title">Ret2dlresovle练习</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">延迟绑定技术因为程序分为静态链接跟动态链接，因为好多库函数在程序中并不一定都用到，所以在处理动态链接程序的时候，elf文件会采取一种叫做延迟绑定（lazy binding）的技术，也就是当我们位于动态链接库的函数被调用的时候，编译器才会真正</div>
+                    <div class="summary">IDAint __cdecl main(int argc, const char **argv, const char **envp)
+{
+  init();
+  vuln();
+  return 0;
+}
+
+ssize_t vuln()
+</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-08-17
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-08-18
+                        </span>
                         <span class="publish-author">
                             
-                            <i class="fa fa-user fa-fw"></i>
-                            IT YUAN
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
                             
                         </span>
                     </div>
-                </div>
-
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
-                        <span class="chip bg-color">原理学习</span>
-                    </a>
-                    
                 </div>
                 
             </div>
@@ -1296,7 +1304,7 @@ $  </code></pre>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">38.3k</span>
+                <span class="white-color">39.4k</span>
             
 
             
