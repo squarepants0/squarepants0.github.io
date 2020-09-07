@@ -584,7 +584,7 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
 <span class="token number">0x70</span><span class="token operator">:</span> <span class="token number">0x0</span>
 <span class="token number">0x80</span><span class="token operator">:</span> <span class="token number">0x0</span></code></pre>
 <p>unsortedbin ：大将一人，且听下回分解<br>smallbins：且听下回分解<br>largebins：且听下回分解</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>free后的chunks会依据自己的完整大小放入不同的bins中，相应的也会清楚某些数据但并不会全部清除。谜团众多请听下回分解~~。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>free后的chunks会依据自己的完整大小放入不同的bins中，相应的也会清除某些数据但并不会全部清除。谜团众多请听下回分解~~。</p>
 
             </div>
             <hr/>
@@ -768,26 +768,26 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/09/07/heap-chu-tan-chunk-de-huo-qu-yu-shi-fang/">
+                <a href="/2020/09/07/heap-chu-tan-bins-shen-jiang/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="Heap--初探--chunk的获取与释放">
+                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Heap--初探--bins神将">
                         
-                        <span class="card-title">Heap--初探--chunk的获取与释放</span>
+                        <span class="card-title">Heap--初探--bins神将</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">什么是堆堆不同于栈，堆是动态分配的（由操作系统内核或者堆管理器），只有在程序中需要时才会分配。在 CTF 的 pwn 程序中，栈是程序加载进内存后就会出现，而堆是由 malloc、alloc、realloc 函数分配内存后才会出现。其生长方</div>
+                    <div class="summary">Previously on Heap–初探–chunk的获取与释放：我们当时最大的疑惑差不多就是Free后的chunks都怎么了，这里来逐一解答。
+前情提要ptmalloc 会统一管理 heap 和 mmap 映射区域中的空闲的 chunk</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -800,7 +800,6 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -962,7 +961,7 @@ chec</div>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">56.1k</span>
+                <span class="white-color">57.2k</span>
             
 
             
