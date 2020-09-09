@@ -599,27 +599,25 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/09/07/heap-chu-tan-bins-shen-jiang/">
+                <a href="/2020/09/09/heap-chu-tan-ji-ben-lou-dong/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/5.jpg" class="responsive-img" alt="Heap--初探--bins神将">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Heap--初探--基本漏洞">
                         
-                        <span class="card-title">Heap--初探--bins神将</span>
+                        <span class="card-title">Heap--初探--基本漏洞</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">Previously on Heap–初探–chunk的获取与释放：我们当时最大的疑惑差不多就是Free后的chunks都怎么了，这里来逐一解答。
-前情提要ptmalloc 会统一管理 heap 和 mmap 映射区域中的空闲的 chunk</div>
+                    <div class="summary">First fit规则在malloc一个chunk时，先在bins中寻找能满足用户需求大小的chunk，也就是大于等于用户需求的大小然后返回，而不是一直遍历到完全符合的chunk。比如说在unsortedbin中，找到了一个大于用户申请的c</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-09
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -632,7 +630,6 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -793,7 +790,7 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">57.2k</span>
+                <span class="white-color">58.6k</span>
             
 
             
