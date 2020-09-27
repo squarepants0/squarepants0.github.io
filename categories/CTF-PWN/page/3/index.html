@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="标签: BLOG, Matrix">
-    <meta name="description" content="标签: BLOG | Matrix">
+    <meta name="keywords" content="分类: CTF-PWN, Matrix">
+    <meta name="description" content="分类: CTF-PWN | Matrix">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,7 +13,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>标签: BLOG | Matrix</title>
+    <title>分类: CTF-PWN | Matrix</title>
     <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
@@ -225,142 +225,267 @@ $('.bg-cover').css('background-image', 'url(/medias/banner/' + new Date().getMin
 
     
 
-<div id="tags" class="container chip-container">
+<div id="category-cloud" class="container chip-container">
     <div class="card">
         <div class="card-content">
             <div class="tag-title center-align">
-                <i class="fa fa-tags"></i>&nbsp;&nbsp;文章标签
+                <i class="fa fa-bookmark"></i>&nbsp;&nbsp;文章分类
             </div>
             <div class="tag-chips">
                 
                 
-                <a href="/tags/2020-8%E6%9C%88%E5%9B%BD%E8%B5%9B/" title="2020-8月国赛: 1">
+                
+                <a href="/categories/%E6%AF%94%E8%B5%9B%E5%A4%8D%E7%8E%B0/" title="比赛复现: 1">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
-                            data-tagname="2020-8月国赛" style="background-color: #F9EBEA;">2020-8月国赛
+                            style="background-color: #F9EBEA;">比赛复现
                         <span class="tag-length">1</span>
                     </span>
                 </a>
                 
                 
-                <a href="/tags/linux/" title="linux: 1">
+                <a href="/categories/MASS/" title="MASS: 2">
                     <span class="chip center-align waves-effect waves-light
                              chip-default "
-                            data-tagname="linux" style="background-color: #F5EEF8;">linux
-                        <span class="tag-length">1</span>
+                            style="background-color: #F5EEF8;">MASS
+                        <span class="tag-length">2</span>
                     </span>
                 </a>
                 
                 
-                <a href="/tags/xctf-pwn-challenge/" title="xctf-pwn-challenge: 14">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="xctf-pwn-challenge" style="background-color: #D5F5E3;">xctf-pwn-challenge
-                        <span class="tag-length">14</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" title="原理学习: 18">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="原理学习" style="background-color: #E8F8F5;">原理学习
-                        <span class="tag-length">18</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/BUU-PWN/" title="BUU-PWN: 3">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="BUU-PWN" style="background-color: #FEF9E7;">BUU-PWN
-                        <span class="tag-length">3</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/BLOG/" title="BLOG: 1">
+                <a href="/categories/CTF-PWN/" title="CTF-PWN: 40">
                     <span class="chip center-align waves-effect waves-light
                              chip-active "
-                            data-tagname="BLOG" style="background-color: #F8F9F9;">BLOG
-                        <span class="tag-length">1</span>
+                            style="background-color: #D5F5E3;">CTF-PWN
+                        <span class="tag-length">40</span>
                     </span>
                 </a>
                 
-                
-                <a href="/tags/wiki-pwn/" title="wiki--pwn: 2">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="wiki--pwn" style="background-color: #82E0AA;">wiki--pwn
-                        <span class="tag-length">2</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/xctf-challege/" title="xctf-challege: 1">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="xctf-challege" style="background-color: #D7BDE2;">xctf-challege
-                        <span class="tag-length">1</span>
-                    </span>
-                </a>
-                
-                
-                <a href="/tags/xctf-pwn-easy/" title="xctf-pwn-easy: 2">
-                    <span class="chip center-align waves-effect waves-light
-                             chip-default "
-                            data-tagname="xctf-pwn-easy" style="background-color: #A3E4D7;">xctf-pwn-easy
-                        <span class="tag-length">2</span>
-                    </span>
-                </a>
                 
             </div>
         </div>
     </div>
 </div>
 
-    <div class="container">
-        
+    
 
-        <article>
-            <div class="row tags-posts">
-                
-                
-                <div class="article tag-post col s12 m6 l4" data-tags="BLOG" data-aos="fade-up">
-                    <div class="card">
-                        <a href="/2020/05/23/mass/">
-                            <div class="card-image tag-image">
+    <article id="articles" class="container articles">
+        <div class="row tags-posts">
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2020/05/22/formal/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/11.jpg" class="responsive-img" alt="Format String Exploit">
+                            
+                            <span class="card-title">Format String Exploit</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary">
+                            
+                                                   格式化字符串漏洞原理格式化字符串函数是根据格式化字符串函数来进行解析的。那么相应的要被解析的参数的个数
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-22
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fa fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
                                 
                                 
-                                <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="BLOG">
-                                
-                                <span class="card-title">BLOG</span>
-                            </div>
-                        </a>
-                        <div class="card-content article-content">
-                            <div class="publish-info">
-                                <span class="publish-date">
-                                    <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-23
-                                </span>
-                                <span class="publish-author">
-                                    
-                                    <i class="fa fa-bookmark fa-fw icon-category"></i>
-                                    
-                                    <a href="/categories/MASS/" class="post-category" target="_blank">
-                                    MASS
-                                    </a>
-                                    
-                                    
-                                </span>
-                            </div>
+                            </span>
                         </div>
                     </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                            <span class="chip bg-color">原理学习</span>
+                        </a>
+                        
+                    </div>
+                    
                 </div>
-                
             </div>
-        </article>
-    </div>
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2020/05/16/xctf-jin-jie-pwn-warmup/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="xctf进阶-pwn-warmup">
+                            
+                            <span class="card-title">xctf进阶-pwn-warmup</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary">
+                            
+                                这个提没有附件，被称为盲打，blind pwn
+黑箱测试之类的。
+linux连接尝试：
+因为没有关键提示，可以从溢出方面下手，这个地址很可能
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-05-16
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fa fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/xctf-pwn-challenge/" target="_blank">
+                            <span class="chip bg-color">xctf-pwn-challenge</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2020/04/23/rop-x86/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="ROP_x86">
+                            
+                            <span class="card-title">ROP_x86</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary">
+                            
+                                ROP的全称为Return-oriented programming（返回导向编程），这是一种高级的内存攻击技术可以用来绕过现代操作系统的各
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-04-23
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fa fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                            <span class="chip bg-color">原理学习</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="article tag-post col s12 m6 l4" data-aos="zoom-in">
+                <div class="card">
+                    <a href="/2020/03/23/xctf-gusnum/">
+                        <div class="card-image tag-image">
+                            
+                            
+                            <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="xctf-gusnum">
+                            
+                            <span class="card-title">xctf-gusnum</span>
+                        </div>
+                    </a>
+                    <div class="card-content article-content">
+                        <div class="summary">
+                            
+                                1: file2: checksec3: 运行4: ida伪代码在用rand（）函数产生随机数时一般用srand（）初始化种子（seed）r
+                            
+                        </div>
+                        <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-03-23
+                            </span>
+                            <span class="publish-author">
+                                
+                                <i class="fa fa-bookmark fa-fw icon-category"></i>
+                                
+                                <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                                
+                                
+                            </span>
+                        </div>
+                    </div>
+
+                    
+                    <div class="card-action article-tags">
+                        
+                        <a href="/tags/xctf-pwn-easy/" target="_blank">
+                            <span class="chip bg-color">xctf-pwn-easy</span>
+                        </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+    </article>
 </main>
+
+
+<div class="container paging">
+    <div class="row">
+        <div class="col s6 m4 l4">
+            
+            <a href="/categories/CTF-PWN/page/2/"
+               class="left btn-floating btn-large waves-effect waves-light bg-color">
+                <i class="fa fa-angle-left"></i>
+            </a>
+            
+        </div>
+        <div class="page-info col m4 l4 hide-on-small-only">
+            <div class="center-align b-text-gray">3 / 3</div>
+        </div>
+        <div class="col s6 m4 l4">
+            
+            <a class="right btn-floating btn-large disabled">
+                <i class="fa fa-angle-right"></i>
+            </a>
+            
+        </div>
+    </div>
+</div>
 
 
 <footer class="page-footer bg-color">
