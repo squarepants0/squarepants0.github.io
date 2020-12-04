@@ -766,20 +766,20 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
             <div class="article-badge left-badge text-color">
                 <i class="fa fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/2020/09/07/heap-chu-tan-chunk-de-huo-qu-yu-shi-fang/">
+                <a href="/2020/09/09/heap-chu-tan-ji-ben-lou-dong/">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/19.jpg" class="responsive-img" alt="Heap--初探--chunk的获取与释放">
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="Heap--初探--基本漏洞">
                         
-                        <span class="card-title">Heap--初探--chunk的获取与释放</span>
+                        <span class="card-title">Heap--初探--基本漏洞</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
-                    <div class="summary">什么是堆堆不同于栈，堆是动态分配的（由操作系统内核或者堆管理器），只有在程序中需要时才会分配。在 CTF 的 pwn 程序中，栈是程序加载进内存后就会出现，而堆是由 malloc、alloc、realloc 函数分配内存后才会出现。其生长方</div>
+                    <div class="summary">First fit规则在malloc一个chunk时，先在bins中寻找能满足用户需求大小的chunk，也就是大于等于用户需求的大小然后返回，而不是一直遍历到完全符合的chunk。比如说在unsortedbin中，找到了一个大于用户申请的c</div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-07
+                            <i class="fa fa-clock-o fa-fw icon-date"></i>2020-09-09
                         </span>
                         <span class="publish-author">
                             
@@ -955,7 +955,7 @@ pwndbg<span class="token operator">></span> x<span class="token operator">/</spa
 
             
                 &nbsp;<i class="fa fa-area-chart"></i>&nbsp;站点总字数:&nbsp;
-                <span class="white-color">124.6k</span>
+                <span class="white-color">121.4k</span>
             
 
             
