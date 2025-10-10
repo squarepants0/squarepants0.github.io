@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="FirmwareBased on 14.1-47.46_nc_64内核文件似乎非常大： 12root@ns# ls -lh &#x2F;flash&#x2F;ns-14.1-47.46.gz -rwxr-xr-x  1 root  wheel   137M Jun  7 15:02 &#x2F;flash&#x2F;ns-14.1-47.46.gz 但是实际上应该是嵌入了一个rootfs： 123456789101112root@ns#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Citrix Ptrace问题">
+<meta property="og:url" content="http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="SquareR">
+<meta property="og:description" content="FirmwareBased on 14.1-47.46_nc_64内核文件似乎非常大： 12root@ns# ls -lh &#x2F;flash&#x2F;ns-14.1-47.46.gz -rwxr-xr-x  1 root  wheel   137M Jun  7 15:02 &#x2F;flash&#x2F;ns-14.1-47.46.gz 但是实际上应该是嵌入了一个rootfs： 123456789101112root@ns#">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010163902865.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010163919064.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164104073.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164152494.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164215035.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164235900.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164301793.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164307953.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164321585.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164445507.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164514424.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164526771.png">
+<meta property="article:published_time" content="2025-10-10T08:47:45.000Z">
+<meta property="article:modified_time" content="2025-10-10T10:52:33.855Z">
+<meta property="article:author" content="SquareR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010163902865.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Citrix Ptrace问题</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 8.0.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/squarepants0">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/09/26/hello-world/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&text=Citrix Ptrace问题"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&is_video=false&description=Citrix Ptrace问题"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Citrix Ptrace问题&body=Check out this article: http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&name=Citrix Ptrace问题&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&t=Citrix Ptrace问题"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Firmware"><span class="toc-number">1.</span> <span class="toc-text">Firmware</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ptrace"><span class="toc-number">2.</span> <span class="toc-text">Ptrace</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#FreeBSD-Verified-execution"><span class="toc-number">2.1.</span> <span class="toc-text">FreeBSD Verified execution</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Citrix Ptrace问题
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">SquareR</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-10-10T08:47:45.000Z" class="dt-published" itemprop="datePublished">2025-10-10</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="Firmware"><a href="#Firmware" class="headerlink" title="Firmware"></a>Firmware</h1><p>Based on <code>14.1-47.46_nc_64</code><br>内核文件似乎非常大：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@ns# <span class="built_in">ls</span> -lh /flash/ns-14.1-47.46.gz </span><br><span class="line">-rwxr-xr-x  1 root  wheel   137M Jun  7 15:02 /flash/ns-14.1-47.46.gz</span><br></pre></td></tr></table></figure>
+<p>但是实际上应该是嵌入了一个rootfs：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@ns# dmesg | grep md0</span><br><span class="line">md0: Embedded image 427819008 bytes at 0xffffffff816784a0</span><br><span class="line">NS-KERN: md0: Preloaded image 427819008 bytes</span><br><span class="line">NS-KERN skipping /dev/md0c...</span><br><span class="line">Trying to mount root from ufs:/dev/md0 []...</span><br><span class="line">root@ns# <span class="built_in">df</span> -h</span><br><span class="line">Filesystem     Size    Used   Avail Capacity  Mounted on</span><br><span class="line">/dev/md0       395M    379M    8.2M    98%    /</span><br><span class="line">devfs          1.0K    1.0K      0B   100%    /dev</span><br><span class="line">procfs         4.0K    4.0K      0B   100%    /proc</span><br><span class="line">/dev/da0s1a    1.5G    141M    1.3G    10%    /flash</span><br><span class="line">/dev/da0s1e     14G    1.9G     11G    15%    /var</span><br></pre></td></tr></table></figure>
+
+<p>msf相当于插入了一个新的段，用于存放rootfs。</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010163902865.png" alt="image-20251010163902865"></p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010163919064.png" alt="image-20251010163919064"></p>
+<p>如果直接把这个内核文件放入IDA，会花费很多时间用于解析，可以使用<code>objcopy</code>来把这一段无需解析的数据删除：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objcopy --remove-section=mfs kernel.nc.zion_47_46 47_46.kernel.no_mfs</span><br></pre></td></tr></table></figure>
+
+<p>也可以直接进入shell将文件系统dump下来：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164104073.png" alt="image-20251010164104073"></p>
+<h1 id="Ptrace"><a href="#Ptrace" class="headerlink" title="Ptrace"></a>Ptrace</h1><p>在shell中使用本地gdb调试任意可执行文件得到如下报错：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164152494.png" alt="image-20251010164152494"></p>
+<p>在14.1版本kdb模式中调试ptrace系统调用时发现：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164215035.png" alt="image-20251010164215035"></p>
+<p>对应kern_ptrace代码中的：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164235900.png" alt="image-20251010164235900"></p>
+<p>可以看到这里返回一个<strong>非零值</strong>，而在13.1版本中返回的是一个0值。并且在gdb尝试获取寄存器值时在kdb中设置这里的rax值为0可以成功获取：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164301793.png" alt="image-20251010164301793"></p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164307953.png" alt="image-20251010164307953"></p>
+<p>继续深入发现和<code>p_candebug</code>调用的<code>mac_proc_check_debug</code>函数有关：</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164321585.png" alt="image-20251010164321585"></p>
+<blockquote>
+<p><code>mac_proc_check_debug</code>是 FreeBSD <strong>MAC（强制访问控制）框架</strong>中的一个安全检查钩子函数。它的核心作用是：<strong>当一个进程（例如调试器 GDB）试图附加（attach）到另一个进程进行调试时，由 MAC 框架调用此函数，以查询并强制执行当前系统安全策略，决定是否允许这次调试操作。</strong></p>
+</blockquote>
+<h2 id="FreeBSD-Verified-execution"><a href="#FreeBSD-Verified-execution" class="headerlink" title="FreeBSD Verified execution"></a>FreeBSD Verified execution</h2><p>FreeBSD Verified execution也就是<code>mac_veriexec</code>是基于FreeBSD MAC框架实现的一个策略，它提供<strong>文件完整性验证（File Integrity Verification）</strong>，类似于其他系统中的“防篡改”功能。具体实现参考：<a target="_blank" rel="noopener" href="https://reviews.freebsd.org/D8554">⚙ D8554 Verified execution (veriexec) as a MAC module.</a></p>
+<p>核心数据结构有：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//***/sys/security/mac_veriexec/mac_veriexec.c***</span></span><br><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">mac_policy_ops</span> <span class="title">mac_veriexec_ops</span> =</span></span><br><span class="line">&#123;</span><br><span class="line">	.mpo_init = mac_veriexec_init,</span><br><span class="line">	.mpo_syscall = mac_veriexec_syscall,</span><br><span class="line">	.mpo_kld_check_load = mac_veriexec_kld_check_load,</span><br><span class="line">	.mpo_mount_destroy_label = mac_veriexec_mount_destroy_label,</span><br><span class="line">	.mpo_mount_init_label = mac_veriexec_mount_init_label,</span><br><span class="line">	.mpo_priv_check = mac_veriexec_priv_check,</span><br><span class="line">	.mpo_proc_check_debug = mac_veriexec_proc_check_debug,</span><br><span class="line">	.mpo_vnode_check_exec = mac_veriexec_vnode_check_exec,</span><br><span class="line">	.mpo_vnode_check_open = mac_veriexec_vnode_check_open,</span><br><span class="line">	.mpo_vnode_copy_label = mac_veriexec_copy_label,</span><br><span class="line">	.mpo_vnode_destroy_label = mac_veriexec_vnode_destroy_label,</span><br><span class="line">	.mpo_vnode_init_label = mac_veriexec_vnode_init_label,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">MAC_POLICY_SET(&amp;mac_veriexec_ops, mac_veriexec, MAC_VERIEXEC_FULLNAME,</span><br><span class="line">    MPC_LOADTIME_FLAG_NOTLATE, &amp;mac_veriexec_slot);</span><br><span class="line">    </span><br><span class="line"><span class="comment">//sys/security/mac/mac_policy.h</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mac_policy_conf</span> &#123;</span></span><br><span class="line">	<span class="type">char</span>				*mpc_name;	<span class="comment">/* policy name */</span></span><br><span class="line">	<span class="type">char</span>				*mpc_fullname;	<span class="comment">/* policy full name */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mac_policy_ops</span>		*<span class="title">mpc_ops</span>;</span>	<span class="comment">/* policy operations */</span></span><br><span class="line">	<span class="type">int</span>				 mpc_loadtime_flags;	<span class="comment">/* flags */</span></span><br><span class="line">	<span class="type">int</span>				*mpc_field_off; <span class="comment">/* security field */</span></span><br><span class="line">	<span class="type">int</span>				 mpc_runtime_flags; <span class="comment">/* flags */</span></span><br><span class="line">	<span class="type">int</span>				 _mpc_spare1;	<span class="comment">/* Spare. */</span></span><br><span class="line">	<span class="type">uint64_t</span>			 _mpc_spare2;	<span class="comment">/* Spare. */</span></span><br><span class="line">	<span class="type">uint64_t</span>			 _mpc_spare3;	<span class="comment">/* Spare. */</span></span><br><span class="line">	<span class="type">void</span>				*_mpc_spare4;	<span class="comment">/* Spare. */</span></span><br><span class="line">	LIST_ENTRY(mac_policy_conf)	 mpc_list;	<span class="comment">/* global list */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	MAC_POLICY_SET(mpops, mpname, mpfullname, mpflags, privdata_wanted) \</span></span><br><span class="line"><span class="meta">	static struct mac_policy_conf mpname##_mac_policy_conf = &#123;	\</span></span><br><span class="line"><span class="meta">		.mpc_name = #mpname,					\</span></span><br><span class="line"><span class="meta">		.mpc_fullname = mpfullname,				\</span></span><br><span class="line"><span class="meta">		.mpc_ops = mpops,					\</span></span><br><span class="line"><span class="meta">		.mpc_loadtime_flags = mpflags,				\</span></span><br><span class="line"><span class="meta">		.mpc_field_off = privdata_wanted,			\</span></span><br><span class="line"><span class="meta">	&#125;;								\</span></span><br><span class="line"><span class="meta">	static moduledata_t mpname##_mod = &#123;				\</span></span><br><span class="line"><span class="meta">		#mpname,						\</span></span><br><span class="line"><span class="meta">		mac_policy_modevent,					\</span></span><br><span class="line"><span class="meta">		&amp;mpname##_mac_policy_conf				\</span></span><br><span class="line"><span class="meta">	&#125;;								\</span></span><br><span class="line"><span class="meta">	MODULE_DEPEND(mpname, kernel_mac_support, MAC_VERSION,		\</span></span><br><span class="line"><span class="meta">	    MAC_VERSION, MAC_VERSION);					\</span></span><br><span class="line"><span class="meta">	DECLARE_MODULE(mpname, mpname##_mod, SI_SUB_MAC_POLICY,		\</span></span><br><span class="line"><span class="meta">	    SI_ORDER_MIDDLE)</span></span><br></pre></td></tr></table></figure>
+
+<p>其中<code>struct mac_policy_ops</code>结构体是一个巨大的钩子函数表，该结构体包含了所有 <code>mpo_*</code>钩子函数，如<code>mpo_proc_check_debug</code>.</p>
+<blockquote>
+<p>FreeBSD 的 MAC 框架是一个安全基础设施，它允许加载不同的安全模块（如 SELinux, BSM, 其他自定义策略）来强制执行访问控制策略。这个框架通过在内核的关键操作点（如文件访问、进程间通信、网络操作等）插入“钩子函数”（Hook Functions）来实现。<br><code>mac_proc_check_debug</code>就是这样一个钩子函数，它被插入到 <code>ptrace(PT_ATTACH, ...)</code>或类似的进程调试系统调用路径中。</p>
+</blockquote>
+<p>对应内核中的静态模块定义：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">.data:FFFFFFFF811B4600 mac_veriexec_mod dq offset aMacVeriexec ; &quot;mac_veriexec&quot;</span><br><span class="line">.data:FFFFFFFF811B4608                 dq offset mac_policy_modevent</span><br><span class="line">.data:FFFFFFFF811B4610                 dq offset mac_veriexec_mac_policy_conf ; struct mac_policy_conf</span><br><span class="line">.data:FFFFFFFF811B4618 mac_veriexec_mac_policy_conf dq offset aMacVeriexec</span><br><span class="line">.data:FFFFFFFF811B4618                                         ; DATA XREF: .data:FFFFFFFF811B4610↑o</span><br><span class="line">.data:FFFFFFFF811B4618                                         ; struct mac_policy_conf</span><br><span class="line">.data:FFFFFFFF811B4620                 dq offset aMacVeriexec_0 ; &quot;MAC/veriexec&quot;</span><br><span class="line">.data:FFFFFFFF811B4628                 dq offset mac_veriexec_ops</span><br><span class="line">.data:FFFFFFFF811B4630                 dq 1</span><br><span class="line">.data:FFFFFFFF811B4638                 dq offset mac_veriexec_slot</span><br><span class="line">.data:FFFFFFFF811B4640                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4648                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4650                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4658                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4660                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4668                 dq 0</span><br><span class="line">.data:FFFFFFFF811B4670 mac_veriexec_ops dq 0                   ; DATA XREF: .data:FFFFFFFF811B4628↑o</span><br><span class="line">.data:FFFFFFFF811B4678                 dq offset mac_veriexec_init</span><br><span class="line">.data:FFFFFFFF811B4680                 dq offset mac_veriexec_syscall</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164445507.png" alt="image-20251010164445507"></p>
+<p><code>mac_veriexec_proc_check_debug</code>对应<code>mpo_proc_check_debug</code>槽位，其功能为：<code>Check if a process is allowed to be debugged. If a process is not flagged with **VERIEXEC_NOTRACE**, then debugging is allowed</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @internal</span></span><br><span class="line"><span class="comment"> * @brief Check if the requested process can be debugged</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @param cred		credentials to use</span></span><br><span class="line"><span class="comment"> * @param p		process to debug</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * @return 0 if debugging is allowed, otherwise an error code.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="type">int</span></span><br><span class="line"><span class="title function_">mac_veriexec_proc_check_debug</span><span class="params">(<span class="keyword">struct</span> ucred *cred, <span class="keyword">struct</span> proc *p)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">int</span> error, flags;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* If we are not enforcing veriexec, nothing for us to check */</span></span><br><span class="line">	<span class="keyword">if</span> ((mac_veriexec_state &amp; VERIEXEC_STATE_ENFORCE) == <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	error = mac_veriexec_metadata_get_executable_flags(cred, p, &amp;flags, <span class="number">0</span>);</span><br><span class="line">	<span class="keyword">if</span> (error != <span class="number">0</span>)</span><br><span class="line">		<span class="keyword">return</span> (<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ((flags &amp; VERIEXEC_NOTRACE) ? EACCES : <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p>暴露的ioctl接口参考：<a target="_blank" rel="noopener" href="https://reviews.freebsd.org/D8561">⚙ D8561 Verified execution (veriexec) device interface to MAC&#x2F;veriexec</a>，并且不只是ptrace无法使用，execve一个二进制文件也会检测hash，类似可行执行，所以没办法直接编译一个程序来操控该ioctl接口。</p>
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164514424.png" alt="image-20251010164514424"></p>
+<p>可以让内核进入kdb状态，然后直接修改<code>mac_veriexec_state</code>值为0：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ns# sysctl debug.kdb.enter=1</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://raw.githubusercontent.com/squarepants0/Blog-Pics/master/image-20251010164526771.png" alt="image-20251010164526771"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">root@ns# sysctl -a | grep veriexec</span><br><span class="line">device  veriexec</span><br><span class="line">security.mac.veriexec.algorithms: SHA256</span><br><span class="line">security.mac.veriexec.state: </span><br><span class="line">security.mac.veriexec.debug: 0</span><br><span class="line">root@ns# gdb /bin/ls </span><br><span class="line">GNU gdb (GDB) 10.1</span><br><span class="line">Copyright (C) 2020 Free Software Foundation, Inc.</span><br><span class="line">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</span><br><span class="line">This is free software: you are free to change and redistribute it.</span><br><span class="line">There is NO WARRANTY, to the extent permitted by law.</span><br><span class="line">Type <span class="string">&quot;show copying&quot;</span> and <span class="string">&quot;show warranty&quot;</span> <span class="keyword">for</span> details.</span><br><span class="line">This GDB was configured as <span class="string">&quot;x86_64-unknown-freebsd11.4&quot;</span>.</span><br><span class="line">Type <span class="string">&quot;show configuration&quot;</span> <span class="keyword">for</span> configuration details.</span><br><span class="line">For bug reporting instructions, please see:</span><br><span class="line">&lt;https://www.gnu.org/software/gdb/bugs/&gt;.</span><br><span class="line">Find the GDB manual and other documentation resources online at:</span><br><span class="line">    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.</span><br><span class="line"></span><br><span class="line">For <span class="built_in">help</span>, <span class="built_in">type</span> <span class="string">&quot;help&quot;</span>.</span><br><span class="line">Type <span class="string">&quot;apropos word&quot;</span> to search <span class="keyword">for</span> commands related to <span class="string">&quot;word&quot;</span>...</span><br><span class="line">Reading symbols from /bin/ls...</span><br><span class="line">(No debugging symbols found <span class="keyword">in</span> /bin/ls)</span><br><span class="line">(gdb) start</span><br><span class="line">Function <span class="string">&quot;main&quot;</span> not defined.</span><br><span class="line">Make breakpoint pending on future shared library load? (y or [n]) y</span><br><span class="line">Temporary breakpoint 1 (-qualified main) pending.</span><br><span class="line">Starting program: /bin/ls </span><br><span class="line">.nsva                   .version                configdb                nsconfig</span><br><span class="line">.snap                   boot                    dm0.img                 secboot</span><br><span class="line">.testing                boot.config             ns-14.1-47.46.gz</span><br><span class="line">[Inferior 1 (process 9857) exited normally]</span><br><span class="line">(gdb) </span><br></pre></td></tr></table></figure>
+<p>这样就可以调试了。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/squarepants0">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Firmware"><span class="toc-number">1.</span> <span class="toc-text">Firmware</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ptrace"><span class="toc-number">2.</span> <span class="toc-text">Ptrace</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#FreeBSD-Verified-execution"><span class="toc-number">2.1.</span> <span class="toc-text">FreeBSD Verified execution</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&text=Citrix Ptrace问题"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&is_video=false&description=Citrix Ptrace问题"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Citrix Ptrace问题&body=Check out this article: http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&title=Citrix Ptrace问题"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&name=Citrix Ptrace问题&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/10/10/Citrix-Ptrace%E9%97%AE%E9%A2%98/&t=Citrix Ptrace问题"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    SquareR
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/squarepants0">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
